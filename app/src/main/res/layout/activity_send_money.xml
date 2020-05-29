@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Home.Transactions.SendMoney">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/textHighlight"
+            android:text="Loading . . ."
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/appBar"
+        android:layout_height="60dp">
+
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:textSize="20dp"
+            android:paddingTop="5dp"
+            android:textStyle="bold"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="Send Money"
+            android:layout_height="match_parent"/>
+        <ImageView
+            android:background="@drawable/image_ripple"
+            android:layout_width="wrap_content"
+            android:paddingHorizontal="18dp"
+            android:src="@drawable/back"
+            android:id="@+id/back"
+            android:clickable="true"
+            android:layout_marginHorizontal="5dp"
+            android:focusable="true"
+            android:layout_height="match_parent"/>
+    </RelativeLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/mainContent"
+        android:visibility="invisible"
+        android:scrollbars="vertical"
+        android:layout_below="@+id/appBar"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:translationZ="10dp"
+                    android:hint="Search"
+                    android:id="@+id/search"
+                    android:paddingLeft="20dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:background="@drawable/edit_text"
+                    android:layout_centerInParent="true"
+                    android:layout_height="50dp"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="25dp"
+                    android:text="All People"
+                    android:id="@+id/peopleHeading"
+                    android:textColor="@color/textHighlight"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/usersContainer"
+                android:nestedScrollingEnabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/colorPrimaryDark"
+    tools:context=".Registration.Login">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="18dp"
+            android:text="Enter your phone number"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/textNormal"
+            android:text="Make sure you can receive SMS to this number so that we can send you a code"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginTop="100dp"
+            android:weightSum="100"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_weight="80"
+                android:focusable="false"
+                android:layout_width="match_parent"
+                android:text="+91"
+                android:letterSpacing="0.2"
+                android:inputType="none"
+                android:layout_height="match_parent"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_weight="20"
+                android:maxLength="10"
+                android:letterSpacing="0.2"
+                android:id="@+id/phoneNumber"
+                android:inputType="number"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+       <RelativeLayout
+           android:layout_marginTop="10dp"
+           android:layout_marginHorizontal="25dp"
+           android:layout_width="match_parent"
+           android:layout_height="100dp">
+
+           <TextView
+               android:layout_width="match_parent"
+               android:text="Send OTP"
+               android:gravity="center"
+               android:textStyle="bold"
+               android:clickable="true"
+               android:focusable="true"
+               android:paddingTop="2dp"
+               android:id="@+id/sendOtp"
+               android:layout_centerInParent="true"
+               android:background="@drawable/button_ripple"
+               android:layout_height="50dp"/>
+
+       </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>
