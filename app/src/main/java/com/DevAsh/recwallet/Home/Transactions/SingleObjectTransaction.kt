@@ -1,8 +1,10 @@
 package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -18,13 +20,22 @@ import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 
 class SingleObjectTransaction : AppCompatActivity() {
 
-    lateinit var allActivityAdapter: AllActivityAdapter
+    private lateinit var allActivityAdapter: AllActivityAdapter
+    lateinit var context: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_single_object_transaction)
 
-        scrollContainer.post { scrollContainer.fullScroll(View.FOCUS_DOWN) }
+        context=this
+
+
+        scrollContainer.post {
+            scrollContainer.fullScroll(View.FOCUS_DOWN)
+            Handler().postDelayed({
+                scrollContainer.visibility = View.VISIBLE
+            },500)
+        }
 
         badge.text =  TransactionContext.selectedUser!!.name[0].toString()
 
@@ -45,7 +56,9 @@ class SingleObjectTransaction : AppCompatActivity() {
         transactionContainer.adapter = allActivityAdapter
 
 
-
+        pay.setOnClickListener{
+            startActivity(Intent(context,AmountPrompt::class.java))
+        }
     }
 }
 

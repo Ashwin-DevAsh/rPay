@@ -36,6 +36,7 @@ class SendMoney : AppCompatActivity() {
     var userAdapter: UserAdapter = UserAdapter(TransactionContext.allUsers,this)
     lateinit var context:Context
     lateinit var searchHandler: Handler
+    lateinit var usersContainer: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,8 @@ class SendMoney : AppCompatActivity() {
 
         context=this
 
+
+        usersContainer = findViewById(R.id.usersContainer)
 
         Handler().postDelayed({
             getAllUsers()

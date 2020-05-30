@@ -7,4 +7,5 @@
     <color name="textHighlight">#00909e</color>
     <color name="textNormal">#757575</color>
     <color name="highlightButton">#035aa6</color>
+    <color name="keyboardColor">#171E21</color>
 </resources>

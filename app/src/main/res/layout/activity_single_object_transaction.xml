@@ -97,15 +97,28 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_below="@id/appBar"
         android:layout_above="@id/nav_view"
+
         android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:text="Loading . . ."
+                android:textColor="@color/textHighlight"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:id="@+id/scrollContainer"
+            android:visibility="invisible"
             android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -118,7 +131,7 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 
@@ -194,6 +207,7 @@
                         android:layout_width="match_parent"
                         android:layout_marginHorizontal="30dp"
                         android:text="Pay"
+                        android:id="@+id/pay"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:layout_marginVertical="12dp"

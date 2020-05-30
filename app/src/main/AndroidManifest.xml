@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".Home.Transactions.PasswordPrompt"
+            android:windowSoftInputMode="adjustResize"
+            />
+        <activity android:name=".Home.Transactions.AmountPrompt" />
+
         <service
             android:name=".Sync.SocketService"
             android:enabled="true"

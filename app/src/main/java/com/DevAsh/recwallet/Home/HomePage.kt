@@ -55,6 +55,7 @@ class HomePage : AppCompatActivity() {
 
         TransactionContext.allTransactions.addAll(
             arrayOf(
+                Transaction("+6391830XXXXX", "993088909", "May 30 , 1:18 PM", "17,500", "Send"),
                 Transaction("+6399419XXXXX", "993088909", "May 27 , 11:52 PM", "7,000", "Send"),
                 Transaction("David", "993088909", "May 27 , 3:02 PM", "2,20,000", "Received"),
                 Transaction("U.S Dealer", "993088909", "May 23 , 8:02 PM", "1,20,000", "Send"),
