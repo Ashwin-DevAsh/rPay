@@ -2,12 +2,11 @@ package com.DevAsh.recwallet.Sync
 
 import android.app.Service
 import android.content.Intent
-import android.content.IntentFilter
-import android.os.Handler
 import android.os.IBinder
-import android.widget.Toast
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.androidnetworking.AndroidNetworking
+import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 
 class SocketService : Service() {
@@ -17,9 +16,19 @@ class SocketService : Service() {
     }
 
     override fun onCreate() {
-        if( DetailsContext.credentials==null){
+        if (DetailsContext.name == null) {
             Realm.init(this)
-            DetailsContext.credentials =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
+            AndroidNetworking.initialize(applicationContext)
+            AndroidNetworking.setParserFactory(JacksonParserFactory())
+            val credentials = Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
+            DetailsContext.setData(
+                credentials!!.name,
+                credentials.phoneNumber,
+                credentials.email,
+                credentials.password,
+                credentials.token
+            )
+
         }
         SocketHelper.connect()
         super.onCreate()

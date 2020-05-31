@@ -54,7 +54,10 @@ class HomePage : AppCompatActivity() {
         }
 
         TransactionContext.allTransactions.addAll(
+
             arrayOf(
+                Transaction("Food order", "993088909", "May 31 , 1:12 PM", "900", "Send"),
+                Transaction("+6397570XXXXX", "993088909", "May 31 , 3:35 AM", "11,000", "Send"),
                 Transaction("+6391830XXXXX", "993088909", "May 30 , 1:18 PM", "17,500", "Send"),
                 Transaction("+6399419XXXXX", "993088909", "May 27 , 11:52 PM", "7,000", "Send"),
                 Transaction("David", "993088909", "May 27 , 3:02 PM", "2,20,000", "Received"),

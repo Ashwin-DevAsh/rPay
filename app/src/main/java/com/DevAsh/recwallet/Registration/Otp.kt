@@ -95,7 +95,13 @@ class Otp : AppCompatActivity() {
                                                                     true
                                                                 )
                                                                 realm.insert(credentials)
-                                                                DetailsContext.credentials = credentials
+                                                                DetailsContext.setData(
+                                                                    credentials!!.name,
+                                                                    credentials.phoneNumber,
+                                                                    credentials.email,
+                                                                    credentials.password,
+                                                                    credentials.token
+                                                                )
                                                             }
                                                             startActivity(Intent(context, HomePage::class.java))
                                                             finish()

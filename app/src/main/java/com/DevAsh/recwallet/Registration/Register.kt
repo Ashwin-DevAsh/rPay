@@ -86,7 +86,13 @@ class Register : AppCompatActivity() {
                                             val token =  response!!.getJSONObject(0)["token"].toString()
                                             val credentials = Credentials(name,phoneNumebr,email,password,token,true)
                                             realm.insert(credentials)
-                                            DetailsContext.credentials=credentials
+                                            DetailsContext.setData(
+                                                credentials.name,
+                                                credentials.phoneNumber,
+                                                credentials.email,
+                                                credentials.password,
+                                                credentials.token
+                                            )
                                             startActivity(Intent(context,HomePage::class.java))
                                             finish()
                                         }

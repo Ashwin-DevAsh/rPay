@@ -25,7 +25,13 @@ class SplashScreen : AppCompatActivity() {
         context = this
 
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
-        DetailsContext.credentials = credentials
+        DetailsContext.setData(
+            credentials!!.name,
+            credentials.phoneNumber,
+            credentials.email,
+            credentials.password,
+            credentials.token
+        )
 
 
          Handler().postDelayed(
