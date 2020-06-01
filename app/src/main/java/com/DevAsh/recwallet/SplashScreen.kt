@@ -36,18 +36,19 @@ class SplashScreen : AppCompatActivity() {
         context = this
 
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
-        DetailsContext.setData(
-            credentials!!.name,
-            credentials.phoneNumber,
-            credentials.email,
-            credentials.password,
-            credentials.token
-        )
-
 
          Handler().postDelayed(
              {
-                 if(credentials.isLogin==true){
+                 if(credentials?.isLogin==true){
+
+                     DetailsContext.setData(
+                         credentials!!.name,
+                         credentials.phoneNumber,
+                         credentials.email,
+                         credentials.password,
+                         credentials.token
+                     )
+
                      AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
                          .addHeaders("jwtToken",DetailsContext.token)
                          .setPriority(Priority.IMMEDIATE)
