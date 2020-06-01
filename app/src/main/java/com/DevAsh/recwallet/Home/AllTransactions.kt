@@ -8,13 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_all_transactions.*
+import kotlinx.android.synthetic.main.activity_all_transactions.activity
+import kotlin.collections.ArrayList
 
 
 class AllTransactions : AppCompatActivity() {
@@ -24,6 +28,7 @@ class AllTransactions : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_transactions)
+
 
         context = this
 

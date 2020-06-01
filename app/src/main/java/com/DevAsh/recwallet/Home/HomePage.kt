@@ -11,14 +11,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
+import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
 import com.DevAsh.recwallet.Sync.SocketService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
@@ -36,6 +43,20 @@ class HomePage : AppCompatActivity() {
         context = this
 
         startService(Intent(this, SocketService::class.java))
+
+        val balanceObserver = Observer<String> { currentBalance ->
+             balance.text = currentBalance
+        }
+
+        StateContext.model.currentBalance.observe(this,balanceObserver)
+
+
+
+
+
+
+
+
 
 
         allActivities.setOnClickListener {
@@ -56,6 +77,7 @@ class HomePage : AppCompatActivity() {
         TransactionContext.allTransactions.addAll(
 
             arrayOf(
+                Transaction("+6397567XXXXX", "993088909", "Jun 1 , 11:24 AM", "28,000", "Send"),
                 Transaction("Food order", "993088909", "May 31 , 1:12 PM", "900", "Send"),
                 Transaction("+6397570XXXXX", "993088909", "May 31 , 3:35 AM", "11,000", "Send"),
                 Transaction("+6391830XXXXX", "993088909", "May 30 , 1:18 PM", "17,500", "Send"),

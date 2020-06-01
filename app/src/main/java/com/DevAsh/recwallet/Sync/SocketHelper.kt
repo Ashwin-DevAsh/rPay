@@ -2,19 +2,16 @@ package com.DevAsh.recwallet.Sync
 
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.RegistrationContext
+import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Home.HomePage
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.JSONArrayRequestListener
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import kotlinx.android.synthetic.main.activity_otp.*
-import org.json.JSONArray
+import com.androidnetworking.interfaces.JSONObjectRequestListener
+import com.github.nkzawa.socketio.client.IO
+import com.github.nkzawa.socketio.client.Socket
 import org.json.JSONObject
-import java.lang.Exception
+import java.text.DecimalFormat
 
 object SocketHelper {
 
@@ -48,13 +45,13 @@ object SocketHelper {
             .addHeaders("jwtToken",DetailsContext.token)
             .setPriority(Priority.IMMEDIATE)
             .build()
-            .getAsJSONArray(object:JSONArrayRequestListener{
-                override fun onResponse(response: JSONArray?) {
-                    println(response)
+            .getAsJSONObject(object: JSONObjectRequestListener {
+                override fun onResponse(response: JSONObject?) {
+                    StateContext.state = response
                 }
 
                 override fun onError(anError: ANError?) {
-                    println(anError)
+                    socket.disconnect()
                 }
 
             })

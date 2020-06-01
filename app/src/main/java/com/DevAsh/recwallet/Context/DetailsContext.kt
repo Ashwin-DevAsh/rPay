@@ -14,4 +14,5 @@ object DetailsContext {
       this.phoneNumber = phoneNumber
       this.token = token
    }
+
 }
