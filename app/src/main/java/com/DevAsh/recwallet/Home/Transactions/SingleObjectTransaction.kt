@@ -29,7 +29,6 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         context=this
 
-
         scrollContainer.post {
             scrollContainer.fullScroll(View.FOCUS_DOWN)
             Handler().postDelayed({

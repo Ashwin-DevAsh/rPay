@@ -51,14 +51,6 @@ class HomePage : AppCompatActivity() {
         StateContext.model.currentBalance.observe(this,balanceObserver)
 
 
-
-
-
-
-
-
-
-
         allActivities.setOnClickListener {
             startActivity(Intent(context, AllTransactions::class.java))
         }
@@ -77,7 +69,7 @@ class HomePage : AppCompatActivity() {
         TransactionContext.allTransactions.addAll(
 
             arrayOf(
-                Transaction("+6397567XXXXX", "993088909", "Jun 1 , 11:24 AM", "28,000", "Send"),
+                Transaction("+6397567XXXXX", "993088909", "Jun 3 , 3:24 AM", "28,000", "Send"),
                 Transaction("Food order", "993088909", "May 31 , 1:12 PM", "900", "Send"),
                 Transaction("+6397570XXXXX", "993088909", "May 31 , 3:35 AM", "11,000", "Send"),
                 Transaction("+6391830XXXXX", "993088909", "May 30 , 1:18 PM", "17,500", "Send"),

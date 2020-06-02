@@ -37,46 +37,44 @@ class SplashScreen : AppCompatActivity() {
 
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
 
-         Handler().postDelayed(
-             {
-                 if(credentials?.isLogin==true){
+        if(credentials?.isLogin==true){
+            Handler().postDelayed({
+                    DetailsContext.setData(
+                        credentials!!.name,
+                        credentials.phoneNumber,
+                        credentials.email,
+                        credentials.password,
+                        credentials.token
+                    )
 
-                     DetailsContext.setData(
-                         credentials!!.name,
-                         credentials.phoneNumber,
-                         credentials.email,
-                         credentials.password,
-                         credentials.token
-                     )
+                    AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
+                        .addHeaders("jwtToken",DetailsContext.token)
+                        .setPriority(Priority.IMMEDIATE)
+                        .build()
+                        .getAsJSONObject(object: JSONObjectRequestListener {
+                            override fun onResponse(response: JSONObject?) {
+                                val formatter = DecimalFormat("##,##,##,##,##,##,###")
+                                StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
+                                startActivity(Intent(context,HomePage::class.java))
+                                finish()
+                            }
 
-                     AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
-                         .addHeaders("jwtToken",DetailsContext.token)
-                         .setPriority(Priority.IMMEDIATE)
-                         .build()
-                         .getAsJSONObject(object: JSONObjectRequestListener {
-                             override fun onResponse(response: JSONObject?) {
-                                 val formatter = DecimalFormat("##,##,##,##,##,##,###")
-                                 StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
-                                 startActivity(Intent(context,HomePage::class.java))
-                                 finish()
-                             }
+                            override fun onError(anError: ANError?) {
+                                println(anError)
+                            }
 
-                             override fun onError(anError: ANError?) {
-                                 println(anError)
-                             }
-
-                         })
+                        })
 
 
-                 }
-                 else{
-                     startActivity(Intent(context,Login::class.java))
-                     finish()
-                 }
 
-             },
-             100
-         )
+            },0)
+        }else{
+            Handler().postDelayed({
+                startActivity(Intent(context,Login::class.java))
+                finish()
+            },2000)
+        }
+
 
     }
 }

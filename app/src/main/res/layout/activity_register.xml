@@ -87,8 +87,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:background="@drawable/edit_text"
-            android:layout_marginBottom="10dp"
+            android:background="@drawable/edit_text_curved"
+            android:layout_marginBottom="12dp"
             android:weightSum="100"
             android:layout_gravity="center"
             android:layout_height="50dp">
@@ -97,14 +97,14 @@
                 android:id="@+id/name"
                 android:layout_weight="15"
                 android:layout_width="match_parent"
-                android:background="@drawable/edit_text"
-                android:paddingLeft="10dp"
+                android:background="@drawable/edit_text_curved"
+                android:paddingLeft="30dp"
                 android:layout_height="50dp"/>
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_weight="85"
                 android:layout_margin="15dp"
-                android:background="@drawable/edit_text"
+                android:background="@drawable/edit_text_curved"
                 android:layout_height="match_parent"
                 android:src="@drawable/person" />
         </LinearLayout>
@@ -113,8 +113,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:background="@drawable/edit_text"
-            android:layout_marginVertical="10dp"
+            android:background="@drawable/edit_text_curved"
+            android:layout_marginVertical="12dp"
             android:weightSum="100"
             android:layout_gravity="center"
             android:layout_height="50dp">
@@ -124,23 +124,23 @@
                 android:focusable="false"
                 android:layout_weight="15"
                 android:layout_width="match_parent"
-                android:background="@drawable/edit_text"
-                android:paddingLeft="10dp"
+                android:background="@drawable/edit_text_curved"
+                android:paddingLeft="30dp"
                 android:layout_height="50dp"/>
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_weight="85"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginVertical="14dp"
-                android:background="@drawable/edit_text"
+                android:background="@drawable/edit_text_curved"
                 android:layout_height="match_parent"
                 android:src="@drawable/call" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:background="@drawable/edit_text"
-            android:layout_marginVertical="10dp"
+            android:background="@drawable/edit_text_curved"
+            android:layout_marginVertical="12dp"
             android:weightSum="100"
             android:layout_gravity="center"
             android:layout_height="50dp">
@@ -150,24 +150,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="15"
-                android:background="@drawable/edit_text"
+                android:background="@drawable/edit_text_curved"
                 android:hint="Email"
-                android:paddingLeft="10dp"
+                android:paddingLeft="30dp"
                 android:singleLine="true" />
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_weight="85"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginVertical="10dp"
-                android:background="@drawable/edit_text"
+                android:background="@drawable/edit_text_curved"
                 android:layout_height="match_parent"
                 android:src="@drawable/mail" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:background="@drawable/edit_text"
-            android:layout_marginVertical="10dp"
+            android:background="@drawable/edit_text_curved"
+            android:layout_marginVertical="12dp"
             android:weightSum="100"
             android:layout_gravity="center"
             android:layout_height="50dp">
@@ -176,8 +176,8 @@
                 android:id="@+id/password"
                 android:layout_weight="15"
                 android:layout_width="match_parent"
-                android:background="@drawable/edit_text"
-                android:paddingLeft="10dp"
+                android:background="@drawable/edit_text_curved"
+                android:paddingLeft="30dp"
                 android:layout_height="50dp"/>
             <ImageView
                 android:layout_width="match_parent"
@@ -185,15 +185,15 @@
                 android:paddingRight="2dp"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginVertical="10dp"
-                android:background="@drawable/edit_text"
+                android:background="@drawable/edit_text_curved"
                 android:layout_height="match_parent"
                 android:src="@drawable/lock" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:background="@drawable/edit_text"
-            android:layout_marginVertical="10dp"
+            android:background="@drawable/edit_text_curved"
+            android:layout_marginVertical="12dp"
             android:weightSum="100"
             android:layout_gravity="center"
             android:layout_height="50dp">
@@ -202,8 +202,8 @@
                 android:id="@+id/confirmPassword"
                 android:layout_weight="15"
                 android:layout_width="match_parent"
-                android:background="@drawable/edit_text"
-                android:paddingLeft="10dp"
+                android:background="@drawable/edit_text_curved"
+                android:paddingLeft="30dp"
                 android:layout_height="50dp"/>
             <ImageView
                 android:layout_width="match_parent"
@@ -211,19 +211,19 @@
                 android:paddingRight="2dp"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginVertical="10dp"
-                android:background="@drawable/edit_text"
+                android:background="@drawable/edit_text_curved"
                 android:layout_height="match_parent"
                 android:src="@drawable/lock" />
         </LinearLayout>
         <TextView
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:gravity="center"
             android:textStyle="bold"
             android:clickable="true"
             android:focusable="true"
             android:id="@+id/done"
-            android:background="@drawable/button_ripple"
+            android:background="@drawable/button_ripple_curved"
             android:text="Done"
             android:translationZ="10dp"
             android:layout_height="51dp"/>

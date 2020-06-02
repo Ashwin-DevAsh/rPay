@@ -25,6 +25,7 @@ class AmountPrompt : AppCompatActivity() {
         }
 
         done.setOnClickListener{
+            TransactionContext.amount = amount.text.toString()
             startActivity(Intent(context,PasswordPrompt::class.java))
         }
     }

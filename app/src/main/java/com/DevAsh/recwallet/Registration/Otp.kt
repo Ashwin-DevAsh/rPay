@@ -1,14 +1,19 @@
 package com.DevAsh.recwallet.Registration
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
+import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Home.HomePage
@@ -17,14 +22,16 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
+import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.gson.JsonArray
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_otp.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.DecimalFormat
+
 
 class Otp : AppCompatActivity() {
 
@@ -50,7 +57,11 @@ class Otp : AppCompatActivity() {
 
         verify.setOnClickListener { view ->
             if (otp.text.toString().length == 4) {
-                mainContent.visibility = INVISIBLE
+                hideKeyboardFrom(context,view)
+                Handler().postDelayed({
+                    mainContent.visibility = INVISIBLE
+
+                },300)
                 AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/setOtp")
                     .addBodyParameter("otpNumber", otp.text.toString())
                     .addBodyParameter(
@@ -73,10 +84,11 @@ class Otp : AppCompatActivity() {
                                                 return@OnCompleteListener
                                             } else {
                                                 val fcmToken = task.result?.token
+                                                println( fcmToken)
                                                 AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/updateFcmToken")
                                                     .addBodyParameter(
                                                         "fcmToken",
-                                                        fcmToken
+                                                         fcmToken
                                                     )
                                                     .addBodyParameter(
                                                         "number",
@@ -102,9 +114,31 @@ class Otp : AppCompatActivity() {
                                                                     credentials.password,
                                                                     credentials.token
                                                                 )
+
+                                                                Handler().postDelayed({
+                                                                    AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
+                                                                        .addHeaders("jwtToken",DetailsContext.token)
+                                                                        .setPriority(Priority.IMMEDIATE)
+                                                                        .build()
+                                                                        .getAsJSONObject(object:
+                                                                            JSONObjectRequestListener {
+                                                                            override fun onResponse(response: JSONObject?) {
+                                                                                val formatter = DecimalFormat("##,##,##,##,##,##,###")
+                                                                                StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
+                                                                                startActivity(Intent(context,HomePage::class.java))
+                                                                                finish()
+                                                                            }
+
+                                                                            override fun onError(anError: ANError?) {
+                                                                                SnackBarHelper.showError(view,anError.toString())
+                                                                            }
+
+                                                                        })
+
+
+
+                                                                },0)
                                                             }
-                                                            startActivity(Intent(context, HomePage::class.java))
-                                                            finish()
                                                         }
 
                                                         override fun onError(anError: ANError?) {
@@ -141,5 +175,11 @@ class Otp : AppCompatActivity() {
 
     override fun onBackPressed() {
 
+    }
+
+    private fun hideKeyboardFrom(context: Context, view: View) {
+        val imm: InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
