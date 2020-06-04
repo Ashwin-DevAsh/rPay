@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_amount_prompt.*
+import java.text.DecimalFormat
 
 class AmountPrompt : AppCompatActivity() {
 
@@ -27,6 +30,7 @@ class AmountPrompt : AppCompatActivity() {
         done.setOnClickListener{
             TransactionContext.amount = amount.text.toString()
             startActivity(Intent(context,PasswordPrompt::class.java))
+            finish()
         }
     }
 }

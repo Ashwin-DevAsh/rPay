@@ -39,10 +39,25 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_below="@id/appBar"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/textHighlight"
+            android:text="Loading . . ."
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_below="@id/appBar"
+        android:visibility="invisible"
+        android:id="@+id/mainContent"
         android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"

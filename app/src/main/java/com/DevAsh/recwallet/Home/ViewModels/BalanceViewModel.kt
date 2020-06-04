@@ -4,13 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Models.Transaction
 
 class BalanceViewModel: ViewModel() {
 
     var currentBalance = MutableLiveData<String>()
-
-    fun setBalance(){
-        currentBalance.value = StateContext.state?.getString(DetailsContext.phoneNumber!!)
-    }
-
+    var allTranactions = MutableLiveData<ArrayList<Transaction>>()
 }

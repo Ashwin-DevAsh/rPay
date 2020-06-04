@@ -77,74 +77,59 @@ class Register : AppCompatActivity() {
                     mainContent.visibility = INVISIBLE
 
                 },300)
-                FirebaseInstanceId.getInstance().instanceId
-                    .addOnCompleteListener(OnCompleteListener { task ->
-                        if (!task.isSuccessful) {
-                            SnackBarHelper.showError(view,"Registration Error")
-                            return@OnCompleteListener
-                        }else{
-                            val fcmToken = task.result?.token
-                            println(fcmToken)
-                            AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
-                                .addBodyParameter("name",name)
-                                .addBodyParameter("email",email)
-                                .addBodyParameter("number",RegistrationContext.countryCode+RegistrationContext.phoneNumber)
-                                .addBodyParameter("password",password)
-                                .addBodyParameter("fcmToken",fcmToken)
-                                .setPriority(Priority.IMMEDIATE)
-                                .build()
-                                .getAsJSONArray(object:JSONArrayRequestListener {
-                                    override fun onResponse(response: JSONArray?) {
-                                        Realm.getDefaultInstance().executeTransaction { realm ->
-                                            realm.delete(Credentials::class.java)
-                                            val token =  response!!.getJSONObject(0)["token"].toString()
-                                            val credentials = Credentials(name,phoneNumebr,email,password,token,true)
-                                            realm.insert(credentials)
-                                            DetailsContext.setData(
-                                                credentials.name,
-                                                credentials.phoneNumber,
-                                                credentials.email,
-                                                credentials.password,
-                                                credentials.token
-                                            )
 
-                                            Handler().postDelayed({
-                                                AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
-                                                    .addHeaders("jwtToken",DetailsContext.token)
-                                                    .setPriority(Priority.IMMEDIATE)
-                                                    .build()
-                                                    .getAsJSONObject(object:
-                                                        JSONObjectRequestListener {
-                                                        override fun onResponse(response: JSONObject?) {
-                                                            val formatter = DecimalFormat("##,##,##,##,##,##,###")
-                                                            StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
-                                                            startActivity(Intent(context,HomePage::class.java))
-                                                            finish()
-                                                        }
+                    AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
+                        .addBodyParameter("name",name)
+                        .addBodyParameter("email",email)
+                        .addBodyParameter("number",RegistrationContext.countryCode+RegistrationContext.phoneNumber)
+                        .addBodyParameter("password",password)
+                        .addBodyParameter("fcmToken","fcmToken")
+                        .setPriority(Priority.IMMEDIATE)
+                        .build()
+                        .getAsJSONArray(object:JSONArrayRequestListener {
+                            override fun onResponse(response: JSONArray?) {
+                                Realm.getDefaultInstance().executeTransaction { realm ->
+                                    realm.delete(Credentials::class.java)
+                                    val token =  response!!.getJSONObject(0)["token"].toString()
+                                    val credentials = Credentials(name,phoneNumebr,email,password,token,true)
+                                    realm.insert(credentials)
+                                    DetailsContext.setData(
+                                        credentials.name,
+                                        credentials.phoneNumber,
+                                        credentials.email,
+                                        credentials.password,
+                                        credentials.token
+                                    )
 
-                                                        override fun onError(anError: ANError?) {
-                                                            SnackBarHelper.showError(view,anError.toString())
-                                                        }
+                                    Handler().postDelayed({
+                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
+                                            .addHeaders("jwtToken",DetailsContext.token)
+                                            .setPriority(Priority.IMMEDIATE)
+                                            .build()
+                                            .getAsJSONObject(object:
+                                                JSONObjectRequestListener {
+                                                override fun onResponse(response: JSONObject?) {
+                                                    val formatter = DecimalFormat("##,##,##,##,##,##,###")
+                                                    StateContext.setBalanceToModel(formatter.format(response?.get(DetailsContext.phoneNumber!!).toString().toInt()))
+                                                    startActivity(Intent(context,HomePage::class.java))
+                                                    finish()
+                                                }
 
-                                                    })
+                                                override fun onError(anError: ANError?) {
+                                                    SnackBarHelper.showError(view,anError.toString())
+                                                }
 
+                                            })
+                                    },0)
 
-
-                                            },0)
-
-                                        }
-                                    }
-                                    override fun onError(error:ANError) {
-                                        mainContent.visibility=VISIBLE
-                                        Log.d("Auth",error.toString())
-                                        SnackBarHelper.showError(view,error.errorDetail)
                                 }
-                            })
+                            }
+                            override fun onError(error:ANError) {
+                                mainContent.visibility=VISIBLE
+                                Log.d("Auth",error.toString())
+                                SnackBarHelper.showError(view,error.errorDetail)
                         }
                     })
-
-
-
             }
         }
     }

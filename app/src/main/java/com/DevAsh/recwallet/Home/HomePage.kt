@@ -5,27 +5,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
-import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
 import com.DevAsh.recwallet.Sync.SocketService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
@@ -35,6 +30,7 @@ import kotlinx.android.synthetic.main.activity_home_page.*
 class HomePage : AppCompatActivity() {
 
     lateinit var context: Context
+    lateinit var activityAdapter:RecentActivityAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,14 +38,22 @@ class HomePage : AppCompatActivity() {
 
         context = this
 
-        startService(Intent(this, SocketService::class.java))
+
+
+                    startService(Intent(this, SocketService::class.java))
+
+
 
         val balanceObserver = Observer<String> { currentBalance ->
              balance.text = currentBalance
         }
 
-        StateContext.model.currentBalance.observe(this,balanceObserver)
+        val transactionObserver = Observer<ArrayList<Transaction>> {updatedList->
+            activityAdapter.updateList(updatedList)
+        }
 
+        StateContext.model.currentBalance.observe(this,balanceObserver)
+        StateContext.model.allTranactions.observe(this,transactionObserver)
 
         allActivities.setOnClickListener {
             startActivity(Intent(context, AllTransactions::class.java))
@@ -57,7 +61,6 @@ class HomePage : AppCompatActivity() {
 
         sendMoney.setOnClickListener {
             val permissions = arrayOf(android.Manifest.permission.READ_CONTACTS)
-
             if(packageManager.checkPermission(android.Manifest.permission.READ_CONTACTS,context.packageName)==PackageManager.PERMISSION_GRANTED ){
                 startActivity(Intent(context, SendMoney::class.java))
             }else{
@@ -66,31 +69,19 @@ class HomePage : AppCompatActivity() {
 
         }
 
-        TransactionContext.allTransactions.addAll(
+        buyMoney.setOnClickListener{
+            StateContext.addTransaction(Transaction("Hello","9551574355","Mar 15","2000","Send"))
+        }
 
-            arrayOf(
-                Transaction("+6397567XXXXX", "993088909", "Jun 3 , 3:24 AM", "28,000", "Send"),
-                Transaction("Food order", "993088909", "May 31 , 1:12 PM", "900", "Send"),
-                Transaction("+6397570XXXXX", "993088909", "May 31 , 3:35 AM", "11,000", "Send"),
-                Transaction("+6391830XXXXX", "993088909", "May 30 , 1:18 PM", "17,500", "Send"),
-                Transaction("+6399419XXXXX", "993088909", "May 27 , 11:52 PM", "7,000", "Send"),
-                Transaction("David", "993088909", "May 27 , 3:02 PM", "2,20,000", "Received"),
-                Transaction("U.S Dealer", "993088909", "May 23 , 8:02 PM", "1,20,000", "Send"),
-                Transaction("App client", "993088909", "May 21 , 11:00 PM", "3,50,000", "Received"),
-                Transaction("Bank", "9930 8890 9780 1247", "May 15 , 11:00 PM", "65,000", "Send"),
-                Transaction("+6399503XXXXX", "+639950357286", "May 5 , 9:30 PM", "11,750", "Send"),
-                Transaction("Flight Book", "+06836547237", "April 15 , 12:30 AM", "39,000", "Send"),
-                Transaction("Tobin", "+176814322900", "March 15 , 12:30 AM", "11,000", "Received"),
-                Transaction("David", "+819885437880", "March 10 , 12:30 AM", "20,000", "Send")
-            )
-        )
         activity.layoutManager = LinearLayoutManager(context)
-        activity.adapter = RecentActivityAdapter(
-            TransactionContext.allTransactions.subList(
+        StateContext.initAllTransaction(TransactionContext.allTransactions)
+        activityAdapter = RecentActivityAdapter(
+           StateContext.model.allTranactions.value!!.subList(
                 0,
                 if(TransactionContext.allTransactions.size>10) 10
                 else TransactionContext.allTransactions.size
             ).toList(),context)
+        activity.adapter = activityAdapter
     }
 
     override fun onBackPressed() {
@@ -111,7 +102,7 @@ class HomePage : AppCompatActivity() {
     }
 }
 
-class RecentActivityAdapter(private val items : List<Transaction>, val context: Context) : RecyclerView.Adapter<RecentActivityViewHolder>() {
+class RecentActivityAdapter(private var items : List<Transaction>, val context: Context) : RecyclerView.Adapter<RecentActivityViewHolder>() {
 
     override fun getItemCount(): Int {
         return items.size
@@ -137,6 +128,11 @@ class RecentActivityAdapter(private val items : List<Transaction>, val context: 
         }else if(items[position].type=="Send"){
             holder.additionalInfo.text= "-${items[position].amount}"
         }
+    }
+
+    fun updateList(updatedList : ArrayList<Transaction>){
+        this.items = updatedList
+        notifyDataSetChanged()
     }
 
 

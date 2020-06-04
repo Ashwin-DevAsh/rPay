@@ -1,13 +1,12 @@
 package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.RegistrationContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.*
+import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -16,6 +15,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import kotlinx.android.synthetic.main.activity_otp.*
 import org.json.JSONObject
+import java.text.DecimalFormat
 
 class TransactionStatus : AppCompatActivity() {
 
@@ -34,8 +34,8 @@ class TransactionStatus : AppCompatActivity() {
             .setContentType("application/json; charset=utf-8")
             .addHeaders("jwtToken", DetailsContext.token)
             .addApplicationJsonBody(object{
-                var from = RegistrationContext.countryCode+RegistrationContext.phoneNumber
-                var to = TransactionContext.selectedUser?.number
+                var from = DetailsContext.phoneNumber
+                var to = TransactionContext.selectedUser?.number.toString().replace("+","")
                 var amount = TransactionContext.amount
             })
             .setPriority(Priority.IMMEDIATE)
@@ -43,7 +43,21 @@ class TransactionStatus : AppCompatActivity() {
             .getAsJSONObject(object :JSONObjectRequestListener{
                 override fun onResponse(response: JSONObject?) {
                     if(response?.get("message")=="done"){
-                        Toast.makeText(context,"Done",Toast.LENGTH_LONG).show()
+                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+                            .addHeaders("jwtToken",DetailsContext.token)
+                            .setPriority(Priority.IMMEDIATE)
+                            .build()
+                            .getAsJSONObject(object: JSONObjectRequestListener {
+                                override fun onResponse(response: JSONObject?) {
+                                    val formatter = DecimalFormat("##,##,##,##,##,##,###")
+                                    StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
+                                    Toast.makeText(context,"Done",Toast.LENGTH_LONG).show()
+                                }
+
+                                override fun onError(anError: ANError?) {
+                                    println(anError)
+                                }
+                            })
                     }
                 }
 

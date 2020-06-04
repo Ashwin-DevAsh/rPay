@@ -5,7 +5,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.DevAsh.recwallet.R
-import kotlinx.android.synthetic.main.activity_amount_prompt.*
+import kotlinx.android.synthetic.main.activity_amount_prompt.back
+import kotlinx.android.synthetic.main.activity_amount_prompt.done
+import kotlinx.android.synthetic.main.activity_password_prompt.*
 
 class PasswordPrompt : AppCompatActivity() {
 
@@ -23,6 +25,15 @@ class PasswordPrompt : AppCompatActivity() {
 
         done.setOnClickListener{
             startActivity(Intent(context,TransactionStatus::class.java))
+            finish()
         }
+
+        cancel.setOnClickListener{
+            super.onBackPressed()
+        }
+    }
+
+    override fun onBackPressed() {
+
     }
 }

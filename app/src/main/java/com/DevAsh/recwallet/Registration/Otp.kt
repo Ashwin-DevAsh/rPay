@@ -77,78 +77,45 @@ class Otp : AppCompatActivity() {
                                 try {
                                     println(otpObject["user"])
                                     val user: JSONObject = otpObject["user"] as JSONObject
-                                    FirebaseInstanceId.getInstance().instanceId
-                                        .addOnCompleteListener(OnCompleteListener { task ->
-                                            if (!task.isSuccessful) {
-                                                SnackBarHelper.showError(view, "Registration Error")
-                                                return@OnCompleteListener
-                                            } else {
-                                                val fcmToken = task.result?.token
-                                                println( fcmToken)
-                                                AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/updateFcmToken")
-                                                    .addBodyParameter(
-                                                        "fcmToken",
-                                                         fcmToken
-                                                    )
-                                                    .addBodyParameter(
-                                                        "number",
-                                                        RegistrationContext.countryCode + RegistrationContext.phoneNumber
-                                                    ).build()
-                                                    .getAsJSONArray(object:JSONArrayRequestListener{
-                                                        override fun onResponse(response: JSONArray?) {
-                                                            Realm.getDefaultInstance().executeTransaction { realm ->
-                                                                realm.delete(Credentials::class.java)
-                                                                val credentials = Credentials(
-                                                                    user["name"].toString(),
-                                                                    user["number"].toString(),
-                                                                    user["email"].toString(),
-                                                                    user["password"].toString(),
-                                                                    otpObject["token"].toString(),
-                                                                    true
-                                                                )
-                                                                realm.insert(credentials)
-                                                                DetailsContext.setData(
-                                                                    credentials!!.name,
-                                                                    credentials.phoneNumber,
-                                                                    credentials.email,
-                                                                    credentials.password,
-                                                                    credentials.token
-                                                                )
-
-                                                                Handler().postDelayed({
-                                                                    AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
-                                                                        .addHeaders("jwtToken",DetailsContext.token)
-                                                                        .setPriority(Priority.IMMEDIATE)
-                                                                        .build()
-                                                                        .getAsJSONObject(object:
-                                                                            JSONObjectRequestListener {
-                                                                            override fun onResponse(response: JSONObject?) {
-                                                                                val formatter = DecimalFormat("##,##,##,##,##,##,###")
-                                                                                StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
-                                                                                startActivity(Intent(context,HomePage::class.java))
-                                                                                finish()
-                                                                            }
-
-                                                                            override fun onError(anError: ANError?) {
-                                                                                SnackBarHelper.showError(view,anError.toString())
-                                                                            }
-
-                                                                        })
-
-
-
-                                                                },0)
-                                                            }
+                                        Realm.getDefaultInstance().executeTransaction { realm ->
+                                            realm.delete(Credentials::class.java)
+                                            val credentials = Credentials(
+                                                user["name"].toString(),
+                                                user["number"].toString(),
+                                                user["email"].toString(),
+                                                user["password"].toString(),
+                                                otpObject["token"].toString(),
+                                                true
+                                            )
+                                            realm.insert(credentials)
+                                            DetailsContext.setData(
+                                                credentials!!.name,
+                                                credentials.phoneNumber,
+                                                credentials.email,
+                                                credentials.password,
+                                                credentials.token
+                                            )
+                                            Handler().postDelayed({
+                                                AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
+                                                    .addHeaders("jwtToken",DetailsContext.token)
+                                                    .setPriority(Priority.IMMEDIATE)
+                                                    .build()
+                                                    .getAsJSONObject(object:
+                                                        JSONObjectRequestListener {
+                                                        override fun onResponse(response: JSONObject?) {
+                                                            val formatter = DecimalFormat("##,##,##,##,##,##,###")
+                                                            StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
+                                                            startActivity(Intent(context,HomePage::class.java))
+                                                            finish()
                                                         }
 
                                                         override fun onError(anError: ANError?) {
-                                                           SnackBarHelper.showError(view,anError.toString())
+                                                            SnackBarHelper.showError(view,anError.toString())
                                                         }
 
                                                     })
-
-                                            }
-                                        })
+                                            },0)
+                                        }
 
                                 } catch (e: Exception) {
                                     startActivity(Intent(context, Register::class.java))

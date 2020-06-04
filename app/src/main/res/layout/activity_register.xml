@@ -225,6 +225,7 @@
             android:id="@+id/done"
             android:background="@drawable/button_ripple_curved"
             android:text="Done"
+            android:layout_marginBottom="20dp"
             android:translationZ="10dp"
             android:layout_height="51dp"/>
 
