@@ -33,6 +33,7 @@ class SingleObjectTransaction : AppCompatActivity() {
         scrollContainer.post {
             scrollContainer.fullScroll(View.FOCUS_DOWN)
             Handler().postDelayed({
+                loadingScreen.visibility = View.INVISIBLE
                 scrollContainer.visibility = View.VISIBLE
             },500)
         }
@@ -73,7 +74,7 @@ class AllActivityAdapter(private val items : ArrayList<Transaction>, val context
     }
 
     override fun onBindViewHolder(holder: AllActivityViewHolder, position: Int) {
-        holder.amount.text = items[position].amount
+        holder.amount.text = "₿ ${items[position].amount}"
         holder.time.text = items[position].time
         if(items[position].type=="Received"){
             holder.container.gravity = Gravity.START

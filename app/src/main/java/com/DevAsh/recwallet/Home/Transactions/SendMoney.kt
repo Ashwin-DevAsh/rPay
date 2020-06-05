@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.ApiContext
+import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Helper.SnackBarHelper
@@ -108,7 +109,6 @@ class SendMoney : AppCompatActivity() {
             .build()
             .getAsJSONArray(object :JSONArrayRequestListener{
                 override fun onResponse(response: JSONArray?) {
-                      println(response)
                       if(response!=null)
 
                       for(i in 0 until response.length()){
@@ -116,7 +116,7 @@ class SendMoney : AppCompatActivity() {
                                response.getJSONObject(i)["name"].toString()
                               ,"+"+response.getJSONObject(i)["number"].toString()
                           )
-                          TransactionContext.allUsers.add(user)
+                          if(user.number!="+"+DetailsContext.phoneNumber) TransactionContext.allUsers.add(user)
                       }
                         usersContainer.layoutManager = LinearLayoutManager(context)
                         userAdapter = UserAdapter(TransactionContext.allUsers,context)

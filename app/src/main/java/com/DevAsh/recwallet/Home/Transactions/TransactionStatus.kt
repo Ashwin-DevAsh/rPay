@@ -38,6 +38,7 @@ class TransactionStatus : AppCompatActivity() {
                 var to = TransactionContext.selectedUser?.number.toString().replace("+","")
                 var amount = TransactionContext.amount
                 var toName = TransactionContext.selectedUser?.name.toString()
+                var fromName = DetailsContext.name
             })
             .setPriority(Priority.IMMEDIATE)
             .build()

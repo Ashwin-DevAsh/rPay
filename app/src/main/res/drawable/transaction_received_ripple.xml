@@ -6,7 +6,7 @@
         <shape android:shape="rectangle">
             <solid android:color="@color/colorPrimaryDark" />
             <corners android:radius="20dp"/>
-<!--            <stroke android:width="0.01dp" android:color="@color/textNormal"/>-->
+            <stroke android:width="0.01dp" android:color="@color/transparentBlack"/>
         </shape>
     </item>
 
@@ -17,7 +17,7 @@
                 android:startColor="@color/buttonColor"
                 android:type="linear" />
             <corners android:radius="20dp" />
-<!--            <stroke android:width="0.01dp" android:color="@color/textNormal"/>-->
+            <stroke android:width="0.01dp" android:color="@color/transparentBlack"/>
 
         </shape>
     </item>

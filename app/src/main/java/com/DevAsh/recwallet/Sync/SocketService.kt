@@ -63,7 +63,7 @@ class SocketService : Service() {
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             val channelId = "DevAsh"
-            val channelName: CharSequence = "Some Channel"
+            val channelName: CharSequence = "Mining"
             val importance = NotificationManager.IMPORTANCE_LOW
             val notificationChannel = NotificationChannel(channelId, channelName, importance)
             notificationManager.createNotificationChannel(notificationChannel)

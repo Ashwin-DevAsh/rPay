@@ -2,12 +2,14 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@android:color/transparent"
     android:layout_height="170dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
         android:gravity="end"
+        android:background="@android:color/transparent"
         android:id="@+id/container"
         android:layout_marginHorizontal="20dp"
         android:layout_height="150dp">

@@ -16,10 +16,13 @@ class NotificationService : FirebaseMessagingService() {
 
     override fun onMessageReceived(p0: RemoteMessage) {
         println("Notification Received")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(Intent(this,SocketService::class.java))
-        } else {
-             startService(Intent(this,SocketService::class.java))
+        println(p0.data)
+        if (p0.data["type"]=="awake"){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(Intent(this,SocketService::class.java))
+            } else {
+                 startService(Intent(this,SocketService::class.java))
+            }
         }
         super.onMessageReceived(p0)
     }

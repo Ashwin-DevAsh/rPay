@@ -69,12 +69,13 @@ class SplashScreen : AppCompatActivity() {
                                     .build()
                                     .getAsJSONArray(object : JSONArrayRequestListener{
                                         override fun onResponse(response: JSONArray?) {
+                                            println(response)
                                             val transactions = ArrayList<Transaction>()
                                             for(i in 0 until response!!.length()){
                                                 transactions.add(Transaction(
-                                                   name = if (response.getJSONObject(i)["From"]==DetailsContext.phoneNumber)
-                                                                response.getJSONObject(i)["To"].toString()
-                                                          else response.getJSONObject(i)["From"].toString(),
+                                                   name =if (response.getJSONObject(i)["From"]==DetailsContext.phoneNumber)
+                                                               response.getJSONObject(i)["ToName"].toString()
+                                                           else response.getJSONObject(i)["FromName"].toString(),
                                                    number = if (response.getJSONObject(i)["From"]==DetailsContext.phoneNumber)
                                                                response.getJSONObject(i)["To"].toString()
                                                            else response.getJSONObject(i)["From"].toString(),
