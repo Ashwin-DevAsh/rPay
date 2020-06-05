@@ -37,6 +37,7 @@ class TransactionStatus : AppCompatActivity() {
                 var from = DetailsContext.phoneNumber
                 var to = TransactionContext.selectedUser?.number.toString().replace("+","")
                 var amount = TransactionContext.amount
+                var toName = TransactionContext.selectedUser?.name.toString()
             })
             .setPriority(Priority.IMMEDIATE)
             .build()
@@ -49,8 +50,8 @@ class TransactionStatus : AppCompatActivity() {
                             .build()
                             .getAsJSONObject(object: JSONObjectRequestListener {
                                 override fun onResponse(response: JSONObject?) {
-                                    val formatter = DecimalFormat("##,##,##,##,##,##,###")
-                                    StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
+                                    val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
+                                    StateContext.setBalanceToModel(formatter.format(response?.get(DetailsContext.phoneNumber!!).toString().toInt()))
                                     Toast.makeText(context,"Done",Toast.LENGTH_LONG).show()
                                 }
 

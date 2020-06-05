@@ -32,8 +32,9 @@
                     android:gravity="center"
                     android:textStyle="bold"
                     android:background="@android:color/transparent"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:text="A"
+                    android:textAllCaps="true"
                     android:paddingTop="5dp"
                     android:id="@+id/badge"
                     android:layout_height="wrap_content"/>

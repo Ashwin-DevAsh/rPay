@@ -13,6 +13,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
@@ -51,7 +52,7 @@ class SingleObjectTransaction : AppCompatActivity() {
         }
 
         transactionContainer.layoutManager = LinearLayoutManager(this)
-        allActivityAdapter = AllActivityAdapter(TransactionContext.allTransactions,this)
+        allActivityAdapter = AllActivityAdapter(StateContext.model.allTranactions.value!!,this)
         transactionContainer.adapter = allActivityAdapter
 
 

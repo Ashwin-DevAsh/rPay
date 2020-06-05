@@ -38,11 +38,7 @@ class HomePage : AppCompatActivity() {
 
         context = this
 
-
-
-                    startService(Intent(this, SocketService::class.java))
-
-
+        startService(Intent(this, SocketService::class.java))
 
         val balanceObserver = Observer<String> { currentBalance ->
              balance.text = currentBalance
@@ -69,24 +65,19 @@ class HomePage : AppCompatActivity() {
 
         }
 
-        buyMoney.setOnClickListener{
-            StateContext.addTransaction(Transaction("Hello","9551574355","Mar 15","2000","Send"))
+        buyMoney.setOnLongClickListener{
+            StateContext.addFakeTransactions()
+            return@setOnLongClickListener true
         }
 
         activity.layoutManager = LinearLayoutManager(context)
-        StateContext.initAllTransaction(TransactionContext.allTransactions)
         activityAdapter = RecentActivityAdapter(
            StateContext.model.allTranactions.value!!.subList(
                 0,
-                if(TransactionContext.allTransactions.size>10) 10
-                else TransactionContext.allTransactions.size
+                if( StateContext.model.allTranactions.value!!.size>10) 10
+                else StateContext.model.allTranactions.value!!.size
             ).toList(),context)
         activity.adapter = activityAdapter
-    }
-
-    override fun onBackPressed() {
-        TransactionContext.allTransactions.clear()
-        super.onBackPressed()
     }
 
     override fun onRequestPermissionsResult(
