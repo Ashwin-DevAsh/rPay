@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
@@ -64,18 +65,21 @@ class SocketService : Service() {
 
             val channelId = "DevAsh"
             val channelName: CharSequence = "Mining"
-            val importance = NotificationManager.IMPORTANCE_LOW
+            val importance = NotificationManager.IMPORTANCE_NONE
             val notificationChannel = NotificationChannel(channelId, channelName, importance)
             notificationManager.createNotificationChannel(notificationChannel)
             val builder: Notification.Builder = Notification.Builder(this, "DevAsh")
-                .setContentTitle("Mining coins . . .")
+                .setContentTitle("Mining")
+                .setContentText("Don't close this process...")
+                .setSmallIcon(R.drawable.bitcoin)
                 .setAutoCancel(true)
             val notification: Notification = builder.build()
             startForeground(1, notification)
         } else {
             val builder = NotificationCompat.Builder(this)
-                .setContentTitle("Mining coins . . .")
-                .setContentText("text")
+                .setContentTitle("Mining")
+                .setContentText("Don't close this process...")
+                .setSmallIcon(R.drawable.bitcoin)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
             val notification: Notification = builder.build()

@@ -46,6 +46,8 @@ class HomePage : AppCompatActivity() {
 
         val transactionObserver = Observer<ArrayList<Transaction>> {updatedList->
             activityAdapter.updateList(updatedList)
+            activity.smoothScrollToPosition(0)
+
         }
 
         StateContext.model.currentBalance.observe(this,balanceObserver)
@@ -117,6 +119,7 @@ class RecentActivityAdapter(private var items : List<Transaction>, val context: 
             holder.additionalInfo.setTextColor(Color.GREEN)
             holder.additionalInfo.text= "+${items[position].amount}"
         }else if(items[position].type=="Send"){
+            holder.additionalInfo.setTextColor(Color.RED)
             holder.additionalInfo.text= "-${items[position].amount}"
         }
     }
@@ -124,6 +127,7 @@ class RecentActivityAdapter(private var items : List<Transaction>, val context: 
     fun updateList(updatedList : ArrayList<Transaction>){
         this.items = updatedList
         notifyDataSetChanged()
+
     }
 
 

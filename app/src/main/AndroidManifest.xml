@@ -28,7 +28,6 @@
         <activity android:name=".Home.Transactions.SingleObjectTransaction" />
         <activity
             android:name=".Home.Transactions.SendMoney"
-            android:label="@string/title_activity_send_money"
             android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".Home.AllTransactions" />
         <activity

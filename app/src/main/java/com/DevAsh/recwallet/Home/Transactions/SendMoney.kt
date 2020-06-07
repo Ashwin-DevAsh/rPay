@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.TransactionContext
-import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -28,8 +28,6 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import kotlinx.android.synthetic.main.activity_send_money.*
 import org.json.JSONArray
-import java.lang.Exception
-import kotlin.collections.ArrayList
 
 
 class SendMoney : AppCompatActivity() {
@@ -62,7 +60,11 @@ class SendMoney : AppCompatActivity() {
 
         search.addTextChangedListener(object:TextWatcher{
             override fun afterTextChanged(s: Editable?) {
-                try{searchHandler.removeCallbacksAndMessages("") }catch(e:Exception){}
+                try {
+                    searchHandler.removeCallbacksAndMessages("")
+                } catch (e: Exception) {
+
+                }
                 searchHandler = Handler()
                 searchHandler.postDelayed({
                     val updatedList = ArrayList<Contacts>()

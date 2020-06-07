@@ -87,6 +87,7 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
             holder.additionalInfo.setTextColor(Color.GREEN)
             holder.additionalInfo.text= "+${items[position].amount}"
         }else if(items[position].type=="Send"){
+            holder.additionalInfo.setTextColor(Color.RED)
             holder.additionalInfo.text= "-${items[position].amount}"
         }
     }
