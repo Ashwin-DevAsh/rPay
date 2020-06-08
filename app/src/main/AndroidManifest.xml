@@ -14,17 +14,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Home.Transactions.TransactionStatus"></activity>
+        <activity android:name=".Home.Transactions.TransactionStatus"/>
         <activity
             android:name=".Home.Transactions.PasswordPrompt"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Home.Transactions.AmountPrompt" />
-
+        <activity android:name=".Home.Transactions.AmountPrompt"  android:windowSoftInputMode="adjustResize"/>
         <service
             android:name=".Sync.SocketService"
             android:enabled="true"
             android:exported="true" />
-
         <activity android:name=".Home.Transactions.SingleObjectTransaction" />
         <activity
             android:name=".Home.Transactions.SendMoney"

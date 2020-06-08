@@ -17,6 +17,7 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import kotlinx.android.synthetic.main.activity_otp.*
+import kotlinx.android.synthetic.main.activity_transaction_status.*
 import org.json.JSONObject
 import java.text.DecimalFormat
 
@@ -30,6 +31,16 @@ class TransactionStatus : AppCompatActivity() {
 
         AndroidNetworking.initialize(applicationContext)
         AndroidNetworking.setParserFactory(JacksonParserFactory())
+
+        amount.text = "₿ "+TransactionContext.amount
+        selectedUserName.text = TransactionContext.selectedUser?.name.toString()
+
+        badge.text = TransactionContext.selectedUser?.name.toString()[0].toString()
+
+        if (TransactionContext.selectedUser?.name.toString().startsWith("+")) {
+           badge.text = TransactionContext.selectedUser?.name.toString().subSequence(1, 3)
+           badge.textSize = 18F
+        }
 
         context=this
 
@@ -84,7 +95,8 @@ class TransactionStatus : AppCompatActivity() {
                                         )
                                     }
                                     StateContext.initAllTransaction(transactions)
-                                    Toast.makeText(context,"Done",Toast.LENGTH_LONG).show()
+                                    statusText.text="Done"
+                                    statusIcon.setImageDrawable(getDrawable(R.drawable.done))
 
                                 }
                                 override fun onError(anError: ANError?) {

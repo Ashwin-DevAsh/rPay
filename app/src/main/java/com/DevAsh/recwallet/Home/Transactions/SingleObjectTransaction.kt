@@ -36,34 +36,12 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         badge = findViewById(R.id.badge)
 
-        Handler().postDelayed({
-            val allTransaction = StateContext.model.allTranactions.value!!
-            for (i in allTransaction.subList(1,allTransaction.size)){
-                if(i.number==TransactionContext.selectedUser!!.number.replace("+","")){
-                    transaction.add(0,i)
-                }
-            }
-            transactionContainer.layoutManager = LinearLayoutManager(this)
-            allActivityAdapter = AllActivityAdapter(transaction,this)
-            transactionContainer.adapter = allActivityAdapter
-            scrollContainer.post {
-                scrollContainer.fullScroll(View.FOCUS_DOWN)
-                Handler().postDelayed({
-                    loadingScreen.visibility = View.INVISIBLE
-                    scrollContainer.visibility = View.VISIBLE
-                },500)
-            }
-        },0)
+
+
 
         val transactionObserver = Observer<ArrayList<Transaction>> {updatedList->
             try{
-                if(transaction.size!=updatedList.size ){
-                    transaction.add(updatedList[0])
-                    allActivityAdapter.notifyDataSetChanged()
-                    scrollContainer.post {
-                        scrollContainer.fullScroll(View.FOCUS_DOWN)
-                    }
-                }
+                getData()
             }catch (e:Throwable){ }
 
         }
@@ -88,11 +66,32 @@ class SingleObjectTransaction : AppCompatActivity() {
         }
 
 
-
-
         pay.setOnClickListener{
             startActivity(Intent(context,AmountPrompt::class.java))
         }
+    }
+
+    private fun getData(){
+        transaction.clear()
+        Handler().postDelayed({
+            val allTransaction = StateContext.model.allTranactions.value!!
+            for (i in allTransaction){
+                if(i.number==TransactionContext.selectedUser!!.number.replace("+","")){
+                    transaction.add(0,i)
+                }
+            }
+            transactionContainer.layoutManager = LinearLayoutManager(this)
+            allActivityAdapter = AllActivityAdapter(transaction,this)
+            transactionContainer.adapter = allActivityAdapter
+
+            scrollContainer.post {
+                scrollContainer.fullScroll(View.FOCUS_DOWN)
+                Handler().postDelayed({
+                    loadingScreen.visibility = View.INVISIBLE
+                    scrollContainer.visibility = View.VISIBLE
+                },500)
+            }
+        },0)
     }
 }
 

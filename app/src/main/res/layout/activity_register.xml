@@ -97,6 +97,8 @@
                 android:id="@+id/name"
                 android:layout_weight="15"
                 android:layout_width="match_parent"
+                android:singleLine="true"
+                android:inputType="text"
                 android:background="@drawable/edit_text_curved"
                 android:paddingLeft="30dp"
                 android:layout_height="50dp"/>
@@ -152,6 +154,7 @@
                 android:layout_weight="15"
                 android:background="@drawable/edit_text_curved"
                 android:hint="Email"
+                android:inputType="text"
                 android:paddingLeft="30dp"
                 android:singleLine="true" />
             <ImageView
@@ -176,6 +179,8 @@
                 android:id="@+id/password"
                 android:layout_weight="15"
                 android:layout_width="match_parent"
+                android:singleLine="true"
+                android:inputType="text"
                 android:background="@drawable/edit_text_curved"
                 android:paddingLeft="30dp"
                 android:layout_height="50dp"/>
@@ -201,6 +206,8 @@
                 android:hint="Confirm Password"
                 android:id="@+id/confirmPassword"
                 android:layout_weight="15"
+                android:singleLine="true"
+                android:inputType="text"
                 android:layout_width="match_parent"
                 android:background="@drawable/edit_text_curved"
                 android:paddingLeft="30dp"

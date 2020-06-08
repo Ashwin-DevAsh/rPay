@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_amount_prompt.*
 import java.text.DecimalFormat
@@ -27,10 +28,19 @@ class AmountPrompt : AppCompatActivity() {
             super.onBackPressed()
         }
 
-        done.setOnClickListener{
+        done.setOnClickListener{v->
             TransactionContext.amount = amount.text.toString()
-            startActivity(Intent(context,PasswordPrompt::class.java))
-            finish()
+            try {
+                if(TransactionContext.amount!!.toInt()>0){
+                    startActivity(Intent(context,PasswordPrompt::class.java))
+                    finish()
+                }else{
+                    SnackBarHelper.showError(v,"Invalid Amount")
+                }
+            }catch (e:Throwable){
+                SnackBarHelper.showError(v,"Invalid Amount")
+            }
+
         }
     }
 }

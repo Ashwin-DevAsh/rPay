@@ -1,9 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Home.Transactions.TransactionStatus">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/appBar"
+        android:orientation="vertical"
+        android:layout_height="60dp">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:src="@drawable/menu_dot"
+            android:clickable="true"
+            android:paddingHorizontal="10dp"
+            android:layout_centerInParent="true"
+            android:focusable="true"
+            android:background="@drawable/image_ripple"
+            android:layout_alignParentRight="true"
+            android:layout_height="45dp"/>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_below="@+id/appBar"
+        android:layout_width="match_parent"
+        android:fillViewport="true"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/topContainer"
+                android:layout_height="250dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="80dp"
+                        android:gravity="center"
+                        android:id="@+id/statusContainer"
+                        android:layout_height="70dp">
+                        <RelativeLayout
+                            android:layout_width="55dp"
+                            android:translationZ="10dp"
+                            android:layout_height="55dp"
+                            android:background="@drawable/avatar">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:gravity="center"
+                                android:textStyle="bold"
+                                android:background="@android:color/transparent"
+                                android:textSize="20sp"
+                                android:text="A"
+                                android:textAllCaps="true"
+                                android:paddingTop="5dp"
+                                android:id="@+id/badge"
+                                android:layout_height="wrap_content"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="1000"
+                        android:layout_marginRight="10dp"
+                        android:textStyle="bold"
+                        android:id="@+id/amount"
+                        android:gravity="center"
+                        android:textSize="40dp"
+                        android:layout_height="70dp"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="paid to"
+                        android:textColor="@color/textHighlight"
+                        android:gravity="center"
+                        android:layout_height="30dp"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Ashwin"
+                        android:gravity="center"
+                        android:id="@+id/selectedUserName"
+                        android:textSize="20dp"
+                        android:layout_height="30dp"/>
+
+                </LinearLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:translationZ="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/transaction_status_bg"
+                android:layout_marginHorizontal="15dp"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:background="@android:color/transparent"
+                    android:layout_height="85dp">
+                    <RelativeLayout
+                        android:background="@android:color/transparent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:src="@drawable/time"
+                            android:background="@android:color/transparent"
+                            android:id="@+id/statusIcon"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/statusText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@id/statusIcon"
+                            android:layout_marginHorizontal="40dp"
+                            android:layout_marginLeft="64dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@android:color/transparent"
+                            android:text="Processing..."
+                            android:textSize="17dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="March 12 , 2017"
+                            android:textSize="10dp"
+                            android:layout_below="@id/statusText"
+                            android:layout_alignLeft="@id/statusIcon"
+                            android:background="@android:color/transparent"
+                            android:layout_marginHorizontal="40dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/textNormal"
+                            android:layout_height="wrap_content"/>
+
+                    </RelativeLayout>
+
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>
