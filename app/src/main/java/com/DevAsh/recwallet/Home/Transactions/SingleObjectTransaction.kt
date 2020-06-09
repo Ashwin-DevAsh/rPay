@@ -15,15 +15,24 @@ import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.*
+import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
+import com.DevAsh.recwallet.SplashScreen
+import com.androidnetworking.AndroidNetworking
+import com.androidnetworking.common.Priority
+import com.androidnetworking.error.ANError
+import com.androidnetworking.interfaces.JSONArrayRequestListener
+import com.androidnetworking.interfaces.JSONObjectRequestListener
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.text.DecimalFormat
 
 class SingleObjectTransaction : AppCompatActivity() {
 
-    private lateinit var allActivityAdapter: AllActivityAdapter
+    var allActivityAdapter: AllActivityAdapter?=null
     private lateinit var badge: TextView
     lateinit var context: Context
     var transaction = ArrayList<Transaction>()
@@ -53,6 +62,22 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         badge.text = TransactionContext.selectedUser!!.name[0].toString()
 
+        try {
+            allActivityAdapter = Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.number.replace("+","")]!!
+            transactionContainer.layoutManager = LinearLayoutManager(context)
+            transactionContainer.adapter = allActivityAdapter
+
+            scrollContainer.post {
+                scrollContainer.fullScroll(View.FOCUS_DOWN)
+                Handler().postDelayed({
+                    loadingScreen.visibility = View.INVISIBLE
+                    scrollContainer.visibility = View.VISIBLE
+                },300)
+            }
+        }catch (e:Throwable){
+
+        }
+
         if (TransactionContext.selectedUser!!.name.startsWith("+")) {
            badge.text = TransactionContext.selectedUser!!.name.subSequence(1, 3)
            badge.textSize = 18F
@@ -74,23 +99,64 @@ class SingleObjectTransaction : AppCompatActivity() {
     private fun getData(){
         transaction.clear()
         Handler().postDelayed({
-            val allTransaction = StateContext.model.allTranactions.value!!
-            for (i in allTransaction){
-                if(i.number==TransactionContext.selectedUser!!.number.replace("+","")){
-                    transaction.add(0,i)
-                }
-            }
-            transactionContainer.layoutManager = LinearLayoutManager(this)
-            allActivityAdapter = AllActivityAdapter(transaction,this)
-            transactionContainer.adapter = allActivityAdapter
+            AndroidNetworking.get(
+                ApiContext.apiUrl
+                    + ApiContext.paymentPort
+                    + "/getTransactionsBetweenObjects?number1=${DetailsContext.phoneNumber}&number2=${TransactionContext.selectedUser!!.number.replace("+","")}")
+                .addHeaders("jwtToken", DetailsContext.token)
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsJSONArray(object: JSONArrayRequestListener {
+                    override fun onResponse(response: JSONArray?) {
 
-            scrollContainer.post {
-                scrollContainer.fullScroll(View.FOCUS_DOWN)
-                Handler().postDelayed({
-                    loadingScreen.visibility = View.INVISIBLE
-                    scrollContainer.visibility = View.VISIBLE
-                },500)
-            }
+                        val transactions = ArrayList<Transaction>()
+                        val transactionObjectArray = response!!
+                        for (i in 0 until transactionObjectArray.length()) {
+                            transactions.add(
+                                Transaction(
+                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                        transactionObjectArray.getJSONObject(i)["ToName"].toString()
+                                    else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
+                                    number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                        transactionObjectArray.getJSONObject(i)["To"].toString()
+                                    else transactionObjectArray.getJSONObject(i)["From"].toString(),
+                                    amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
+                                    time = SplashScreen.dateToString(
+                                        transactionObjectArray.getJSONObject(
+                                            i
+                                        )["TransactionTime"].toString()
+                                    ),
+                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                        "Send"
+                                    else "Received"
+                                )
+                            )
+                        }
+
+                        if(transactions.size!=allActivityAdapter?.itemCount) {
+                            transaction = transactions
+                            transactionContainer.layoutManager = LinearLayoutManager(context)
+                            allActivityAdapter = AllActivityAdapter(transaction, context)
+                            transactionContainer.adapter = allActivityAdapter
+                            Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.number.replace("+","")] = allActivityAdapter!!
+                            scrollContainer.post {
+                                scrollContainer.fullScroll(View.FOCUS_DOWN)
+                                Handler().postDelayed({
+                                    loadingScreen.visibility = View.INVISIBLE
+                                    scrollContainer.visibility = View.VISIBLE
+                                },300)
+                            }
+                        }
+
+
+
+                    }
+
+                    override fun onError(anError: ANError?) {
+                       println(anError)
+                    }
+
+                })
         },0)
     }
 }

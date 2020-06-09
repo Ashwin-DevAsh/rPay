@@ -6,4 +6,5 @@ object TransactionContext {
     var allUsers = ArrayList<Contacts>()
     var selectedUser:Contacts?=null
     var amount:String?=null
+    var needToPay = false
 }
