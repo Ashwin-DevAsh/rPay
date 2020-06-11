@@ -5,6 +5,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Database.StateLedger
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
@@ -17,6 +18,7 @@ import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
+import io.realm.Realm
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.util.logging.Handler
@@ -25,6 +27,7 @@ object SocketHelper {
 
     private val url = ApiContext.apiUrl+ ApiContext.syncPort
     lateinit var socket:Socket
+    var newUser:Boolean = false
 
     fun connect(){
         println("Called . . .")
@@ -33,16 +36,38 @@ object SocketHelper {
 
         socket.on("connect") {
             println("connecting ....")
-            val data = JSONObject()
-            data.put("number",DetailsContext.phoneNumber)
-            data.put("fcmToken",DetailsContext.fcmToken)
-            socket.emit("getInformation",data)
+            if(newUser || true){
+                newUser=false
+                val data = JSONObject()
+                data.put("number",DetailsContext.phoneNumber)
+                data.put("amount","3501000")
+                data.put("fcmToken",DetailsContext.fcmToken)
+                socket.emit("newUser",data)
+            }else{
+                val data = JSONObject()
+                data.put("number",DetailsContext.phoneNumber)
+                data.put("fcmToken",DetailsContext.fcmToken)
+                socket.emit("getInformation",data)
+            }
         }
 
         socket.on("doUpdate"){
               println("updating ....")
               getState()
         }
+
+        socket.on("addNewUser"){data->
+            println("new user added... ${data[0]}")
+
+            val userObject = data[0] as JSONObject
+
+            Realm.getDefaultInstance().executeTransaction{realm->
+                val stateLedger=StateLedger(userObject["number"].toString(),Integer.valueOf(userObject["amount"].toString()))
+                realm.insert(stateLedger)
+            }
+        }
+
+
 
         socket.on("disconnect"){
             println("disconnecting...")
@@ -52,8 +77,6 @@ object SocketHelper {
             println("received payment")
             getMyState()
         }
-
-
 
     }
 

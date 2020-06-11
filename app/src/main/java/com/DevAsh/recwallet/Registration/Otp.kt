@@ -17,7 +17,9 @@ import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Home.HomePage
+import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
+import com.DevAsh.recwallet.SplashScreen
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -96,21 +98,45 @@ class Otp : AppCompatActivity() {
                                                 credentials.token
                                             )
                                             Handler().postDelayed({
-                                                AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
+                                                AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                                                     .addHeaders("jwtToken",DetailsContext.token)
                                                     .setPriority(Priority.IMMEDIATE)
                                                     .build()
-                                                    .getAsJSONObject(object:
-                                                        JSONObjectRequestListener {
+                                                    .getAsJSONObject(object: JSONObjectRequestListener {
                                                         override fun onResponse(response: JSONObject?) {
-                                                            val formatter = DecimalFormat("##,##,##,##,##,##,###")
-                                                            StateContext.setBalanceToModel(formatter.format(response?.get("919551574355").toString().toInt()))
-                                                            startActivity(Intent(context,HomePage::class.java))
+                                                            val balance = response?.getInt("Balance")
+                                                            val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
+                                                            StateContext.setBalanceToModel(formatter.format(balance))
+                                                            val transactionObjectArray = response?.getJSONArray("Transactions")
+                                                            val transactions = ArrayList<Transaction>()
+                                                            for (i in 0 until transactionObjectArray!!.length()) {
+                                                                transactions.add(
+                                                                    0, Transaction(
+                                                                        name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                            transactionObjectArray.getJSONObject(i)["ToName"].toString()
+                                                                        else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
+                                                                        number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                            transactionObjectArray.getJSONObject(i)["To"].toString()
+                                                                        else transactionObjectArray.getJSONObject(i)["From"].toString(),
+                                                                        amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
+                                                                        time = SplashScreen.dateToString(
+                                                                            transactionObjectArray.getJSONObject(
+                                                                                i
+                                                                            )["TransactionTime"].toString()
+                                                                        ),
+                                                                        type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                            "Send"
+                                                                        else "Received"
+                                                                    )
+                                                                )
+                                                            }
+                                                            StateContext.initAllTransaction(transactions)
+                                                            startActivity(Intent(context, HomePage::class.java))
                                                             finish()
                                                         }
 
                                                         override fun onError(anError: ANError?) {
-                                                            SnackBarHelper.showError(view,anError.toString())
+                                                            println(anError)
                                                         }
 
                                                     })

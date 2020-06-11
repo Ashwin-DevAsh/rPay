@@ -44,12 +44,10 @@ class NotificationService : FirebaseMessagingService() {
 
             try {
                 SocketHelper.getMyState()
-            } catch (e:Throwable){
+            } catch (e:Throwable){ }
 
-            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val notificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
                 val channelId = "Payment"
                 val channelName: CharSequence = "Payment"

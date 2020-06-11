@@ -9,6 +9,8 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.DevAsh.recwallet.Database.Migrations
+import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
@@ -18,7 +20,9 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import org.json.JSONObject
+import java.security.SecureRandom
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -30,7 +34,8 @@ class SplashScreen : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Realm.init(this)
+       RealmHelper.init(this)
+
         AndroidNetworking.initialize(applicationContext)
         AndroidNetworking.setParserFactory(JacksonParserFactory())
         super.onCreate(savedInstanceState)

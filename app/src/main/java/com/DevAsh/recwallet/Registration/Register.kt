@@ -20,6 +20,7 @@ import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -109,6 +110,7 @@ class Register : AppCompatActivity() {
                                             .getAsJSONObject(object:
                                                 JSONObjectRequestListener {
                                                 override fun onResponse(response: JSONObject?) {
+                                                    SocketHelper.newUser=true
                                                     val formatter = DecimalFormat("##,##,##,##,##,##,###")
                                                     StateContext.setBalanceToModel(formatter.format(response?.get(DetailsContext.phoneNumber!!).toString().toInt()))
                                                     startActivity(Intent(context,HomePage::class.java))

@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.google.android.gms.tasks.OnCompleteListener
@@ -30,7 +31,7 @@ class SocketService : Service() {
         println("creating ....")
 
         if (DetailsContext.name == null) {
-            Realm.init(this)
+            RealmHelper.init(this)
             AndroidNetworking.initialize(applicationContext)
             AndroidNetworking.setParserFactory(JacksonParserFactory())
             val credentials = Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
