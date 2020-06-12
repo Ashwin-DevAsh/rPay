@@ -33,5 +33,22 @@ open class Migrations : RealmMigration {
 
         }
 
+        else if(oldVersion==6L){
+            val checkPoint = schema.get(("CheckPoint"))
+            checkPoint!!.removeField("transactionCheckPoint")
+            checkPoint.removeField("usersCheckPoint")
+            checkPoint.addField("checkPoint",Integer::class.java)
+        }
+
+    }
+
+    override fun hashCode(): Int {
+        return Migrations::class.java.hashCode()
+    }
+
+    override fun equals(`object`: Any?): Boolean {
+        return if (`object` == null) {
+            false
+        } else `object` is Migrations
     }
 }

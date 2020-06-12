@@ -8,7 +8,6 @@ object StateContext {
 
 
 
-    var state:JSONObject? = null
 
     val model: BalanceViewModel = BalanceViewModel()
 

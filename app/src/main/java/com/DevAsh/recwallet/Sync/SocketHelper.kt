@@ -5,6 +5,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Database.CheckPoint
 import com.DevAsh.recwallet.Database.StateLedger
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Home.HomePage
@@ -30,43 +31,24 @@ object SocketHelper {
     var newUser:Boolean = false
 
     fun connect(){
-        println("Called . . .")
         socket = IO.socket(url)
         socket.connect()
 
         socket.on("connect") {
             println("connecting ....")
-            if(newUser || true){
-                newUser=false
-                val data = JSONObject()
-                data.put("number",DetailsContext.phoneNumber)
-                data.put("amount","3501000")
-                data.put("fcmToken",DetailsContext.fcmToken)
-                socket.emit("newUser",data)
-            }else{
-                val data = JSONObject()
-                data.put("number",DetailsContext.phoneNumber)
-                data.put("fcmToken",DetailsContext.fcmToken)
-                socket.emit("getInformation",data)
-            }
+            val data = JSONObject(
+               mapOf(
+                   "number"  to DetailsContext.phoneNumber,
+                   "fcmToken" to DetailsContext.fcmToken
+               )
+            )
+            socket.emit("getInformation",data)
+
         }
 
         socket.on("doUpdate"){
-              println("updating ....")
-              getState()
+
         }
-
-        socket.on("addNewUser"){data->
-            println("new user added... ${data[0]}")
-
-            val userObject = data[0] as JSONObject
-
-            Realm.getDefaultInstance().executeTransaction{realm->
-                val stateLedger=StateLedger(userObject["number"].toString(),Integer.valueOf(userObject["amount"].toString()))
-                realm.insert(stateLedger)
-            }
-        }
-
 
 
         socket.on("disconnect"){
@@ -74,7 +56,6 @@ object SocketHelper {
         }
 
         socket.on("receivedPayment"){
-            println("received payment")
             getMyState()
         }
 
@@ -123,22 +104,4 @@ object SocketHelper {
 
     }
 
-
-
-    private fun getState(){
-        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
-            .addHeaders("jwtToken",DetailsContext.token)
-            .setPriority(Priority.IMMEDIATE)
-            .build()
-            .getAsJSONObject(object: JSONObjectRequestListener {
-                override fun onResponse(response: JSONObject?) {
-                    StateContext.state = response
-                }
-
-                override fun onError(anError: ANError?) {
-                    socket.disconnect()
-                }
-
-            })
-    }
 }
