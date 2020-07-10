@@ -6,9 +6,6 @@ import org.json.JSONObject
 
 object StateContext {
 
-
-
-
     val model: BalanceViewModel = BalanceViewModel()
 
     init {
@@ -25,13 +22,18 @@ object StateContext {
 
     fun addTransaction(transaction: Transaction){
         model.allTranactions.value?.add(0,transaction)
-
     }
 
     fun addFakeTransactions(){
         val transactions = ArrayList<Transaction>()
+        setBalanceToModel("34,60,000")
         transactions.addAll(
             arrayOf(
+                Transaction("+6663529XXXXX", "993088909", "Jul 9 , 3:45 AM", "16,000", "Send"),
+                Transaction("+6399419XXXXX", "993088909", "Jul 7 , 5:00 AM", "17,200", "Send"),
+                Transaction("+6399503XXXXX", "993088909", "Jul 5 , 3:20 AM", "15,000", "Send"),
+                Transaction("+6399503XXXXX", "993088909", "Jul 3 , 4:00 AM", "15,500", "Send"),
+                Transaction("+6392570XXXXX", "993088909", "Jun 20 , 10:30 PM", "17,000", "Send"),
                 Transaction("USA Project", "993088909", "Jun 4 , 12:15 AM", "20,00,000", "Received"),
                 Transaction("+6397567XXXXX", "993088909", "May 30 , 3:24 AM", "28,000", "Send"),
                 Transaction("Food order", "993088909", "May 31 , 1:12 PM", "900", "Send"),

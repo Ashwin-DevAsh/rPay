@@ -19,6 +19,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
@@ -64,6 +65,10 @@ class HomePage : AppCompatActivity() {
                 ActivityCompat.requestPermissions(this, permissions,0)
             }
 
+        }
+
+        buyMoney.setOnClickListener{
+            startActivity(Intent(this,AddMoney::class.java))
         }
 
         buyMoney.setOnLongClickListener{

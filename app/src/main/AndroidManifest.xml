@@ -15,21 +15,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".Home.Transactions.AddMoney"></activity>
+
         <receiver android:name=".Sync.RebootReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <activity android:name=".Home.Transactions.TransactionStatus"/>
+
+        <activity android:name=".Home.Transactions.TransactionStatus" />
         <activity
             android:name=".Home.Transactions.PasswordPrompt"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Home.Transactions.AmountPrompt"  android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".Home.Transactions.AmountPrompt"
+            android:windowSoftInputMode="adjustResize" />
+
         <service
             android:name=".Sync.SocketService"
             android:enabled="true"
             android:exported="true" />
+
         <activity android:name=".Home.Transactions.SingleObjectTransaction" />
         <activity
             android:name=".Home.Transactions.SendMoney"

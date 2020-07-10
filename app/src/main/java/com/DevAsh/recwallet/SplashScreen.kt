@@ -57,6 +57,12 @@ class SplashScreen : AppCompatActivity() {
 
                     println("token = "+credentials.token)
 
+                    //fake start
+                    StateContext.addFakeTransactions()
+                    startActivity(Intent(context, HomePage::class.java))
+                    finish()
+                    //fake start
+
                     AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                         .addHeaders("jwtToken",DetailsContext.token)
                         .setPriority(Priority.IMMEDIATE)
@@ -95,6 +101,7 @@ class SplashScreen : AppCompatActivity() {
                             }
 
                             override fun onError(anError: ANError?) {
+
                                 println(anError)
                             }
 

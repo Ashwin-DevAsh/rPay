@@ -11,7 +11,6 @@
         android:id="@+id/appBar"
         android:orientation="vertical"
         android:layout_height="60dp">
-
         <ImageView
             android:layout_width="wrap_content"
             android:src="@drawable/menu_dot"
@@ -22,7 +21,6 @@
             android:background="@drawable/image_ripple"
             android:layout_alignParentRight="true"
             android:layout_height="45dp"/>
-
     </RelativeLayout>
 
     <LinearLayout
@@ -40,8 +38,6 @@
             android:layout_height="match_parent"/>
     </LinearLayout>
 
-
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_below="@id/appBar"
@@ -53,7 +49,6 @@
         android:paddingHorizontal="15dp"
         android:orientation="vertical"
         android:layout_height="match_parent">
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="150dp">
@@ -63,7 +58,6 @@
                 android:paddingBottom="30dp"
                 android:orientation="vertical"
                 android:layout_height="wrap_content">
-
                 <TextView
                     android:layout_width="match_parent"
                     android:gravity="center"
