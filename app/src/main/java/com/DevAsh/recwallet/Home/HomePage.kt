@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
@@ -30,7 +31,6 @@ import kotlinx.android.synthetic.main.activity_home_page.*
 class HomePage : AppCompatActivity() {
 
     lateinit var context: Context
-    lateinit var activityAdapter:RecentActivityAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,18 +44,15 @@ class HomePage : AppCompatActivity() {
              balance.text = currentBalance
         }
 
-        val transactionObserver = Observer<ArrayList<Transaction>> {updatedList->
-            activityAdapter.updateList(updatedList)
-            activity.smoothScrollToPosition(0)
+        greetings.setText("Hii, "+DetailsContext.name)
 
-        }
 
         StateContext.model.currentBalance.observe(this,balanceObserver)
-        StateContext.model.allTranactions.observe(this,transactionObserver)
 
-        allActivities.setOnClickListener {
-            startActivity(Intent(context, AllTransactions::class.java))
-        }
+
+//        allActivities.setOnClickListener {
+//            startActivity(Intent(context, AllTransactions::class.java))
+//        }
 
         sendMoney.setOnClickListener {
             val permissions = arrayOf(android.Manifest.permission.READ_CONTACTS)
@@ -72,18 +69,10 @@ class HomePage : AppCompatActivity() {
         }
 
         buyMoney.setOnLongClickListener{
-            StateContext.addFakeTransactions()
+//            StateContext.addFakeTransactions()
             return@setOnLongClickListener true
         }
 
-        activity.layoutManager = LinearLayoutManager(context)
-        activityAdapter = RecentActivityAdapter(
-           StateContext.model.allTranactions.value!!.subList(
-                0,
-                if( StateContext.model.allTranactions.value!!.size>10) 10
-                else StateContext.model.allTranactions.value!!.size
-            ).toList(),context)
-        activity.adapter = activityAdapter
     }
 
     override fun onRequestPermissionsResult(
@@ -100,47 +89,3 @@ class HomePage : AppCompatActivity() {
 
 }
 
-class RecentActivityAdapter(private var items : List<Transaction>, val context: Context) : RecyclerView.Adapter<RecentActivityViewHolder>() {
-
-    override fun getItemCount(): Int {
-        return items.size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentActivityViewHolder {
-        return RecentActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_listtile, parent, false))
-    }
-
-    override fun onBindViewHolder(holder: RecentActivityViewHolder, position: Int) {
-        holder.title.text = items[position].name
-        holder.subtitle.text = items[position].time
-        holder.badge.text = items[position].name[0].toString()
-
-        if (items[position].name.startsWith("+")) {
-            holder.badge.text = items[position].name.subSequence(1, 3)
-            holder.badge.textSize = 18F
-        }
-
-        if(items[position].type=="Received"){
-            holder.additionalInfo.setTextColor(Color.GREEN)
-            holder.additionalInfo.text= "+${items[position].amount}"
-        }else if(items[position].type=="Send"){
-            holder.additionalInfo.setTextColor(Color.RED)
-            holder.additionalInfo.text= "-${items[position].amount}"
-        }
-    }
-
-    fun updateList(updatedList : ArrayList<Transaction>){
-        this.items = updatedList
-        notifyDataSetChanged()
-
-    }
-
-
-}
-
-class RecentActivityViewHolder (view: View) : RecyclerView.ViewHolder(view) {
-    val title = view.findViewById(R.id.title) as TextView
-    val subtitle = view.findViewById(R.id.subtitle) as TextView
-    val badge = view.findViewById(R.id.badge) as TextView
-    val additionalInfo = view.findViewById(R.id.additionalInfo) as TextView
-}

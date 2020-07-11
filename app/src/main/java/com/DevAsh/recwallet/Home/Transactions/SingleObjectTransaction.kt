@@ -28,6 +28,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Exception
 import java.text.DecimalFormat
 
 class SingleObjectTransaction : AppCompatActivity() {
@@ -56,9 +57,6 @@ class SingleObjectTransaction : AppCompatActivity() {
         }
 
         StateContext.model.allTranactions.observe(this,transactionObserver)
-
-
-
 
         badge.text = TransactionContext.selectedUser!!.name[0].toString()
 

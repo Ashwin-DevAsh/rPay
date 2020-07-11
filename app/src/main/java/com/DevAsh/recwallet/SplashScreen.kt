@@ -57,11 +57,11 @@ class SplashScreen : AppCompatActivity() {
 
                     println("token = "+credentials.token)
 
-                    //fake start
-                    StateContext.addFakeTransactions()
-                    startActivity(Intent(context, HomePage::class.java))
-                    finish()
-                    //fake start
+//                    //fake start
+//                    StateContext.addFakeTransactions()
+//                    startActivity(Intent(context, HomePage::class.java))
+//                    finish()
+//                    //fake start
 
                     AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                         .addHeaders("jwtToken",DetailsContext.token)
@@ -70,6 +70,7 @@ class SplashScreen : AppCompatActivity() {
                         .getAsJSONObject(object: JSONObjectRequestListener {
                             override fun onResponse(response: JSONObject?) {
                                 val balance = response?.getInt("Balance")
+                                StateContext.currentBalance = balance!!
                                 val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                 StateContext.setBalanceToModel(formatter.format(balance))
                                 val transactionObjectArray = response?.getJSONArray("Transactions")

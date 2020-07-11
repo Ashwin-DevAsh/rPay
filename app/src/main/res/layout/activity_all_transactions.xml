@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".Home.AllTransactions">
 
 
@@ -56,6 +57,8 @@
         android:layout_width="match_parent"
         android:layout_below="@id/appBar"
         android:visibility="invisible"
+        android:background="@color/colorPrimaryDark"
+
         android:id="@+id/mainContent"
         android:layout_height="match_parent">
         <LinearLayout

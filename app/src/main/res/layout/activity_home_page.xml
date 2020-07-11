@@ -2,72 +2,74 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/colorPrimaryDark"
     android:layout_height="match_parent"
     tools:context=".Home.HomePage">
-    
-    <RelativeLayout
+
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:id="@+id/appBar"
-        android:layout_height="60dp">
-
-        <ImageView
-            android:background="@drawable/image_ripple"
-            android:layout_width="wrap_content"
-            android:paddingHorizontal="18dp"
-            android:src="@drawable/scan"
-            android:clickable="true"
-            android:layout_marginHorizontal="5dp"
-            android:focusable="true"
-            android:layout_height="match_parent"/>
-
-        <ImageView
-            android:layout_alignParentRight="true"
-            android:background="@drawable/image_ripple"
-            android:layout_width="wrap_content"
-            android:paddingHorizontal="18dp"
-            android:src="@drawable/settings"
-            android:clickable="true"
-            android:layout_marginHorizontal="5dp"
-            android:focusable="true"
-            android:layout_height="match_parent"/>
-    </RelativeLayout>
-
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="100"
         android:layout_below="@+id/appBar"
        >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="80"
+
             android:layout_height="match_parent">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <LinearLayout
-                    android:layout_centerInParent="true"
+
                     android:layout_width="wrap_content"
+
+                    android:layout_alignParentLeft="true"
                     android:orientation="vertical"
-                    android:gravity="center"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="start"
+                    android:layout_marginTop="20dp"
                     android:layout_height="wrap_content">
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:text="  Loading..."
-                        android:id="@+id/balance"
-                        android:textSize="45dp"
+                        android:layout_width="250dp"
+                        android:text="Hii, Uservdjehvxievxhjevxjhevn"
+                        android:textStyle="bold"
+                        android:id="@+id/greetings"
+                        android:textSize="35dp"
+                        android:scrollHorizontally="true"
+                        android:ellipsize="end"
+
+                        android:maxLines="1"
+
+                        android:textColor="@color/textColor"
                         android:layout_height="wrap_content"/>
                     <TextView
                         android:layout_width="wrap_content"
+                        android:id="@+id/balance"
                         android:text="Total balance"
                         android:background="@drawable/balance_bg"
                         android:paddingHorizontal="10dp"
+                        android:textSize="12dp"
                         android:paddingVertical="5dp"
-                        android:textColor="@color/textHighlight"
+                        android:textColor="@color/highlightButton"
+                        android:textStyle="bold"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_marginTop="23dp"
+                    android:scaleType="fitXY"
+                    android:id="@+id/profile"
+                    android:background="@android:color/transparent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/profile"
+                    android:padding="5dp"
+                    android:layout_height="50dp"/>
             </RelativeLayout>
         </LinearLayout>
 
@@ -79,13 +81,15 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_margin="20dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="15dp"
                 android:translationZ="10dp"
                 android:weightSum="100"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:background="@drawable/home_module"
-                android:layout_height="135dp">
+                android:background="@drawable/button_ripple_gradient"
+                android:layout_height="115dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -103,13 +107,13 @@
                             android:layout_width="match_parent"
                             android:background="@android:color/transparent"
                             android:src="@drawable/send_money"
-                            android:layout_height="50dp"/>
+                            android:layout_height="40dp"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:background="@android:color/transparent"
                             android:gravity="center"
-                            android:text="Send Money"
-
+                            android:textColor="@android:color/white"
+                            android:text="Pay Money"
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
                     <LinearLayout
@@ -117,7 +121,7 @@
                         android:focusable="true"
                         android:id="@+id/sendMoney"
                         android:clickable="true"
-                        android:background="@drawable/home_module_ripple"
+                        android:background="@android:color/transparent"
                         android:layout_height="match_parent">
 
                     </LinearLayout>
@@ -127,8 +131,8 @@
 
                 <LinearLayout
                     android:layout_width="1dp"
-                    android:background="@color/colorAccent"
-                    android:layout_height="100dp"/>
+                    android:background="@color/colorPrimary"
+                    android:layout_height="80dp"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -146,13 +150,13 @@
                             android:layout_width="match_parent"
                             android:background="@android:color/transparent"
                             android:src="@drawable/purchase"
-                            android:layout_height="50dp"/>
+                            android:layout_height="40dp"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:background="@android:color/transparent"
                             android:gravity="center"
                             android:text="Add Money"
-
+                            android:textColor="@android:color/white"
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
                     <LinearLayout
@@ -160,76 +164,42 @@
                         android:focusable="true"
                         android:id="@+id/buyMoney"
                         android:clickable="true"
-                        android:background="@drawable/home_module_ripple"
+                        android:background="@android:color/transparent"
                         android:layout_height="match_parent">
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
+        </LinearLayout>
 
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginRight="20dp"
-                android:layout_height="40dp">
-                <TextView
-
-                    android:layout_width="match_parent"
-                    android:text="Recent Activities"
-                    android:gravity="center_vertical"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    android:layout_marginHorizontal="25dp"
-                    android:layout_height="match_parent"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                 <androidx.recyclerview.widget.RecyclerView
-                     android:layout_width="match_parent"
-                     android:id="@+id/activity"
-                     android:scrollbars="none"
-                     android:focusable="false"
-                     android:clickable="false"
-                     android:paddingTop="5dp"
-                     android:isScrollContainer="false"
-                     android:layout_height="match_parent"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@android:color/transparent"
-                    android:layout_height="match_parent"/>
-            </RelativeLayout>
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/container_background"
+            android:layout_height="300dp">
 
         </LinearLayout>
 
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/fade"
-        android:layout_height="130dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="View more"
-            android:layout_marginBottom="15dp"
-            android:focusable="true"
-            android:clickable="true"
-            android:textStyle="bold"
-            android:textSize="13dp"
-            android:paddingTop="2dp"
-            android:gravity="center"
-            android:translationZ="200dp"
-            android:paddingHorizontal="20dp"
-            android:background="@drawable/button_ripple_gradient"
-            android:id="@+id/allActivities"
-            android:layout_centerInParent="true"
-            android:layout_height="40dp"/>
-    </RelativeLayout>
+    </ScrollView>
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:text="View more"-->
+<!--            android:layout_marginBottom="15dp"-->
+<!--            android:focusable="true"-->
+<!--            android:clickable="true"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="13dp"-->
+<!--            android:paddingTop="2dp"-->
+<!--            android:gravity="center"-->
+<!--            android:translationZ="200dp"-->
+<!--            android:paddingHorizontal="20dp"-->
+<!--            android:background="@drawable/button_ripple_gradient"-->
+<!--            android:id="@+id/allActivities"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_height="40dp"/>-->
 
 </RelativeLayout>

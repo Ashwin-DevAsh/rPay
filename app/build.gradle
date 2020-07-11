@@ -15,7 +15,6 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,6 +39,10 @@ android {
 
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -60,4 +63,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.github.nkzawa:socket.io-client:0.6.0'
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
+    implementation 'com.razorpay:checkout:1.5.16'
 }

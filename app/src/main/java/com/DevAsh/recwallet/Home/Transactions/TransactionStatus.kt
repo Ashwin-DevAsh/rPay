@@ -72,6 +72,7 @@ class TransactionStatus : AppCompatActivity() {
                                         jsonData.put("to",TransactionContext.selectedUser?.number.toString().replace("+",""))
                                         SocketHelper.socket.emit("notifyPayment",jsonData)
                                         val balance = response?.getInt("Balance")
+                                        StateContext.currentBalance = balance!!
                                         val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                         StateContext.setBalanceToModel(formatter.format(balance))
                                         val transactionObjectArray = response?.getJSONArray("Transactions")

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import com.DevAsh.recwallet.Context.DetailsContext
+import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.R
@@ -29,9 +31,15 @@ class AmountPrompt : AppCompatActivity() {
         }
 
         done.setOnClickListener{v->
+
             TransactionContext.amount = amount.text.toString()
+            if(TransactionContext.amount!!.toInt()>=StateContext.currentBalance){
+                SnackBarHelper.showError(v,"Insufficient Amount")
+                return@setOnClickListener
+            }
+
             try {
-                if(TransactionContext.amount!!.toInt()>0){
+               if(TransactionContext.amount!!.toInt()>0){
                     startActivity(Intent(context,PasswordPrompt::class.java))
                     finish()
                 }else{

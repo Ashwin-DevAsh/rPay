@@ -7,13 +7,14 @@ import org.json.JSONObject
 object StateContext {
 
     val model: BalanceViewModel = BalanceViewModel()
+    var currentBalance = 0
 
     init {
         model.allTranactions.value = ArrayList()
     }
 
     fun setBalanceToModel(amount: String){
-         model.currentBalance.value = "₿ $amount"
+         model.currentBalance.value = "$amount\tRC".replace("-","")
     }
 
     fun initAllTransaction(initList:ArrayList<Transaction>){
@@ -22,6 +23,10 @@ object StateContext {
 
     fun addTransaction(transaction: Transaction){
         model.allTranactions.value?.add(0,transaction)
+    }
+
+    fun getBalance():String{
+        return model.currentBalance.value!!
     }
 
     fun addFakeTransactions(){

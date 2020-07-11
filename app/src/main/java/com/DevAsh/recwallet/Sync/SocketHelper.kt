@@ -69,6 +69,7 @@ object SocketHelper {
             .getAsJSONObject(object: JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject?) {
                     val balance = response?.getInt("Balance")
+                    StateContext.currentBalance = balance!!
                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                     StateContext.setBalanceToModel(formatter.format(balance))
                     val transactionObjectArray = response?.getJSONArray("Transactions")

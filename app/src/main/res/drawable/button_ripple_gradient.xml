@@ -2,11 +2,7 @@
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@android:color/black">
 
-    <item android:id="@android:id/mask">
-        <shape android:shape="rectangle">
-            <corners android:radius="20dp" />
-        </shape>
-    </item>
+
 
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
@@ -14,7 +10,7 @@
                 android:endColor="@color/highlightButton"
                 android:startColor="#0779e4"
                 android:type="linear" />
-            <corners android:radius="20dp" />
+            <corners android:radius="10dp" />
         </shape>
     </item>
 

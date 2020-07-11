@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#21253D</color>
-    <color name="colorPrimaryDark">#0E0F1A</color>
-    <color name="colorAccent">#80ffffff</color>
+    <color name="colorPrimary">#F7F7F7</color>
+    <color name="colorPrimaryDark">#F7F7F7</color>
+    <color name="colorAccent">#023b6e</color>
     <color name="buttonColor">#1E2238</color>
     <color name="textHighlight">#00909e</color>
+    <color name="textColor">#000000</color>
     <color name="textNormal">#757575</color>
     <color name="highlightButton">#035aa6</color>
     <color name="keyboardColor">#171E21</color>
     <color name="transparentBlack">#1A000000</color>
+    <color name="containerColor">#95ffffff</color>
+    <color name="lightbackground">#10035aa6</color>
 </resources>
