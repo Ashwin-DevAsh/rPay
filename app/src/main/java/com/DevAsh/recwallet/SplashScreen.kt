@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
@@ -14,6 +15,8 @@ import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
+import com.DevAsh.recwallet.Registration.Otp
+import com.DevAsh.recwallet.Registration.Register
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -54,7 +57,6 @@ class SplashScreen : AppCompatActivity() {
                         credentials.password,
                         credentials.token
                     )
-
                     println("token = "+credentials.token)
 
 //                    //fake start
@@ -100,16 +102,10 @@ class SplashScreen : AppCompatActivity() {
                                 startActivity(Intent(context, HomePage::class.java))
                                 finish()
                             }
-
                             override fun onError(anError: ANError?) {
-
                                 println(anError)
                             }
-
                         })
-
-
-
             },0)
         }else{
             Handler().postDelayed({

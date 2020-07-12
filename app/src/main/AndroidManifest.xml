@@ -15,12 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Home.Transactions.AddMoney"></activity>
+        <activity android:name=".Home.Transactions.AddMoney"/>
 
         <receiver android:name=".Sync.RebootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

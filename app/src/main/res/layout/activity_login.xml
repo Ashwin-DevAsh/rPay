@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:gravity="center"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             android:textSize="18dp"
             android:text="Enter your phone number"
             android:layout_height="wrap_content"/>
@@ -70,6 +71,7 @@
                android:focusable="true"
                android:paddingTop="2dp"
                android:id="@+id/sendOtp"
+               android:textColor="@android:color/white"
                android:layout_centerInParent="true"
                android:background="@drawable/button_ripple"
                android:layout_height="50dp"/>

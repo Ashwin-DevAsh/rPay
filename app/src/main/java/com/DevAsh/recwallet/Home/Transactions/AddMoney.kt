@@ -1,7 +1,12 @@
 package com.DevAsh.recwallet.Home.Transactions
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -28,7 +33,7 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 
 
-class AddMoney : AppCompatActivity() ,PaymentResultListener {
+class AddMoney : AppCompatActivity(){
     var amount:String =""
     var context = this
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +45,7 @@ class AddMoney : AppCompatActivity() ,PaymentResultListener {
             amount = amountEditText.text.toString()
             try{
                 if(amount !="" && Integer.parseInt(amount)>0){
-                    startPayment(v)
+                    payUsingUpi(amount,"9840176511@ybl","Barath","R-pay")
                 }else{
                     SnackBarHelper.showError(v,"Invalid Amount")
                 }
@@ -78,12 +83,41 @@ class AddMoney : AppCompatActivity() ,PaymentResultListener {
         }
     }
 
-    override fun onPaymentError(p0: Int, p1: String?) {
-        Toast.makeText(this,"Error in payment",Toast.LENGTH_LONG).show()
-        finish()
+    private fun payUsingUpi(
+        amount: String?,
+        upiId: String?,
+        name: String?,
+        note: String?
+    ) {
+        val uri: Uri = Uri.parse("upi://pay").buildUpon()
+            .appendQueryParameter("pa", upiId)
+            .appendQueryParameter("pn", name)
+            .appendQueryParameter("tn", note)
+            .appendQueryParameter("am", amount)
+            .appendQueryParameter("cu", "INR")
+            .build()
+        val upiPayIntent = Intent(Intent.ACTION_VIEW)
+        upiPayIntent.data = uri
+
+        // will always show a dialog to user to choose an app
+        val chooser = Intent.createChooser(upiPayIntent, "Pay with")
+
+        // check if intent resolves
+        if (null != chooser.resolveActivity(packageManager)) {
+            startActivityForResult(chooser, 1)
+        } else {
+            Toast.makeText(
+                this,
+                "No UPI app found, please install one to continue",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
-    override fun onPaymentSuccess(p0: String?) {
+
+
+
+    private fun onPaymentSuccess(p0: String?) {
         val amount = this.amount
         AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/addMoney")
             .setContentType("application/json; charset=utf-8")
@@ -154,4 +188,95 @@ class AddMoney : AppCompatActivity() ,PaymentResultListener {
 
             })
     }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            1 -> if (Activity.RESULT_OK == resultCode || resultCode == 11) {
+                if (data != null) {
+                    val trxt = data.getStringExtra("response")
+                    Log.d("UPI", "onActivityResult: $trxt")
+                    val dataList: ArrayList<String> = ArrayList()
+                    dataList.add(trxt)
+                    upiPaymentDataOperation(dataList)
+                } else {
+                    Log.d("UPI", "onActivityResult: " + "Return data is null")
+                    val dataList: ArrayList<String> = ArrayList()
+                    dataList.add("nothing")
+                    upiPaymentDataOperation(dataList)
+                }
+            }
+        }
+    }
+
+    private fun upiPaymentDataOperation(data: ArrayList<String>) {
+        if (isConnectionAvailable(this)) {
+            var str = data[0]
+            var paymentCancel = ""
+            if (str == null) str = "discard"
+            var status = ""
+            var approvalRefNo = ""
+            val response = str.split("&".toRegex()).toTypedArray()
+            for (i in response.indices) {
+                val equalStr =
+                    response[i].split("=".toRegex()).toTypedArray()
+                if (equalStr.size >= 2) {
+                    if (equalStr[0].toLowerCase() == "Status".toLowerCase()) {
+                        status = equalStr[1].toLowerCase()
+                    } else if (equalStr[0]
+                            .toLowerCase() == "ApprovalRefNo".toLowerCase() || equalStr[0]
+                            .toLowerCase() == "txnRef".toLowerCase()
+                    ) {
+                        approvalRefNo = equalStr[1]
+                    }
+                } else {
+                    paymentCancel = "Payment cancelled by user."
+                }
+            }
+            when {
+                status == "success" -> {
+                    Toast.makeText(this, "Transaction successful.", Toast.LENGTH_SHORT)
+                        .show()
+                    Log.d("UPI", "responseStr: $approvalRefNo")
+                    onPaymentSuccess(approvalRefNo)
+                }
+                "Payment cancelled by user." == paymentCancel -> {
+                    Toast.makeText(this, "Payment cancelled by user.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else -> {
+                    Toast.makeText(
+                        this,
+                        "Transaction failed.Please try again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            Toast.makeText(
+                this,
+                "Internet connection is not available. Please check and try again",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun isConnectionAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val netInfo = connectivityManager.activeNetworkInfo
+            if (netInfo != null && netInfo.isConnected
+                && netInfo.isConnectedOrConnecting
+                && netInfo.isAvailable
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
 }

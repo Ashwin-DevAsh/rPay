@@ -64,4 +64,6 @@ dependencies {
     implementation 'com.github.nkzawa:socket.io-client:0.6.0'
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
     implementation 'com.razorpay:checkout:1.5.16'
+    implementation 'com.synnapps:carouselview:0.1.4'
+    implementation 'com.shreyaspatil:EasyUpiPayment:2.0'
 }

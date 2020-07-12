@@ -38,7 +38,6 @@ class NotificationService : FirebaseMessagingService() {
                  startService(Intent(this,SocketService::class.java))
             }
         }else{
-
             val amount = p0.data["type"]!!.split(",")[3]
             val fromName = p0.data["type"]!!.split(",")[1]
 

@@ -12,4 +12,5 @@
     <color name="transparentBlack">#1A000000</color>
     <color name="containerColor">#95ffffff</color>
     <color name="lightbackground">#10035aa6</color>
+    <color name="textDark">#02335E</color>
 </resources>
