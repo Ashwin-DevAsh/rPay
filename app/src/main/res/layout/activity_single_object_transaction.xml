@@ -3,19 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Home.Transactions.SingleObjectTransaction">
+
+<RelativeLayout
+    
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:id="@+id/appBar"
+        android:background="@color/colorPrimary"
         android:layout_height="65dp">
         <RelativeLayout
             android:layout_width="match_parent"
             android:translationZ="2dp"
+            android:background="@color/colorPrimary"
             android:layout_height="65dp">
             <ImageView
-                android:background="@drawable/image_ripple"
                 android:layout_width="wrap_content"
                 android:paddingHorizontal="18dp"
                 android:src="@drawable/back"
@@ -33,26 +41,36 @@
                     android:gravity="center"
                     android:id="@+id/statusContainer"
                     android:layout_height="65dp">
-                    <RelativeLayout
+                    <androidx.cardview.widget.CardView
                         android:layout_width="42dp"
-                        android:translationZ="10dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/avatar">
+                        app:cardElevation="0dp"
+                        app:cardCornerRadius="50dp"
+                        android:layout_height="42dp">
+                        <RelativeLayout
+                            android:layout_width="42dp"
+                            android:translationZ="10dp"
+                            android:id="@+id/avatarContainer"
+                            android:layout_height="42dp"
+                        >
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:gravity="center"
-                            android:textStyle="bold"
-                            android:background="@android:color/transparent"
-                            android:textSize="20dp"
-                            android:text="A"
-                            android:paddingTop="5dp"
-                            android:id="@+id/badge"
-                            android:layout_height="wrap_content"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:gravity="center"
+                                android:textStyle="bold"
+                                android:background="@android:color/transparent"
+                                android:textSize="20dp"
+                                android:textColor="@android:color/white"
+                                android:text="A"
+                                android:paddingTop="5dp"
+                                android:id="@+id/badge"
+                                android:layout_height="wrap_content"/>
 
 
-                    </RelativeLayout>
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
+
 
 
                 </LinearLayout>
@@ -72,7 +90,7 @@
                         android:text="Ashwin"
                         android:textSize="16dp"
                         android:gravity="bottom"
-                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/black"
 
                         android:id="@+id/name"
                         android:textStyle="bold"
@@ -101,35 +119,27 @@
         android:layout_width="match_parent"
         android:layout_below="@id/appBar"
         android:layout_above="@id/nav_view"
+        android:background="@color/colorPrimary"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:id="@+id/loadingScreen"
-            android:layout_height="match_parent">
-            <TextView
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:text="Loading . . ."
-                android:textColor="@color/textHighlight"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
+
+
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:id="@+id/scrollContainer"
+            android:background="@color/colorPrimary"
             android:visibility="invisible"
             android:fillViewport="true"
-            android:background="@color/transparentBlack"
             android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:background="@color/transparentBlack"
+
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
-                    android:background="@color/transparentBlack"
+                    android:background="@color/colorPrimary"
                     android:id="@+id/transactionContainer"
                     android:layout_height="match_parent"/>
             </LinearLayout>
@@ -141,14 +151,12 @@
 
 
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <androidx.cardview.widget.CardView
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_height="60dp"
-        android:translationZ="200dp"
-        app:elevation="200dp"
-        android:elevation="200dp"
+        app:cardElevation="10dp"
         android:background="?android:attr/windowBackground"
         >
 
@@ -157,11 +165,11 @@
                 android:orientation="horizontal"
                 android:weightSum="100"
                 android:translationZ="200dp"
+                android:background="@color/colorPrimary"
                 app:elevation="200dp"
                 android:elevation="200dp"
                 android:gravity="center"
                 android:layout_height="match_parent">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_weight="50"
@@ -170,13 +178,7 @@
                     app:elevation="200dp"
                     android:elevation="200dp"
                     android:layout_height="match_parent">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:translationZ="200dp"
-                        app:elevation="200dp"
-                        android:elevation="200dp"
-                        android:background="@color/buttonColor"
-                        android:layout_height="0.5dp"/>
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
@@ -191,9 +193,6 @@
                             android:layout_height="match_parent"/>
 
                     </RelativeLayout>
-
-
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -202,28 +201,48 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:background="@color/buttonColor"
-                        android:layout_height="0.5dp"/>
-
-                    <TextView
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_marginHorizontal="30dp"
-                        android:text="Pay"
-                        android:id="@+id/pay"
-                        android:gravity="center"
-                        android:textStyle="bold"
+                        app:cardCornerRadius="20dp"
                         android:layout_marginVertical="12dp"
-                        android:background="@drawable/button_ripple_gradient"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent">
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="Pay"
+                            android:id="@+id/pay"
+                            android:gravity="center"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:background="@drawable/button_ripple_gradient"
+                            android:layout_height="match_parent"/>
+                    </androidx.cardview.widget.CardView>
                 </LinearLayout>
-
             </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:id="@+id/loadingScreen"
+        android:background="@color/colorPrimary"
+        android:layout_height="match_parent">
+        <com.agrawalsuneet.dotsloader.loaders.TashieLoader
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tashieloader_animDelay="100"
+            app:tashieloader_animDur="500"
+            app:tashieloader_dotsColor="@color/highlightButton"
+            app:tashieloader_dotsDist="5dp"
+            app:tashieloader_dotsRadius="10dp"
+            app:tashieloader_interpolator="@android:anim/accelerate_interpolator"
+            app:tashieloader_noOfDots="4" />
+    </LinearLayout>
 
 
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 
 

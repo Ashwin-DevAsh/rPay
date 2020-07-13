@@ -1,28 +1,31 @@
 package com.DevAsh.recwallet.Home
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.UiContext.colors
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.Contacts
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
@@ -30,12 +33,20 @@ import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketService
+import com.synnapps.carouselview.CarouselView
+import com.synnapps.carouselview.ImageListener
 import kotlinx.android.synthetic.main.activity_home_page.*
 
 
 class HomePage : AppCompatActivity() {
 
     var context: Context = this
+
+    lateinit var carouselView: CarouselView
+    var sampleImages = intArrayOf(
+        R.drawable.banner_1,
+        R.drawable.banner_2
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +55,34 @@ class HomePage : AppCompatActivity() {
 
         merchantHolder.layoutManager = GridLayoutManager(context, 3)
         recent.layoutManager = GridLayoutManager(context, 3)
+
+        val bottomDown: Animation = AnimationUtils.loadAnimation(
+            context,
+            R.anim.button_down
+        )
+        val bottomUp: Animation = AnimationUtils.loadAnimation(
+            context,
+            R.anim.button_up
+        )
+
+        val hiddenPanel = findViewById<CardView>(R.id.scanContainer)
+
+
+        scroller.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (scrollY >500) {
+                if(hiddenPanel.visibility==View.VISIBLE){
+                    hiddenPanel.startAnimation(bottomDown)
+                    hiddenPanel.visibility=View.INVISIBLE
+                }
+
+            }
+            if(scrollY < 500){
+                if(hiddenPanel.visibility==View.INVISIBLE){
+                    hiddenPanel.visibility=View.VISIBLE
+                    hiddenPanel.startAnimation(bottomUp)
+                }
+            }
+        }
 
         merchantHolder.adapter = MerchantViewAdapter(arrayListOf(
             Merchant("Hut Cafe","1234567890",R.drawable.hut_cafe),
@@ -69,6 +108,18 @@ class HomePage : AppCompatActivity() {
             Merchant("More","1234567890",R.drawable.more)
         ),context)
 
+        val imageListener =
+            ImageListener { position, imageView ->
+                imageView.setImageResource(sampleImages[position])
+                imageView.scaleType=ImageView.ScaleType.CENTER_INSIDE
+                imageView.adjustViewBounds=true
+                imageView.setBackgroundColor(Color.WHITE)
+            }
+
+        carouselView = findViewById(R.id.carouselView)
+        carouselView.pageCount = sampleImages.size
+        carouselView.setImageListener(imageListener)
+
         startService(Intent(this, SocketService::class.java))
 
         val balanceObserver = Observer<String> { currentBalance ->
@@ -86,7 +137,7 @@ class HomePage : AppCompatActivity() {
 //            }else{
 //                ActivityCompat.requestPermissions(this, permissions,0)
 //            }
-//            startActivity(Intent(context, SendMoney::class.java))
+            startActivity(Intent(context, SendMoney::class.java))
         }
 
         buyMoney.setOnClickListener{v->
@@ -96,6 +147,21 @@ class HomePage : AppCompatActivity() {
         buyMoney.setOnLongClickListener{
 //            StateContext.addFakeTransactions()
             return@setOnLongClickListener true
+        }
+
+        profile.setOnClickListener{
+            startActivity(Intent(context,Profile::class.java))
+        }
+
+        scan.setOnClickListener{
+            val permissions = arrayOf(android.Manifest.permission.CAMERA)
+            if(packageManager.checkPermission(android.Manifest.permission.CAMERA,context.packageName)==PackageManager.PERMISSION_GRANTED ){
+                startActivity(Intent(context,
+                    QrScanner::class.java))
+            }else{
+                ActivityCompat.requestPermissions(this, permissions,1)
+            }
+
         }
 
     }
@@ -109,6 +175,10 @@ class HomePage : AppCompatActivity() {
                 if(grantResults[0]==PackageManager.PERMISSION_GRANTED ){
                     startActivity(Intent(context, SendMoney::class.java))
                 }
+        }else if(requestCode==1){
+            if(grantResults[0]==PackageManager.PERMISSION_GRANTED ){
+                startActivity(Intent(context, QrScanner::class.java))
+            }
         }
     }
 
@@ -152,6 +222,7 @@ class MerchantViewHolder (view: View, context: Context) : RecyclerView.ViewHolde
                 context.startActivity(Intent(context,AddMoney::class.java))
             }else{
                 TransactionContext.selectedUser= Contacts(merchant.name,merchant.phoneNumber)
+                TransactionContext.avatarColor = "#035aa6"
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
                 )
@@ -165,9 +236,6 @@ class MerchantViewHolder (view: View, context: Context) : RecyclerView.ViewHolde
 
 class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Context) : RecyclerView.Adapter<PeopleViewHolder>() {
 
-    var colors = arrayListOf(
-        "#E68bc34a","#E6f9a825","#E600b0ff","#E6ff1744","#E6512da8","#E600acc1","#E61a237e","#E65d4037","#E6880e4f"
-    )
 
     override fun getItemCount(): Int {
         return items.size
@@ -185,8 +253,9 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
             holder.title.text = items[position].name
             holder.badge.text = items[position].name[0].toString()
             holder.badge.setBackgroundColor(Color.parseColor(colors[position%colors.size]))
+            holder.color = colors[position%colors.size]
 
-            if (items[position].name.startsWith("+")) {
+        if (items[position].name.startsWith("+")) {
                 holder.badge.text = items[position].name.subSequence(1, 3)
                 holder.badge.textSize = 18F
             }
@@ -202,12 +271,13 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
 class PeopleViewHolder (view: View, context: Context) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
-    val card = view.findViewById(R.id.card) as CardView
+    lateinit var color: String
     lateinit var people: Merchant
 
     init {
         view.setOnClickListener{
                 TransactionContext.selectedUser= Contacts(people.name,people.phoneNumber)
+                TransactionContext.avatarColor = color
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
                 )

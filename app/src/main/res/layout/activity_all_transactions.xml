@@ -1,61 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimaryDark"
     tools:context=".Home.AllTransactions">
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:id="@+id/appBar"
 
-            android:layout_height="60dp">
-
-            <TextView
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_centerInParent="true"
-                android:textSize="20dp"
-                android:paddingTop="5dp"
-                android:textStyle="bold"
-                android:clickable="false"
-                android:focusable="false"
-                android:text="All Activities"
-                android:layout_height="match_parent"/>
-            <ImageView
-                android:background="@drawable/image_ripple"
-                android:layout_width="wrap_content"
-                android:paddingHorizontal="18dp"
-                android:src="@drawable/back"
-                android:id="@+id/back"
-                android:clickable="true"
-                android:layout_marginHorizontal="5dp"
-                android:focusable="true"
-                android:layout_height="match_parent"/>
-        </RelativeLayout>
 
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center"
-        android:layout_below="@id/appBar"
+        android:background="@color/colorPrimary"
         android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/textHighlight"
-            android:text="Loading . . ."
-            android:layout_height="match_parent"/>
+        <com.agrawalsuneet.dotsloader.loaders.TashieLoader
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:tashieloader_animDelay="100"
+            app:tashieloader_animDur="500"
+            app:tashieloader_dotsColor="@color/highlightButton"
+            app:tashieloader_dotsDist="5dp"
+            app:tashieloader_dotsRadius="10dp"
+            app:tashieloader_interpolator="@android:anim/accelerate_interpolator"
+            app:tashieloader_noOfDots="4" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_below="@id/appBar"
+        android:fillViewport="true"
         android:visibility="invisible"
         android:background="@color/colorPrimaryDark"
 
@@ -66,16 +43,46 @@
             android:orientation="vertical"
             android:layout_height="match_parent">
 
-            <LinearLayout
+
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="10dp"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_height="150dp">
+                <LinearLayout
+                    android:layout_centerInParent="true"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:gravity="start"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:textSize="45dp"
+                        android:text="Transaction"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:gravity="start"
+                        android:textColor="@android:color/black"
+                        android:textSize="30dp"
+                        android:textStyle="bold"
+                        android:text="History"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:id="@+id/activity"
                 android:nestedScrollingEnabled="false"
-
                 android:scrollbars="none"
                 android:layout_height="match_parent"/>
 

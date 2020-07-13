@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimaryDark"
     android:layout_height="match_parent"
     tools:context=".Registration.Otp">
@@ -9,14 +10,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center"
+        android:background="@color/colorPrimary"
         android:layout_height="match_parent">
-        <TextView
+        <com.agrawalsuneet.dotsloader.loaders.TashieLoader
             android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/textHighlight"
-            android:text="Loading . . ."
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:tashieloader_animDelay="100"
+            app:tashieloader_animDur="500"
+            app:tashieloader_dotsColor="@color/highlightButton"
+            app:tashieloader_dotsDist="5dp"
+            app:tashieloader_dotsRadius="10dp"
+            app:tashieloader_interpolator="@android:anim/accelerate_interpolator"
+            app:tashieloader_noOfDots="4" />
     </LinearLayout>
 
     <LinearLayout

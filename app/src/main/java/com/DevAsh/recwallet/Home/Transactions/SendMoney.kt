@@ -2,6 +2,7 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.UiContext.colors
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
@@ -160,6 +163,9 @@ class UserAdapter(private var items : ArrayList<Contacts>, val context: Context)
         holder.title.text = items[position].name
         holder.subtitle.text = items[position].number
         holder.badge.text = items[position].name[0].toString()
+        holder.avatarContainer.setBackgroundColor(Color.parseColor(colors[position%colors.size]))
+
+        holder.color = colors[position%colors.size]
 
         if (items[position].name.startsWith("+")) {
             holder.badge.text = items[position].name.subSequence(1, 3)
@@ -177,9 +183,13 @@ class ViewHolder (view: View,context: Context) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val subtitle = view.findViewById(R.id.subtitle) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
+    val avatarContainer = view.findViewById(R.id.avatarContainer) as RelativeLayout
+    lateinit var color: String
+
 
     init {
         view.setOnClickListener{
+           TransactionContext.avatarColor = color
            TransactionContext.selectedUser= Contacts(title.text.toString(),subtitle.text.toString())
            startActivity(context,Intent(context,SingleObjectTransaction::class.java),null)
         }

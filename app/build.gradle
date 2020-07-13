@@ -65,5 +65,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
     implementation 'com.razorpay:checkout:1.5.16'
     implementation 'com.synnapps:carouselview:0.1.4'
-    implementation 'com.shreyaspatil:EasyUpiPayment:2.0'
+    implementation 'com.budiyev.android:code-scanner:2.1.0'
+    implementation 'com.agrawalsuneet.androidlibs:dotsloader:1.4'
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.4'
 }

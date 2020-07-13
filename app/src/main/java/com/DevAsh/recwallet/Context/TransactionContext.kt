@@ -7,4 +7,6 @@ object TransactionContext {
     var selectedUser:Contacts?=null
     var amount:String?=null
     var needToPay = false
+    var avatarColor = "#035aa6"
+    var currency = "RC"
 }

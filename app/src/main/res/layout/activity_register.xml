@@ -10,21 +10,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center"
-        android:background="@android:color/transparent"
+        android:background="@color/colorPrimary"
         android:layout_height="match_parent">
-        <TextView
+        <com.agrawalsuneet.dotsloader.loaders.TashieLoader
             android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:textColor="@color/textHighlight"
-            android:text="Loading . . ."
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:tashieloader_animDelay="100"
+            app:tashieloader_animDur="500"
+            app:tashieloader_dotsColor="@color/highlightButton"
+            app:tashieloader_dotsDist="5dp"
+            app:tashieloader_dotsRadius="10dp"
+            app:tashieloader_interpolator="@android:anim/accelerate_interpolator"
+            app:tashieloader_noOfDots="4" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-
+        android:background="@color/colorPrimary"
         android:id="@+id/mainContent"
         android:scrollbars="none"
         android:layout_height="match_parent">
@@ -220,8 +222,6 @@
                 android:textColor="@android:color/white"
                 android:layout_height="51dp"/>
         </androidx.cardview.widget.CardView>
-
-
     </LinearLayout>
     </ScrollView>
 

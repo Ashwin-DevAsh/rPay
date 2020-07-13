@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.UiContext.colors
 import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
@@ -36,41 +37,36 @@ class AllTransactions : AppCompatActivity() {
 
         context = this
 
-        back.setOnClickListener{
-            super.onBackPressed()
-        }
 
         val transactionObserver = Observer<ArrayList<Transaction>> {updatedList->
          activityAdapter.updateList(updatedList)
         }
 
         StateContext.model.allTranactions.observe(this,transactionObserver)
-
         activityAdapter =AllActivityAdapter(StateContext.model.allTranactions.value!!,context)
-
-
         Handler().postDelayed({
             activity.layoutManager = LinearLayoutManager(context)
             activity.adapter = activityAdapter
             mainContent.visibility=View.VISIBLE
         },700)
-
-
-
-
-
     }
 
 }
 
 class AllActivityAdapter(private var items : ArrayList<Transaction>, val context: Context) : RecyclerView.Adapter<AllActivityViewHolder>() {
 
+
+
+    var colorIndex = 0
+
+    var colorMap = HashMap<String,String>()
+
     override fun getItemCount(): Int {
         return items.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllActivityViewHolder {
-        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_listtile, parent, false))
+        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_listtile_transaction, parent, false))
     }
 
     override fun onBindViewHolder(holder: AllActivityViewHolder, position: Int) {
@@ -83,12 +79,24 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
             holder.badge.textSize = 18F
         }
 
+        try {
+            holder.badge.setBackgroundColor(Color.parseColor(colorMap[items[position].number]))
+        }catch (e:Throwable){
+            holder.badge.setBackgroundColor(Color.parseColor(colors[colorIndex]))
+            colorMap[items[position].number] = colors[colorIndex]
+            colorIndex = (colorIndex+1)%colors.size
+        }
+
+
+
         if(items[position].type=="Received"){
-            holder.additionalInfo.setTextColor(Color.GREEN)
-            holder.additionalInfo.text= "+${items[position].amount}"
+            holder.additionalInfo.setTextColor(Color.parseColor("#1b5e20"))
+            holder.additionalInfo.setBackgroundColor(Color.parseColor("#151b5e20"))
+            holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"
         }else if(items[position].type=="Send"){
-            holder.additionalInfo.setTextColor(Color.RED)
-            holder.additionalInfo.text= "-${items[position].amount}"
+            holder.additionalInfo.setTextColor(Color.parseColor("#d50000"))
+            holder.additionalInfo.setBackgroundColor(Color.parseColor("#15d50000"))
+            holder.additionalInfo.text= "-${items[position].amount} ${TransactionContext.currency}"
         }
     }
 

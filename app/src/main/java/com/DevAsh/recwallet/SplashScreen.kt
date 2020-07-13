@@ -13,6 +13,7 @@ import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.Migrations
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Home.HomePage
+import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
 import com.DevAsh.recwallet.Registration.Otp

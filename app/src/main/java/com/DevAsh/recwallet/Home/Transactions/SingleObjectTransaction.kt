@@ -2,6 +2,7 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -9,14 +10,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.QuickContactBadge
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.*
-import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
@@ -24,18 +23,15 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
-import com.androidnetworking.interfaces.JSONObjectRequestListener
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import org.json.JSONArray
-import org.json.JSONObject
-import java.lang.Exception
-import java.text.DecimalFormat
 
 class SingleObjectTransaction : AppCompatActivity() {
 
     var allActivityAdapter: AllActivityAdapter?=null
     private lateinit var badge: TextView
     lateinit var context: Context
+
     var transaction = ArrayList<Transaction>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +41,9 @@ class SingleObjectTransaction : AppCompatActivity() {
         context=this
 
         badge = findViewById(R.id.badge)
+
+
+        avatarContainer.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
 
 
 
@@ -119,7 +118,9 @@ class SingleObjectTransaction : AppCompatActivity() {
                                         transactionObjectArray.getJSONObject(i)["To"].toString()
                                     else transactionObjectArray.getJSONObject(i)["From"].toString(),
                                     amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
-                                    time = SplashScreen.dateToString(
+                                    time =(if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                        "Paid  "
+                                    else "Received  ")+ SplashScreen.dateToString(
                                         transactionObjectArray.getJSONObject(
                                             i
                                         )["TransactionTime"].toString()
@@ -166,11 +167,11 @@ class AllActivityAdapter(private val items : ArrayList<Transaction>, val context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllActivityViewHolder {
-        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_transaction, parent, false))
+        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_transactions, parent, false))
     }
 
     override fun onBindViewHolder(holder: AllActivityViewHolder, position: Int) {
-        holder.amount.text = "₿ ${items[position].amount}"
+        holder.amount.text = "${items[position].amount}"
         holder.time.text = items[position].time
         if(items[position].type=="Received"){
             holder.container.gravity = Gravity.START
