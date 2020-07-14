@@ -89,7 +89,11 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
 
 
 
-        if(items[position].type=="Received"){
+        if(items[position].name=="Load Money"){
+            holder.additionalInfo.setTextColor(Color.parseColor("#ff9100"))
+            holder.additionalInfo.setBackgroundColor(Color.parseColor("#25ff9100"))
+            holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"
+        }else if(items[position].type=="Received"){
             holder.additionalInfo.setTextColor(Color.parseColor("#1b5e20"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#151b5e20"))
             holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"

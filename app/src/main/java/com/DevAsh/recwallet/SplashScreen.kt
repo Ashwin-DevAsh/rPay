@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.Migrations
 import com.DevAsh.recwallet.Database.RealmHelper
@@ -30,6 +31,8 @@ import java.security.SecureRandom
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SplashScreen : AppCompatActivity() {

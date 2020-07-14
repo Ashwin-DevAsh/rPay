@@ -1,13 +1,17 @@
 package com.DevAsh.recwallet.Registration
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.RegistrationContext
-import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -27,9 +31,17 @@ class Login : AppCompatActivity() {
 
         context = this
 
+        cancel.setOnClickListener{
+            onBackPressed()
+        }
+
         sendOtp.setOnClickListener{view->
 
            if(phoneNumber.text.toString().length==10){
+               hideKeyboardFrom(context,view)
+               Handler().postDelayed({
+                   mainContent.visibility= View.GONE
+               },500)
                RegistrationContext.phoneNumber = phoneNumber.text.toString()
                AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getOtp?number=${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
                    .setPriority(Priority.IMMEDIATE)
@@ -52,6 +64,19 @@ class Login : AppCompatActivity() {
 
         }
 
+    }
+
+    override fun onBackPressed() {
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(startMain)
+    }
+
+    private fun hideKeyboardFrom(context: Context, view: View) {
+        val imm: InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
 

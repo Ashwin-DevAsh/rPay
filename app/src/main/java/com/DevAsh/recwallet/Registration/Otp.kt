@@ -57,6 +57,11 @@ class Otp : AppCompatActivity() {
             finish()
         }
 
+        cancel.setOnClickListener{
+            startActivity(Intent(context, Login::class.java))
+            finish()
+        }
+
         verify.setOnClickListener { view ->
             if (otp.text.toString().length == 4) {
                 hideKeyboardFrom(context,view)
