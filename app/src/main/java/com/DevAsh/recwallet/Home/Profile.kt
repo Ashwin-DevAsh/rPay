@@ -3,23 +3,25 @@ package com.DevAsh.recwallet.Home
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.zxing.WriterException
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_profile.*
 import org.json.JSONObject
@@ -40,31 +42,25 @@ class Profile : AppCompatActivity() {
         email.text =DetailsContext.email
         phone.text =  "+"+DetailsContext.phoneNumber
 
-        val qrData = JSONObject(mapOf(
-            "name" to DetailsContext.name,
-            "number" to DetailsContext.phoneNumber
-        ))
+
+        val jwt = Jwts.builder().claim("name", DetailsContext.name).claim("number", DetailsContext.phoneNumber)
+            .signWith(SignatureAlgorithm.HS256, "DevAsh")
+            .compact()
+
+
+
 
         val qrgEncoder =
-            QRGEncoder(qrData.toString(), null, QRGContents.Type.TEXT, 1000)
+            QRGEncoder(jwt.toString(), null, QRGContents.Type.TEXT, 1000)
         qrgEncoder.colorWhite = getColor(R.color.colorPrimary)
         try {
              bitmap = qrgEncoder.bitmap
-            qr.setImageBitmap(bitmap)
+             qr.setImageBitmap(bitmap)
         } catch (e: WriterException) {
 
         }
 
-        Handler().postDelayed({
-            bitmapPath = MediaStore.Images.Media.insertImage(contentResolver, bitmap,"title", null)
-            bitmapUri = Uri.parse(bitmapPath)
-        },0)
-
-
-
         share.setOnClickListener{
-              println(qrData.toString())
-
             val permissions = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             if(packageManager.checkPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,packageName)== PackageManager.PERMISSION_GRANTED ){
                 Handler().postDelayed({
@@ -114,8 +110,12 @@ class Profile : AppCompatActivity() {
     }
 
     private fun share(){
-
-
+        val view = findViewById<View>(R.id.qrContent)
+        val bitmap2 = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap2)
+        view.draw(canvas)
+        bitmapPath = MediaStore.Images.Media.insertImage(contentResolver, bitmap2,"title", null)
+        bitmapUri = Uri.parse(bitmapPath)
         val intent = Intent(Intent.ACTION_SEND)
         intent.putExtra(Intent.EXTRA_STREAM, bitmapUri )
         intent.putExtra(Intent.EXTRA_TEXT,"Hey! this is R-Pay QrCode")

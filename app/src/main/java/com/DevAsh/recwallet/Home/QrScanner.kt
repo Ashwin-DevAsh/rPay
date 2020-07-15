@@ -13,6 +13,7 @@ import com.DevAsh.recwallet.Home.Transactions.Contacts
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.R
 import com.budiyev.android.codescanner.*
+import io.jsonwebtoken.Jwts
 import org.json.JSONObject
 
 
@@ -28,7 +29,7 @@ class QrScanner : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         val scannerView = findViewById<CodeScannerView>(R.id.scanner_view)
@@ -45,18 +46,19 @@ class QrScanner : AppCompatActivity() {
         codeScanner.decodeCallback = DecodeCallback {
             runOnUiThread {
                 try {
-                    val people = JSONObject(it.text)
-                    TransactionContext.selectedUser= Contacts(people.get("name").toString(),people.get("number").toString())
+
+                    val people = Jwts.parser().setSigningKey("DevAsh").parseClaimsJws(it.text).body
+                    TransactionContext.selectedUser= Contacts(people["name"].toString(), people["number"].toString())
                     startActivity(
                         Intent(context, SingleObjectTransaction::class.java)
                     )
                     finish()
                 }catch (e:Throwable){
+                    println(e)
                     context.onBackPressed()
 
                 }
 
-                Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
             }
         }
         codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS

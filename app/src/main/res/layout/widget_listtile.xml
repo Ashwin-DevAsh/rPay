@@ -22,7 +22,7 @@
             android:layout_height="70dp">
             <androidx.cardview.widget.CardView
                 android:layout_width="45dp"
-                app:cardCornerRadius="50dp"
+                app:cardCornerRadius="22.5dp"
                 app:cardElevation="0dp"
                 android:layout_height="45dp">
                 <RelativeLayout

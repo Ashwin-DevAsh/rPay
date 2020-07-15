@@ -40,6 +40,14 @@ open class Migrations : RealmMigration {
             checkPoint.addField("checkPoint",Integer::class.java)
         }
 
+        else if(oldVersion==7L){
+            val checkPoint = schema.create("RecentContacts")
+            checkPoint.addField("name",String::class.java)
+            checkPoint.addField("number",String::class.java)
+            checkPoint.addField("freq",Integer::class.java)
+
+        }
+
     }
 
     override fun hashCode(): Int {

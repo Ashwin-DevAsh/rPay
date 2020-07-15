@@ -91,7 +91,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_weight="85"
-                android:padding="15dp"
+                android:padding="17dp"
                 android:background="@android:color/transparent"
                 android:layout_height="match_parent"
                 android:src="@drawable/person" />
@@ -117,7 +117,7 @@
                 android:layout_height="50dp"/>
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_weight="85"
+                android:layout_weight="87"
                 android:padding="15dp"
                 android:background="@android:color/transparent"
                 android:layout_height="match_parent"
@@ -145,7 +145,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_weight="85"
-                android:padding="11dp"
+                android:padding="13dp"
                 android:background="@android:color/transparent"
                 android:layout_height="match_parent"
                 android:src="@drawable/mail" />
@@ -171,7 +171,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_weight="85"
-                android:padding="10dp"
+                android:padding="12dp"
                 android:paddingRight="2dp"
                 android:background="@android:color/transparent"
                 android:layout_height="match_parent"
@@ -199,7 +199,8 @@
                 android:layout_width="match_parent"
                 android:layout_weight="85"
                 android:paddingRight="2dp"
-                android:padding="10dp"
+                android:padding="12dp"
+
                 android:background="@android:color/transparent"
                 android:layout_height="match_parent"
                 android:src="@drawable/lock" />
@@ -207,7 +208,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="51dp"
-            app:cardCornerRadius="50dp"
+            app:cardCornerRadius="25.5dp"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="30dp">
             <TextView

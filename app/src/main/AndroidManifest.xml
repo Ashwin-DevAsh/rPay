@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,10 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Home.Profile"></activity>
+        <activity android:name=".Home.Transactions.Successful"></activity>
+        <activity android:name=".Home.Profile" />
         <activity android:name=".Home.QrScanner" />
         <activity android:name=".Home.Transactions.AddingOptions" />
-        <activity android:name=".Home.Transactions.AddMoney" android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".Home.Transactions.AddMoney"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver android:name=".Sync.RebootReceiver">
             <intent-filter>

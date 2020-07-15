@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -123,5 +123,25 @@
     </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:id="@+id/loadingScreen"
+        android:background="@color/colorPrimary"
+        android:layout_height="match_parent">
+        <com.agrawalsuneet.dotsloader.loaders.TashieLoader
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:tashieloader_animDelay="100"
+            app:tashieloader_animDur="500"
+            app:tashieloader_dotsColor="@color/highlightButton"
+            app:tashieloader_dotsDist="5dp"
+            app:tashieloader_dotsRadius="10dp"
+            app:tashieloader_interpolator="@android:anim/accelerate_interpolator"
+            app:tashieloader_noOfDots="4" />
+    </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</RelativeLayout>

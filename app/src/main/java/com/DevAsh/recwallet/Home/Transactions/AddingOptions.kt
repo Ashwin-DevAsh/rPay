@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -40,20 +41,28 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         amount = intent.getStringExtra("amount")!!
 
         upi.setOnClickListener{
+            loadingScreen.visibility = View.VISIBLE
             payUsingUpi(amount,"9840176511@ybl","Barath","R-pay")
         }
 
         razorpay.setOnClickListener{v->
-            startPayment(v)
+            loadingScreen.visibility = View.VISIBLE
+            Handler().postDelayed({
+                startPayment()
+            },1000)
         }
     }
 
     override fun onPaymentError(p0: Int, p1: String?) {
+        loadingScreen.visibility = View.GONE
         Toast.makeText(context,"",Toast.LENGTH_LONG).show()
     }
 
     override fun onPaymentSuccess(p0: String?) {
         val amount = this.amount
+        Handler().postDelayed({
+            loadingScreen.visibility = View.VISIBLE
+        },500)
         AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/addMoney")
             .setContentType("application/json; charset=utf-8")
             .addHeaders("jwtToken", DetailsContext.token)
@@ -68,6 +77,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             .build()
             .getAsJSONObject(object : JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject?) {
+                    loadingScreen.visibility = View.VISIBLE
                     if(response?.get("message")=="done"){
                         AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                             .addHeaders("jwtToken", DetailsContext.token)
@@ -106,6 +116,10 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                         )
                                     }
                                     StateContext.initAllTransaction(transactions)
+                                    val intent = Intent(context,Successful::class.java)
+                                    intent.putExtra("type","addMoney")
+                                    intent.putExtra("amount",amount)
+                                    startActivity(intent)
                                     context.finish()
                                 }
                                 override fun onError(anError: ANError?) {
@@ -118,6 +132,12 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
 
                 }
             })
+    }
+
+
+    override fun onResume() {
+        loadingScreen.visibility = View.GONE
+        super.onResume()
     }
 
     private fun payUsingUpi(
@@ -135,9 +155,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             .build()
         val upiPayIntent = Intent(Intent.ACTION_VIEW)
         upiPayIntent.data = uri
-        // will always show a dialog to user to choose an app
         val chooser = Intent.createChooser(upiPayIntent, "Pay with")
-        // check if intent resolves
         if (null != chooser.resolveActivity(packageManager)) {
             startActivityForResult(chooser, 1)
         } else {
@@ -149,7 +167,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         }
     }
 
-    private fun startPayment(v: View) {
+    private fun startPayment() {
         val activity: Activity = this
         val co = Checkout()
         co.setKeyID("rzp_test_txenFuJupWfNO6")
@@ -227,10 +245,12 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                     onPaymentSuccess(approvalRefNo)
                 }
                 "Payment cancelled by user." == paymentCancel -> {
+                    loadingScreen.visibility = View.GONE
                     Toast.makeText(this, "Payment cancelled by user.", Toast.LENGTH_SHORT)
                         .show()
                 }
                 else -> {
+                    loadingScreen.visibility = View.GONE
                     Toast.makeText(
                         this,
                         "Transaction failed.Please try again",

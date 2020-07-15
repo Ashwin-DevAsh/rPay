@@ -5,8 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +15,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
-import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +29,7 @@ import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketService
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.synnapps.carouselview.CarouselView
 import com.synnapps.carouselview.ImageListener
 import kotlinx.android.synthetic.main.activity_home_page.*
@@ -94,7 +91,7 @@ class HomePage : AppCompatActivity() {
             Merchant("Fine Payment","1234567890",R.drawable.fine),
             Merchant("zerox","1234567890",R.drawable.xrox),
             Merchant("More","1234567890",R.drawable.more)
-            ),context)
+            ),context,BottomSheetObject(context))
 
         recent.adapter = PeopleViewAdapter(arrayListOf(
             Merchant("Hut Cafe","1234567890"),
@@ -153,6 +150,10 @@ class HomePage : AppCompatActivity() {
             startActivity(Intent(context,Profile::class.java))
         }
 
+        pay.setOnClickListener{
+            startActivity(Intent(context, SendMoney::class.java))
+        }
+
         scan.setOnClickListener{
             val permissions = arrayOf(android.Manifest.permission.CAMERA)
             if(packageManager.checkPermission(android.Manifest.permission.CAMERA,context.packageName)==PackageManager.PERMISSION_GRANTED ){
@@ -182,17 +183,62 @@ class HomePage : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(startMain)
+    }
+
+    class BottomSheetObject(val context:Context):BottomSheet{
+        val mBottomSheetDialog = BottomSheetDialog(context)
+        val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
+        init {
+            val merchantContainer = sheetView.findViewById<RecyclerView>(R.id.merchantContainer)
+            merchantContainer.layoutManager = GridLayoutManager(context, 3)
+            merchantContainer.adapter = MerchantViewAdapter(arrayListOf(
+                Merchant("Hut Cafe","1234567890",R.drawable.hut_cafe),
+                Merchant("Tamil cafe","1234567890",R.drawable.tamil_cafe),
+                Merchant("Rec Mart","1234567890",R.drawable.rec_mart),
+                Merchant("A2Z","1234567890",R.drawable.ug),
+                Merchant("CCD","1234567890",R.drawable.ccd),
+                Merchant("Rec bill","1234567890",R.drawable.rec_bill),
+                Merchant("Fine Payment","1234567890",R.drawable.fine),
+                Merchant("zerox","1234567890",R.drawable.xrox),
+                Merchant("Hut Cafe","1234567890",R.drawable.hut_cafe),
+                Merchant("Tamil cafe","1234567890",R.drawable.tamil_cafe),
+                Merchant("Rec Mart","1234567890",R.drawable.rec_mart),
+                Merchant("A2Z","1234567890",R.drawable.ug),
+                Merchant("CCD","1234567890",R.drawable.ccd),
+                Merchant("Rec bill","1234567890",R.drawable.rec_bill),
+                Merchant("Fine Payment","1234567890",R.drawable.fine),
+                Merchant("zerox","1234567890",R.drawable.xrox)
+            ),context,this)
+            mBottomSheetDialog.setContentView(sheetView)
+        }
+        override fun openBottomSheet(){
+            mBottomSheetDialog.show()
+        }
+
+        override fun closeBottomSheet() {
+            mBottomSheetDialog.cancel()
+        }
+    }
+
+
+
+
 
 }
 
-class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: Context) : RecyclerView.Adapter<MerchantViewHolder>() {
+class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<MerchantViewHolder>() {
 
     override fun getItemCount(): Int {
         return items.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MerchantViewHolder {
-        return MerchantViewHolder(LayoutInflater.from(context).inflate(R.layout.merchant_avatar, parent, false),context)
+        return MerchantViewHolder(LayoutInflater.from(context).inflate(R.layout.merchant_avatar, parent, false),context,openBottomSheetCallback)
     }
 
     override fun onBindViewHolder(holder: MerchantViewHolder, position: Int) {
@@ -204,23 +250,25 @@ class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: 
         }
 
     }
-
     fun updateList(updatedList : ArrayList<Merchant>){
         this.items = updatedList
         notifyDataSetChanged()
     }
 }
 
-class MerchantViewHolder (view: View, context: Context) : RecyclerView.ViewHolder(view) {
+class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: BottomSheet?) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val badge = view.findViewById(R.id.avatar) as ImageView
     lateinit var merchant:Merchant
 
+
     init {
+
         view.setOnClickListener{
             if(merchant.name=="More"){
-                context.startActivity(Intent(context,AddMoney::class.java))
+                  bottomSheetCallback?.openBottomSheet()
             }else{
+                bottomSheetCallback?.closeBottomSheet()
                 TransactionContext.selectedUser= Contacts(merchant.name,merchant.phoneNumber)
                 TransactionContext.avatarColor = "#035aa6"
                 context.startActivity(
@@ -283,4 +331,9 @@ class PeopleViewHolder (view: View, context: Context) : RecyclerView.ViewHolder(
                 )
         }
     }
+}
+
+interface BottomSheet{
+    fun openBottomSheet()
+    fun closeBottomSheet()
 }

@@ -31,7 +31,6 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_below="@id/appBar"
         android:fillViewport="true"
         android:visibility="invisible"
         android:background="@color/colorPrimaryDark"
