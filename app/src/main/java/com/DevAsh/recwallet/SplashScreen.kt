@@ -4,34 +4,25 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Database.Credentials
-import com.DevAsh.recwallet.Database.Migrations
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Home.HomePage
-import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
-import com.DevAsh.recwallet.Registration.Otp
-import com.DevAsh.recwallet.Registration.Register
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import org.json.JSONObject
-import java.security.SecureRandom
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -54,6 +45,9 @@ class SplashScreen : AppCompatActivity() {
 
         if(credentials?.isLogin==true){
             Handler().postDelayed({
+                StateContext.initRecentContact()
+            },0)
+            Handler().postDelayed({
                     DetailsContext.setData(
                         credentials!!.name,
                         credentials.phoneNumber,
@@ -61,14 +55,6 @@ class SplashScreen : AppCompatActivity() {
                         credentials.password,
                         credentials.token
                     )
-                    println("token = "+credentials.token)
-
-//                    //fake start
-//                    StateContext.addFakeTransactions()
-//                    startActivity(Intent(context, HomePage::class.java))
-//                    finish()
-//                    //fake start
-
                     AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                         .addHeaders("jwtToken",DetailsContext.token)
                         .setPriority(Priority.IMMEDIATE)

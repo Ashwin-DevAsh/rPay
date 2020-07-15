@@ -8,12 +8,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.TransactionContext.needToPay
+import com.DevAsh.recwallet.Database.RealmHelper
+import com.DevAsh.recwallet.Database.RecentContacts
 import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
@@ -22,8 +26,10 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
+import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
+import kotlinx.android.synthetic.main.activity_home_page.*
 import kotlinx.android.synthetic.main.activity_password_prompt.*
 import kotlinx.android.synthetic.main.activity_transaction_status.*
 import org.json.JSONObject
@@ -32,13 +38,12 @@ import java.text.DecimalFormat
 
 class PasswordPrompt : AppCompatActivity() {
 
-    lateinit var context: Context
+     var context: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password_prompt)
-
-        context=this
+        RealmHelper.init(context)
 
         back.setOnClickListener{
             super.onBackPressed()
@@ -143,8 +148,32 @@ class PasswordPrompt : AppCompatActivity() {
         val intent = Intent(this,Successful::class.java)
         intent.putExtra("type","transaction")
         intent.putExtra("amount",TransactionContext.amount)
+        Handler().postDelayed({
+            addRecent()
+        },0)
         startActivity(intent)
         finish()
+    }
+
+    private fun addRecent(){
+        StateContext.addRecentContact(Merchant(TransactionContext.selectedUser?.name!!,
+            TransactionContext.selectedUser?.number!!,null))
+        Realm.getDefaultInstance().executeTransaction{realm->
+            var isExist = realm.where(RecentContacts::class.java)
+                .contains("number", TransactionContext.selectedUser?.number!!).findFirst()
+            if(isExist==null){
+                val recentContacts=RecentContacts(
+                    TransactionContext.selectedUser?.name,
+                    TransactionContext.selectedUser?.number,
+                    0
+                )
+                realm.insertOrUpdate(recentContacts)
+                Toast.makeText(this,"done",Toast.LENGTH_LONG).show()
+            }else{
+                isExist.freq=isExist.freq+1
+            }
+        }
+
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

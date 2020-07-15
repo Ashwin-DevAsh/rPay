@@ -45,6 +45,7 @@ class HomePage : AppCompatActivity() {
         R.drawable.banner_2
     )
 
+    lateinit var peopleViewAdapter: PeopleViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,18 +93,8 @@ class HomePage : AppCompatActivity() {
             Merchant("zerox","1234567890",R.drawable.xrox),
             Merchant("More","1234567890",R.drawable.more)
             ),context,BottomSheetObject(context))
-
-        recent.adapter = PeopleViewAdapter(arrayListOf(
-            Merchant("Hut Cafe","1234567890"),
-            Merchant("Tamil cafe","1234567890"),
-            Merchant("Rec Mart","1234567890"),
-            Merchant("UG","1234567890"),
-            Merchant("CCD","1234567890"),
-            Merchant("Rec bill","1234567890"),
-            Merchant("Fine Payment","1234567890"),
-            Merchant("Exrox","1234567890"),
-            Merchant("More","1234567890",R.drawable.more)
-        ),context)
+        peopleViewAdapter = PeopleViewAdapter(arrayListOf<Merchant>(),this)
+        recent.adapter = peopleViewAdapter
 
         val imageListener =
             ImageListener { position, imageView ->
@@ -123,8 +114,22 @@ class HomePage : AppCompatActivity() {
              balance.text = currentBalance
         }
 
+        val recentContactsObserver = Observer<ArrayList<Merchant>> {recentContacts->
+            println("Updating...")
+            var newList = try{recentContacts.subList(0,9)}catch (e:Throwable){recentContacts}
+            peopleViewAdapter.updateList(ArrayList(newList))
+            if(recentContacts.size!=0){
+                info.visibility = View.GONE
+                recent.visibility = View.VISIBLE
+            }else{
+                info.visibility = View.VISIBLE
+                recent.visibility = View.GONE
+            }
+        }
+
         greetings.text=("Hii, "+DetailsContext.name)
         StateContext.model.currentBalance.observe(this,balanceObserver)
+        StateContext.model.recentContacts.observe(this,recentContactsObserver)
 
 
         sendMoney.setOnClickListener {

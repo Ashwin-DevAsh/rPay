@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.UiContext.colors
-import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_all_transactions.*
@@ -42,8 +40,8 @@ class AllTransactions : AppCompatActivity() {
          activityAdapter.updateList(updatedList)
         }
 
-        StateContext.model.allTranactions.observe(this,transactionObserver)
-        activityAdapter =AllActivityAdapter(StateContext.model.allTranactions.value!!,context)
+        StateContext.model.allTransactions.observe(this,transactionObserver)
+        activityAdapter =AllActivityAdapter(StateContext.model.allTransactions.value!!,context)
         Handler().postDelayed({
             activity.layoutManager = LinearLayoutManager(context)
             activity.adapter = activityAdapter

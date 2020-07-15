@@ -1,4 +1,4 @@
-package com.DevAsh.recwallet.Context;
+package com.DevAsh.recwallet.Database;
 
 import io.realm.RealmObject;
 

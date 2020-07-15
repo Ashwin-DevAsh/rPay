@@ -55,7 +55,7 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         }
 
-        StateContext.model.allTranactions.observe(this,transactionObserver)
+        StateContext.model.allTransactions.observe(this,transactionObserver)
 
         badge.text = TransactionContext.selectedUser!!.name[0].toString()
 

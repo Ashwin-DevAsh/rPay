@@ -1,8 +1,10 @@
 package com.DevAsh.recwallet.Context
 
+import com.DevAsh.recwallet.Database.RecentContacts
 import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
+import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
-import org.json.JSONObject
+import io.realm.Realm
 
 object StateContext {
 
@@ -10,7 +12,7 @@ object StateContext {
     var currentBalance = 0
 
     init {
-        model.allTranactions.value = ArrayList()
+        model.allTransactions.value = ArrayList()
     }
 
     fun setBalanceToModel(amount: String){
@@ -18,11 +20,30 @@ object StateContext {
     }
 
     fun initAllTransaction(initList:ArrayList<Transaction>){
-        model.allTranactions.value = ArrayList(initList)
+        model.allTransactions.value = ArrayList(initList)
+    }
+
+    fun initRecentContact(){
+        val data=Realm.getDefaultInstance().where(RecentContacts::class.java).findAll()
+        var arrayList= ArrayList<Merchant>()
+        for(i in data){
+           arrayList.add(0,Merchant(i.name,i.number,null))
+        }
+        model.recentContacts.value=arrayList
+    }
+    fun addRecentContact(contact: Merchant){
+        println("Added")
+        val temp = model.recentContacts.value
+        temp?.add(0,contact)
+        model.recentContacts.value=temp
     }
 
     fun addTransaction(transaction: Transaction){
-        model.allTranactions.value?.add(0,transaction)
+        val temp = model.allTransactions.value
+        temp?.add(0,transaction)
+        model.allTransactions.value=temp
+
+
     }
 
     fun getBalance():String{
@@ -55,7 +76,7 @@ object StateContext {
                 Transaction("David", "+819885437880", "March 10 , 12:30 AM", "20,000", "Send")
             )
         )
-        model.allTranactions.value=transactions
+        model.allTransactions.value=transactions
     }
 
 }
