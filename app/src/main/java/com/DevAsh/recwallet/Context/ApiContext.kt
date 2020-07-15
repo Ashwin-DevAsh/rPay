@@ -5,4 +5,5 @@ object ApiContext {
     var registrationPort=":8000"
     var syncPort=":7000"
     var paymentPort=":10000"
+    var key="DevAsh9551574355"
 }

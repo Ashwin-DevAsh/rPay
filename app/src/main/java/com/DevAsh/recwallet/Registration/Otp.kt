@@ -110,6 +110,7 @@ class Otp : AppCompatActivity() {
                                                     .getAsJSONObject(object: JSONObjectRequestListener {
                                                         override fun onResponse(response: JSONObject?) {
                                                             val balance = response?.getInt("Balance")
+                                                            StateContext.currentBalance = balance!!
                                                             val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                                             StateContext.setBalanceToModel(formatter.format(balance))
                                                             val transactionObjectArray = response?.getJSONArray("Transactions")
@@ -135,6 +136,7 @@ class Otp : AppCompatActivity() {
                                                                     )
                                                                 )
                                                             }
+
                                                             StateContext.initAllTransaction(transactions)
                                                             startActivity(Intent(context, HomePage::class.java))
                                                             finish()

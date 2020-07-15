@@ -67,11 +67,11 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             .setContentType("application/json; charset=utf-8")
             .addHeaders("jwtToken", DetailsContext.token)
             .addApplicationJsonBody(object{
-                var from = ""
+                var from = p0
                 var to = DetailsContext.phoneNumber
                 var amount = amount
                 var toName = DetailsContext.name
-                var fromName = "Load Money"
+                var fromName = "Added to wallet"
             })
             .setPriority(Priority.IMMEDIATE)
             .build()

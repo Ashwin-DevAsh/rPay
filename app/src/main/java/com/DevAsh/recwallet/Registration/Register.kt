@@ -17,6 +17,7 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Helper.SnackBarHelper
@@ -30,9 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_otp.*
 import kotlinx.android.synthetic.main.activity_register.*
-import kotlinx.android.synthetic.main.activity_register.mainContent
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -44,14 +43,15 @@ class Register : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Realm.init(this)
         super.onCreate(savedInstanceState)
-
         AndroidNetworking.initialize(applicationContext)
         AndroidNetworking.setParserFactory(JacksonParserFactory())
-
         setContentView(R.layout.activity_register)
         context=this
 
         phoneNumber.setText("+${RegistrationContext.countryCode}${RegistrationContext.phoneNumber}")
+        cancel.setOnClickListener{
+           onBackPressed()
+        }
 
         done.setOnClickListener{view->
             val phoneNumebr = RegistrationContext.countryCode+RegistrationContext.phoneNumber
@@ -62,6 +62,7 @@ class Register : AppCompatActivity() {
 
             if( phoneNumebr.length<10
                 || name.isEmpty()
+                || email.length<8
                 || !email.contains("@")
                 || !email.contains(".")
                 || password.isEmpty()
@@ -76,14 +77,13 @@ class Register : AppCompatActivity() {
                 hideKeyboardFrom(context,view)
                 Handler().postDelayed({
                     mainContent.visibility = INVISIBLE
-
                 },300)
 
                     AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
                         .addBodyParameter("name",name)
                         .addBodyParameter("email",email)
                         .addBodyParameter("number",RegistrationContext.countryCode+RegistrationContext.phoneNumber)
-                        .addBodyParameter("password",password)
+                        .addBodyParameter("password",PasswordHashing.encryptMsg(password))
                         .addBodyParameter("fcmToken","fcmToken")
                         .setPriority(Priority.IMMEDIATE)
                         .build()
@@ -92,13 +92,13 @@ class Register : AppCompatActivity() {
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)
                                     val token =  response!!.getJSONObject(0)["token"].toString()
-                                    val credentials = Credentials(name,phoneNumebr,email,password,token,true)
+                                    val credentials = Credentials(name,phoneNumebr,email,  PasswordHashing.encryptMsg(password),token,true)
                                     realm.insert(credentials)
                                     DetailsContext.setData(
                                         credentials.name,
                                         credentials.phoneNumber,
                                         credentials.email,
-                                        credentials.password,
+                                        PasswordHashing.encryptMsg(credentials.password),
                                         credentials.token
                                     )
 
@@ -134,6 +134,13 @@ class Register : AppCompatActivity() {
                     })
             }
         }
+    }
+
+    override fun onBackPressed() {
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(startMain)
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

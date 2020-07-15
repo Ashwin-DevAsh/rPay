@@ -17,7 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Home.Transactions.Successful"></activity>
+        <activity
+            android:windowSoftInputMode="adjustResize"
+            android:name=".Home.ChangePassword">
+
+        </activity>
+        <activity android:name=".Home.Transactions.Successful" />
         <activity android:name=".Home.Profile" />
         <activity android:name=".Home.QrScanner" />
         <activity android:name=".Home.Transactions.AddingOptions" />

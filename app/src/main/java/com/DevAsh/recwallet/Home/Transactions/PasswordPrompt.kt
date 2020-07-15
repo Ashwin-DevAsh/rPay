@@ -16,6 +16,7 @@ import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.TransactionContext.needToPay
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Database.RecentContacts
+import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
@@ -51,7 +52,8 @@ class PasswordPrompt : AppCompatActivity() {
 
         done.setOnClickListener{v->
 
-            if(DetailsContext.password==password.text.toString()){
+
+            if(PasswordHashing.decryptMsg(DetailsContext.password!!)==password.text.toString()){
                 needToPay = true
                 hideKeyboardFrom(context,v)
                 Handler().postDelayed({
@@ -156,22 +158,24 @@ class PasswordPrompt : AppCompatActivity() {
     }
 
     private fun addRecent(){
-        StateContext.addRecentContact(Merchant(TransactionContext.selectedUser?.name!!,
-            TransactionContext.selectedUser?.number!!,null))
+
         Realm.getDefaultInstance().executeTransaction{realm->
-            var isExist = realm.where(RecentContacts::class.java)
+            var freq = 0
+            val isExist = realm.where(RecentContacts::class.java)
                 .contains("number", TransactionContext.selectedUser?.number!!).findFirst()
             if(isExist==null){
-                val recentContacts=RecentContacts(
-                    TransactionContext.selectedUser?.name,
-                    TransactionContext.selectedUser?.number,
-                    0
-                )
-                realm.insertOrUpdate(recentContacts)
-                Toast.makeText(this,"done",Toast.LENGTH_LONG).show()
+                StateContext.addRecentContact(Merchant(TransactionContext.selectedUser?.name!!,
+                    TransactionContext.selectedUser?.number!!,null))
             }else{
-                isExist.freq=isExist.freq+1
+                freq = isExist.freq+1
+                isExist.deleteFromRealm()
             }
+            val recentContacts=RecentContacts(
+                TransactionContext.selectedUser?.name,
+                TransactionContext.selectedUser?.number,
+                freq
+            )
+            realm.insertOrUpdate(recentContacts)
         }
 
     }

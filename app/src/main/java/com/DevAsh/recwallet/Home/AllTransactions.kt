@@ -87,10 +87,15 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
 
 
 
-        if(items[position].name=="Load Money"){
+        if(items[position].name=="Added to wallet"){
+            holder.badge.text = "RC"
+            holder.badge.textSize = 14F
             holder.additionalInfo.setTextColor(Color.parseColor("#ff9100"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#25ff9100"))
             holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"
+            holder.badge.setBackgroundColor(context.getColor(R.color.highlightButton))
+
+
         }else if(items[position].type=="Received"){
             holder.additionalInfo.setTextColor(Color.parseColor("#1b5e20"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#151b5e20"))

@@ -37,7 +37,7 @@ class AmountPrompt : AppCompatActivity() {
                 SnackBarHelper.showError(v,"Invalid Credentials")
                 return@setOnClickListener
             }
-            if(TransactionContext.amount!!.toInt()>=StateContext.currentBalance){
+            if(TransactionContext.amount!!.toInt()>StateContext.currentBalance){
                 SnackBarHelper.showError(v,"Insufficient Amount")
                 return@setOnClickListener
             }

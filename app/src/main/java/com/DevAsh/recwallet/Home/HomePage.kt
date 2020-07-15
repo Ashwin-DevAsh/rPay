@@ -22,6 +22,7 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.UiContext.colors
+import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.Contacts
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
@@ -51,6 +52,11 @@ class HomePage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
+       val message =  PasswordHashing.encryptMsg("12345678")
+
+
+
+
         merchantHolder.layoutManager = GridLayoutManager(context, 3)
         recent.layoutManager = GridLayoutManager(context, 3)
 
@@ -70,12 +76,12 @@ class HomePage : AppCompatActivity() {
             if (scrollY >500) {
                 if(hiddenPanel.visibility==View.VISIBLE){
                     hiddenPanel.startAnimation(bottomDown)
-                    hiddenPanel.visibility=View.INVISIBLE
+                    hiddenPanel.visibility=View.GONE
                 }
 
             }
             if(scrollY < 500){
-                if(hiddenPanel.visibility==View.INVISIBLE){
+                if(hiddenPanel.visibility==View.GONE){
                     hiddenPanel.visibility=View.VISIBLE
                     hiddenPanel.startAnimation(bottomUp)
                 }
@@ -92,8 +98,8 @@ class HomePage : AppCompatActivity() {
             Merchant("Fine Payment","1234567890",R.drawable.fine),
             Merchant("zerox","1234567890",R.drawable.xrox),
             Merchant("More","1234567890",R.drawable.more)
-            ),context,BottomSheetObject(context))
-        peopleViewAdapter = PeopleViewAdapter(arrayListOf<Merchant>(),this)
+            ),context,BottomSheetMerchant(context))
+        peopleViewAdapter = PeopleViewAdapter(arrayListOf(),this,BottomSheetPeople(context))
         recent.adapter = peopleViewAdapter
 
         val imageListener =
@@ -116,7 +122,13 @@ class HomePage : AppCompatActivity() {
 
         val recentContactsObserver = Observer<ArrayList<Merchant>> {recentContacts->
             println("Updating...")
-            var newList = try{recentContacts.subList(0,9)}catch (e:Throwable){recentContacts}
+            val newList = try{
+                ArrayList(recentContacts.subList(0,8))
+            }catch (e:Throwable){
+                ArrayList(recentContacts.subList(0,recentContacts.size))
+            }
+            newList.add(Merchant("More","",R.drawable.more))
+
             peopleViewAdapter.updateList(ArrayList(newList))
             if(recentContacts.size!=0){
                 info.visibility = View.GONE
@@ -140,6 +152,10 @@ class HomePage : AppCompatActivity() {
 //                ActivityCompat.requestPermissions(this, permissions,0)
 //            }
             startActivity(Intent(context, SendMoney::class.java))
+        }
+
+        balance.setOnClickListener{
+            startActivity(Intent(this,AllTransactions::class.java))
         }
 
         buyMoney.setOnClickListener{v->
@@ -195,7 +211,7 @@ class HomePage : AppCompatActivity() {
         startActivity(startMain)
     }
 
-    class BottomSheetObject(val context:Context):BottomSheet{
+    class BottomSheetMerchant(val context:Context):BottomSheet{
         val mBottomSheetDialog = BottomSheetDialog(context)
         val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
         init {
@@ -219,6 +235,26 @@ class HomePage : AppCompatActivity() {
                 Merchant("Fine Payment","1234567890",R.drawable.fine),
                 Merchant("zerox","1234567890",R.drawable.xrox)
             ),context,this)
+            mBottomSheetDialog.setContentView(sheetView)
+        }
+        override fun openBottomSheet(){
+            mBottomSheetDialog.show()
+        }
+
+        override fun closeBottomSheet() {
+            mBottomSheetDialog.cancel()
+        }
+    }
+
+    class BottomSheetPeople(val context:Context):BottomSheet{
+        val mBottomSheetDialog = BottomSheetDialog(context)
+        val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
+        init {
+            val peopleContainer = sheetView.findViewById<RecyclerView>(R.id.merchantContainer)
+            val title = sheetView.findViewById<TextView>(R.id.title)
+            title.text="Peoples"
+            peopleContainer.layoutManager = GridLayoutManager(context, 3)
+            peopleContainer.adapter = PeopleViewAdapter(StateContext.model.recentContacts.value!!,context,this)
             mBottomSheetDialog.setContentView(sheetView)
         }
         override fun openBottomSheet(){
@@ -287,7 +323,7 @@ class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: Botto
 
 
 
-class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Context) : RecyclerView.Adapter<PeopleViewHolder>() {
+class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<PeopleViewHolder>() {
 
 
     override fun getItemCount(): Int {
@@ -295,7 +331,7 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleViewHolder {
-        return PeopleViewHolder(LayoutInflater.from(context).inflate(R.layout.people_avatar, parent, false),context)
+        return PeopleViewHolder(LayoutInflater.from(context).inflate(R.layout.people_avatar, parent, false),context,openBottomSheetCallback)
     }
 
     override fun onBindViewHolder(holder: PeopleViewHolder, position: Int) {
@@ -307,6 +343,13 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
             holder.badge.text = items[position].name[0].toString()
             holder.badge.setBackgroundColor(Color.parseColor(colors[position%colors.size]))
             holder.color = colors[position%colors.size]
+            if(items[position].name=="More" ){
+                holder.avatar.visibility = View.VISIBLE
+                holder.badge.visibility=View.GONE
+            }else{
+                holder.avatar.visibility = View.GONE
+                holder.badge.visibility=View.VISIBLE
+            }
 
         if (items[position].name.startsWith("+")) {
                 holder.badge.text = items[position].name.subSequence(1, 3)
@@ -321,19 +364,30 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
     }
 }
 
-class PeopleViewHolder (view: View, context: Context) : RecyclerView.ViewHolder(view) {
+class PeopleViewHolder (view: View, context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
+    val avatar = view.findViewById(R.id.avatar) as ImageView
     lateinit var color: String
     lateinit var people: Merchant
 
     init {
         view.setOnClickListener{
+            if(people.name=="More"){
+                val imageView = ImageView(context)
+                imageView.setImageDrawable(context.getDrawable(R.drawable.more))
+                openBottomSheetCallback?.openBottomSheet()
+
+
+            }else{
+                openBottomSheetCallback?.closeBottomSheet()
                 TransactionContext.selectedUser= Contacts(people.name,people.phoneNumber)
                 TransactionContext.avatarColor = color
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
                 )
+            }
+
         }
     }
 }

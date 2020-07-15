@@ -23,12 +23,11 @@ class Successful : AppCompatActivity() {
         type = intent.getStringExtra("type")!!
         val amount = intent.getStringExtra("amount")
         if(type=="addMoney"){
-            message.text = "The amount $amount ${TransactionContext.currency} was successfully added in your wallet"
+            message.text = "The amount $amount ${TransactionContext.currency}s was successfully added in your wallet"
         }else{
             image.setImageDrawable(getDrawable(R.drawable.transaction_successful))
-            message.text = "Your transaction of $amount ${TransactionContext.currency} was successfully completed"
+            message.text = "Your transaction of $amount ${TransactionContext.currency}s was successfully completed"
         }
-
 
         val ring: MediaPlayer = MediaPlayer.create(this, R.raw.success)
         ring.start()

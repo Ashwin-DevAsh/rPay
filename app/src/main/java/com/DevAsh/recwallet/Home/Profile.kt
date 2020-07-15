@@ -47,9 +47,6 @@ class Profile : AppCompatActivity() {
             .signWith(SignatureAlgorithm.HS256, "DevAsh")
             .compact()
 
-
-
-
         val qrgEncoder =
             QRGEncoder(jwt.toString(), null, QRGContents.Type.TEXT, 1000)
         qrgEncoder.colorWhite = getColor(R.color.colorPrimary)
@@ -58,6 +55,10 @@ class Profile : AppCompatActivity() {
              qr.setImageBitmap(bitmap)
         } catch (e: WriterException) {
 
+        }
+
+        changePassword.setOnClickListener{
+            startActivity(Intent(this,ChangePassword::class.java))
         }
 
         share.setOnClickListener{
