@@ -13,8 +13,10 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
@@ -44,7 +46,7 @@ class Profile : AppCompatActivity() {
 
 
         val jwt = Jwts.builder().claim("name", DetailsContext.name).claim("number", DetailsContext.phoneNumber)
-            .signWith(SignatureAlgorithm.HS256, "DevAsh")
+            .signWith(SignatureAlgorithm.HS256, ApiContext.key)
             .compact()
 
         val qrgEncoder =
@@ -81,27 +83,27 @@ class Profile : AppCompatActivity() {
         }
 
         logout.setOnClickListener{
-            val mBottomSheetDialog = BottomSheetDialog(this)
+            val mBottomSheetDialog = AlertDialog.Builder(this)
             val sheetView: View = layoutInflater.inflate(R.layout.confirm_sheet, null)
             val done = sheetView.findViewById<TextView>(R.id.done)
             val cancel = sheetView.findViewById<TextView>(R.id.cancel)
+            mBottomSheetDialog.setView(sheetView)
+            val dialog = mBottomSheetDialog.show()
             cancel.setOnClickListener{
-                mBottomSheetDialog.cancel()
+                dialog.dismiss()
             }
             done.setOnClickListener{
-                mBottomSheetDialog.cancel()
+                dialog.dismiss()
                 logOut()
             }
-            mBottomSheetDialog.setContentView(sheetView)
-            mBottomSheetDialog.show()
+
         }
 
     }
 
     private fun logOut(){
-        println("hello")
         Realm.getDefaultInstance().executeTransaction{ realm ->
-            realm.where(com.DevAsh.recwallet.Database.Credentials::class.java).findAll().deleteAllFromRealm()
+            realm.deleteAll()
             val intent = Intent(applicationContext, Login::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)

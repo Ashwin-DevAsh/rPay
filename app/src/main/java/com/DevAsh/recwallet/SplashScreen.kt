@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
+import com.DevAsh.recwallet.Helper.SnackBarHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
@@ -23,13 +25,12 @@ import org.json.JSONObject
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import kotlin.collections.ArrayList
 
 
 class SplashScreen : AppCompatActivity() {
 
     lateinit var context: Context
-
+    lateinit var parentLayout: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
        RealmHelper.init(this)
@@ -38,8 +39,11 @@ class SplashScreen : AppCompatActivity() {
         AndroidNetworking.setParserFactory(JacksonParserFactory())
         super.onCreate(savedInstanceState)
 
+
         setContentView(R.layout.activity_splash_screen)
         context = this
+
+        parentLayout = findViewById(android.R.id.content)
 
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
 
@@ -93,6 +97,7 @@ class SplashScreen : AppCompatActivity() {
                                 finish()
                             }
                             override fun onError(anError: ANError?) {
+                                SnackBarHelper.showError(parentLayout,"unable to establish a connection")
                                 println(anError)
                             }
                         })

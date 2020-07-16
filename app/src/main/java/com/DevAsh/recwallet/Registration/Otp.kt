@@ -82,6 +82,9 @@ class Otp : AppCompatActivity() {
                             val otpObject = response?.getJSONObject(0)
                             if (otpObject != null && otpObject["message"] == "verified") {
                                 try {
+                                    Handler().postDelayed({
+                                        StateContext.initRecentContact()
+                                    },0)
                                     println(otpObject["user"])
                                     val user: JSONObject = otpObject["user"] as JSONObject
                                         Realm.getDefaultInstance().executeTransaction { realm ->

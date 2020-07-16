@@ -78,6 +78,9 @@ class Register : AppCompatActivity() {
                 Handler().postDelayed({
                     mainContent.visibility = INVISIBLE
                 },300)
+                Handler().postDelayed({
+                    StateContext.initRecentContact()
+                },0)
 
                     AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
                         .addBodyParameter("name",name)
