@@ -66,12 +66,14 @@ class SplashScreen : AppCompatActivity() {
                         .build()
                         .getAsJSONObject(object: JSONObjectRequestListener {
                             override fun onResponse(response: JSONObject?) {
+                                println(DetailsContext.token)
                                 val balance = response?.getInt("Balance")
                                 StateContext.currentBalance = balance!!
                                 val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                 StateContext.setBalanceToModel(formatter.format(balance))
                                 val transactionObjectArray = response?.getJSONArray("Transactions")
                                 val transactions = ArrayList<Transaction>()
+                                println(response)
                                 for (i in 0 until transactionObjectArray!!.length()) {
                                     transactions.add(
                                         0, Transaction(
@@ -90,7 +92,8 @@ class SplashScreen : AppCompatActivity() {
                                             type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                                   "Send"
                                             else "Received",
-                                            transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
+                                            transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
+                                            isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
                                         )
                                     )
                                 }

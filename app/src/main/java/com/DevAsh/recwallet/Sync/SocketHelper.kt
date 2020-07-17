@@ -82,7 +82,8 @@ object SocketHelper {
                                 type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                     "Send"
                                 else "Received",
-                                transactionId = ""
+                                transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
+                                isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
                             )
                         )
                     }

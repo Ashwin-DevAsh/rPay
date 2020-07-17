@@ -35,6 +35,7 @@ import kotlin.collections.ArrayList
 class AddingOptions : AppCompatActivity(), PaymentResultListener {
     lateinit var amount:String
     var context = this
+    var addingOption:String? = "Upi transaction"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding_options)
@@ -42,11 +43,13 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         amount = intent.getStringExtra("amount")!!
 
         upi.setOnClickListener{
+            addingOption = "Upi transaction"
             loadingScreen.visibility = View.VISIBLE
             payUsingUpi(amount,"9840176511@ybl","Barath","R-pay")
         }
 
         razorpay.setOnClickListener{v->
+            addingOption = "Gateway transaction"
             loadingScreen.visibility = View.VISIBLE
             Handler().postDelayed({
                 startPayment()
@@ -56,7 +59,6 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
 
     override fun onPaymentError(p0: Int, p1: String?) {
         loadingScreen.visibility = View.GONE
-        Toast.makeText(context,"",Toast.LENGTH_LONG).show()
     }
 
     override fun onPaymentSuccess(p0: String?) {
@@ -72,7 +74,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                 var to = DetailsContext.phoneNumber
                 var amount = amount
                 var toName = DetailsContext.name
-                var fromName = "Added to wallet"
+                var fromName = addingOption
             })
             .setPriority(Priority.IMMEDIATE)
             .build()
@@ -113,7 +115,8 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                                 type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                                     "Send"
                                                 else "Received",
-                                                transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
+                                                transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
+                                                isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
                                             )
                                         )
                                     }
@@ -169,11 +172,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         if (null != chooser.resolveActivity(packageManager)) {
             startActivityForResult(chooser, 1)
         } else {
-            Toast.makeText(
-                this,
-                "No UPI app found, please install one to continue",
-                Toast.LENGTH_SHORT
-            ).show()
+          AlertHelper.showError("No UPI app found, please install one to continue",this@AddingOptions)
         }
     }
 
@@ -249,31 +248,26 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             }
             when {
                 status == "success" -> {
-                    Toast.makeText(this, "Transaction successful.  $approvalRefNo", Toast.LENGTH_SHORT)
-                        .show()
-                    Log.d("UPI", "responseStr: $approvalRefNo")
+                    AlertHelper.showError( "Transaction successful.  $approvalRefNo",this)
                     onPaymentSuccess(approvalRefNo)
                 }
                 "Payment cancelled by user." == paymentCancel -> {
                     loadingScreen.visibility = View.GONE
-                    Toast.makeText(this, "Payment cancelled by user.", Toast.LENGTH_SHORT)
-                        .show()
+                    AlertHelper.showError( "Payment cancelled by user.", this)
                 }
                 else -> {
                     loadingScreen.visibility = View.GONE
-                    Toast.makeText(
-                        this,
+                    AlertHelper.showError(
                         "Transaction failed.Please try again",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        this
+                        )
                 }
             }
         } else {
-            Toast.makeText(
-                this,
+            AlertHelper.showError(
                 "Internet connection is not available. Please check and try again",
-                Toast.LENGTH_SHORT
-            ).show()
+                this
+            )
         }
     }
 

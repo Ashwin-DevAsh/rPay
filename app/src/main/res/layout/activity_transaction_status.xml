@@ -44,6 +44,7 @@
             android:layout_width="match_parent"
             android:background="@color/colorPrimary"
             android:orientation="vertical"
+            android:id="@+id/mainContent"
             android:layout_height="match_parent">
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -144,7 +145,7 @@
                         <ImageView
                             android:layout_width="50dp"
                             android:layout_marginTop="10dp"
-                            android:padding="13dp"
+                            android:padding="14dp"
                             android:id="@+id/imageDone"
                             android:layout_marginLeft="10dp"
                             android:src="@drawable/done"
@@ -162,16 +163,17 @@
                                 android:gravity="center_vertical"
                                 android:textStyle="bold"
                                 android:id="@+id/subText"
-                                android:textSize="18dp"
+                                android:textSize="16dp"
                                 android:textColor="@android:color/black"
                                 android:layout_height="30dp"/>
                             <TextView
                                 android:layout_width="match_parent"
                                 android:text="Jul 16 19:51"
                                 android:id="@+id/time"
+                                android:textSize="12dp"
                                 android:gravity="center_vertical"
                                 android:textColor="@android:color/black"
-                                android:layout_height="30dp"/>
+                                android:layout_height="wrap_content"/>
 
                         </LinearLayout>
                         <LinearLayout
@@ -185,12 +187,65 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:orientation="vertical"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginHorizontal="25dp"
+                        android:layout_height="wrap_content">
                         <TextView
+                            android:text="rpay transaction ID"
+                            android:layout_width="match_parent"
+                            android:textSize="12dp"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
                             android:layout_width="match_parent"
                             android:id="@+id/transactionID"
-                            android:layout_height="50dp"/>
+                            android:text="000000000000001"
+                            android:layout_height="wrap_content"/>
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginHorizontal="25dp"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="To: Ashwin"
+                            android:id="@+id/toDetails"
+                            android:layout_width="match_parent"
+                            android:textSize="12dp"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:layout_width="match_parent"
+                            android:id="@+id/toID"
+                            android:text="+919551574355"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginHorizontal="25dp"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="From: Akilan"
+                            android:layout_width="match_parent"
+                            android:textSize="12dp"
+                            android:id="@+id/fromDetails"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:layout_width="match_parent"
+                            android:id="@+id/fromID"
+                            android:text="+919881574355"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -260,7 +315,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:text="Share"
-                        android:id="@+id/pay"
+                        android:id="@+id/share"
                         android:gravity="center"
                         android:textColor="@android:color/white"
                         android:textStyle="bold"

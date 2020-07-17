@@ -135,7 +135,9 @@ class Otp : AppCompatActivity() {
                                                                         type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                                                             "Send"
                                                                         else "Received",
-                                                                        transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
+                                                                        transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
+                                                                        isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("isGenerated")
+
                                                                     )
                                                                 )
                                                             }

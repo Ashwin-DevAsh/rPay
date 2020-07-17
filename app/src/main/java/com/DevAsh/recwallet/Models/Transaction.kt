@@ -6,5 +6,6 @@ class Transaction(
     var time: String,
     var amount: String,
     var type: String,
-    var transactionId:String
+    var transactionId:String,
+    var isGenerated:Boolean
 )

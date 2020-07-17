@@ -94,8 +94,10 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
 
 
 
-        if(items[position].name=="Added to wallet"){
+        if(items[position].isGenerated){
+
             holder.badge.text = "RC"
+            holder.title.text="Added to wallet"
             holder.badge.textSize = 14F
             holder.additionalInfo.setTextColor(Color.parseColor("#ff9100"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#25ff9100"))
@@ -125,8 +127,6 @@ class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=n
     val subtitle = view.findViewById(R.id.subtitle) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
     val additionalInfo = view.findViewById(R.id.additionalInfo) as TextView
-
-
 
     init {
         view.setOnClickListener{

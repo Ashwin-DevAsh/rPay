@@ -16,15 +16,15 @@
         <androidx.cardview.widget.CardView
             android:layout_width="100dp"
             android:layout_marginBottom="250dp"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="50dp"
             app:cardBackgroundColor="@color/colorPrimary"
             android:background="@color/colorPrimary"
-            android:foreground="@mipmap/ic_launcher"
             android:layout_height="100dp">
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:src="@mipmap/ic_launcher"
 
+                android:layout_height="match_parent">
             </ImageView>
         </androidx.cardview.widget.CardView>
 
@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/image_container"
-            android:fontFamily="@font/archivo_black"
+            android:fontFamily="@font/audiowide"
             android:gravity="center"
             android:letterSpacing="0.15"
             android:text="INITIATORS"
