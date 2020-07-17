@@ -10,7 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.RegistrationContext
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -53,13 +53,13 @@ class Login : AppCompatActivity() {
                        }
 
                        override fun onError(anError: ANError?) {
-                            println(anError)
-                            SnackBarHelper.showError(view,anError?.errorDetail.toString())
+                           AlertHelper.showServerError(this@Login)
+
                        }
                    })
 
            }else{
-               SnackBarHelper.showError(view,"Invalid number")
+
            }
 
         }
@@ -71,6 +71,7 @@ class Login : AppCompatActivity() {
         startMain.addCategory(Intent.CATEGORY_HOME)
         startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(startMain)
+        finishAndRemoveTask()
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

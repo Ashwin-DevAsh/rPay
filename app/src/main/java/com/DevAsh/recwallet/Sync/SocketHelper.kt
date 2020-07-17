@@ -1,14 +1,8 @@
 package com.DevAsh.recwallet.Sync
 
-import android.widget.Toast
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
-import com.DevAsh.recwallet.Database.CheckPoint
-import com.DevAsh.recwallet.Database.StateLedger
-import com.DevAsh.recwallet.Helper.SnackBarHelper
-import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.SplashScreen
 import com.androidnetworking.AndroidNetworking
@@ -17,12 +11,8 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
-import io.realm.Realm
 import org.json.JSONObject
 import java.text.DecimalFormat
-import java.util.logging.Handler
 
 object SocketHelper {
 
@@ -91,7 +81,8 @@ object SocketHelper {
                                 ),
                                 type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                     "Send"
-                                else "Received"
+                                else "Received",
+                                transactionId = ""
                             )
                         )
                     }

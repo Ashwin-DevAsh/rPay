@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.*
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
@@ -91,6 +92,10 @@ class SingleObjectTransaction : AppCompatActivity() {
         pay.setOnClickListener{
             startActivity(Intent(context,AmountPrompt::class.java))
         }
+
+        cancel.setOnClickListener{
+            onBackPressed()
+        }
     }
 
     private fun getData(){
@@ -127,7 +132,9 @@ class SingleObjectTransaction : AppCompatActivity() {
                                     ),
                                     type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                         "Send"
-                                    else "Received"
+                                    else "Received",
+                                    transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
+
                                 )
                             )
                         }
@@ -152,7 +159,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                     }
 
                     override fun onError(anError: ANError?) {
-                       println(anError)
+                        AlertHelper.showServerError(this@SingleObjectTransaction)
                     }
 
                 })

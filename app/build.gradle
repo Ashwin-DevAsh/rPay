@@ -69,4 +69,5 @@ dependencies {
     implementation 'com.agrawalsuneet.androidlibs:dotsloader:1.4'
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.4'
     implementation 'io.jsonwebtoken:jjwt:0.7.0'
+    implementation 'com.nispok:snackbar:2.11.+'
 }

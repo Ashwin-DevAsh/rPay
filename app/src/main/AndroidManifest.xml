@@ -37,7 +37,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Home.Transactions.TransactionStatus" />
+        <activity android:name=".Home.Transactions.TransactionDetails" />
         <activity
             android:name=".Home.Transactions.PasswordPrompt"
             android:windowSoftInputMode="adjustResize" />

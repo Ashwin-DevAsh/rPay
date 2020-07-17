@@ -11,7 +11,7 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
@@ -21,6 +21,7 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
+import kotlinx.android.synthetic.main.activity_all_transactions.*
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.text.ParseException
@@ -87,8 +88,9 @@ class SplashScreen : AppCompatActivity() {
                                                 )["TransactionTime"].toString()
                                             ),
                                             type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
-                                                "Send"
-                                            else "Received"
+                                                  "Send"
+                                            else "Received",
+                                            transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
                                         )
                                     )
                                 }
@@ -97,8 +99,7 @@ class SplashScreen : AppCompatActivity() {
                                 finish()
                             }
                             override fun onError(anError: ANError?) {
-                                SnackBarHelper.showError(parentLayout,"unable to establish a connection")
-                                println(anError)
+                                  AlertHelper.showServerError(this@SplashScreen)
                             }
                         })
             },0)
@@ -114,7 +115,7 @@ class SplashScreen : AppCompatActivity() {
 
     companion object{
         fun dateToString(timeStamp:String):String{
-            var time = timeStamp.subSequence(0,timeStamp.length-3).split(" ")[1]
+            val time = timeStamp.subSequence(0,timeStamp.length-3).split(" ")[1]
             try {
                 val format = SimpleDateFormat("MM-dd-yyyy")
                 val df2 = SimpleDateFormat("MMM dd")

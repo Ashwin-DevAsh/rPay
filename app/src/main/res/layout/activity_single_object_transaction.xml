@@ -185,7 +185,8 @@
 
                         <TextView
                             android:layout_width="match_parent"
-                            android:text="Request"
+                            android:text="Cancel"
+                            android:id="@+id/cancel"
                             android:gravity="center"
                             android:textStyle="bold"
                             android:clickable="true"

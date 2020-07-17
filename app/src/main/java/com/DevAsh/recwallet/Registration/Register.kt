@@ -5,12 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
@@ -20,15 +18,13 @@ import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_register.*
@@ -50,7 +46,7 @@ class Register : AppCompatActivity() {
 
         phoneNumber.setText("+${RegistrationContext.countryCode}${RegistrationContext.phoneNumber}")
         cancel.setOnClickListener{
-           onBackPressed()
+           finishAffinity()
         }
 
         done.setOnClickListener{view->
@@ -61,18 +57,18 @@ class Register : AppCompatActivity() {
             val confirmPassword = confirmPassword.text.toString()
 
             if( phoneNumebr.length<10
-                || name.isEmpty()
+                || name.length<2
                 || email.length<8
                 || !email.contains("@")
                 || !email.contains(".")
                 || password.isEmpty()
                 || confirmPassword.isEmpty())
             {
-                SnackBarHelper.showError(view,"Invalid Credentials")
+                AlertHelper.showError("Invalid Credentials", this)
             }else if(password.length<8){
-                SnackBarHelper.showError(view,"Password must contain at least 8 characters")
+                AlertHelper.showError("Password must contain at least 8 characters", this)
             }else if(password!=confirmPassword){
-                SnackBarHelper.showError(view,"Password not match")
+                AlertHelper.showError("Password not match", this)
             }else{
                 hideKeyboardFrom(context,view)
                 Handler().postDelayed({
@@ -101,7 +97,7 @@ class Register : AppCompatActivity() {
                                         credentials.name,
                                         credentials.phoneNumber,
                                         credentials.email,
-                                        PasswordHashing.encryptMsg(credentials.password),
+                                        credentials.password,
                                         credentials.token
                                     )
 
@@ -119,9 +115,8 @@ class Register : AppCompatActivity() {
                                                     startActivity(Intent(context,HomePage::class.java))
                                                     finish()
                                                 }
-
                                                 override fun onError(anError: ANError?) {
-                                                    SnackBarHelper.showError(view,anError.toString())
+                                                    AlertHelper.showServerError(this@Register)
                                                 }
 
                                             })
@@ -131,9 +126,9 @@ class Register : AppCompatActivity() {
                             }
                             override fun onError(error:ANError) {
                                 mainContent.visibility=VISIBLE
-                                Log.d("Auth",error.toString())
-                                SnackBarHelper.showError(view,error.errorDetail)
-                        }
+                                AlertHelper.showServerError(this@Register)
+
+                            }
                     })
             }
         }

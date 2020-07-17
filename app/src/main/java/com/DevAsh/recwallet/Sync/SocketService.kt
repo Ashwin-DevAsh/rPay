@@ -34,7 +34,8 @@ class SocketService : Service() {
             RealmHelper.init(this)
             AndroidNetworking.initialize(applicationContext)
             AndroidNetworking.setParserFactory(JacksonParserFactory())
-            val credentials = Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
+            val credentials =
+                Realm.getDefaultInstance().where(Credentials::class.java).findFirst() ?: return
             DetailsContext.setData(
                 credentials!!.name,
                 credentials.phoneNumber,
@@ -72,7 +73,7 @@ class SocketService : Service() {
             val builder: Notification.Builder = Notification.Builder(this, "DevAsh")
                 .setContentTitle("Mining")
                 .setContentText("Don't close this process...")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.drawable.rpay_notification)
                 .setAutoCancel(true)
             val notification: Notification = builder.build()
             startForeground(1, notification)
@@ -80,7 +81,7 @@ class SocketService : Service() {
             val builder = NotificationCompat.Builder(this)
                 .setContentTitle("Mining")
                 .setContentText("Don't close this process...")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.drawable.rpay_notification)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
             val notification: Notification = builder.build()

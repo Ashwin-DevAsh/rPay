@@ -105,8 +105,7 @@ class Profile : AppCompatActivity() {
         Realm.getDefaultInstance().executeTransaction{ realm ->
             realm.deleteAll()
             val intent = Intent(applicationContext, Login::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            finishAffinity()
             startActivity(intent)
         }
 

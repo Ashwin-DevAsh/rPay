@@ -15,6 +15,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
@@ -111,7 +112,8 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                                 ),
                                                 type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                                     "Send"
-                                                else "Received"
+                                                else "Received",
+                                                transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
                                             )
                                         )
                                     }
@@ -123,9 +125,17 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                     context.finish()
                                 }
                                 override fun onError(anError: ANError?) {
-                                    Toast.makeText(context,"",Toast.LENGTH_LONG).show()
+                                    AlertHelper.showAlertDialog(this@AddingOptions,
+                                        "Failed !",
+                                        "your transaction of ${TransactionContext.amount} ${TransactionContext.currency} is failed. if any amount debited it will refund soon"
+                                    )
                                 }
                             })
+                    }else{
+                        AlertHelper.showAlertDialog(this@AddingOptions,
+                            "Failed !",
+                            "your transaction of ${TransactionContext.amount} ${TransactionContext.currency} is failed. if any amount debited it will refund soon"
+                        )
                     }
                 }
                 override fun onError(anError: ANError?) {

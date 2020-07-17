@@ -22,7 +22,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.UiContext.colors
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -137,10 +137,7 @@ class SendMoney : AppCompatActivity() {
                 }
 
                 override fun onError(anError: ANError?) {
-                    SnackBarHelper.showError(mainContent,anError!!.errorDetail)
-                    Handler().postDelayed({
-                        onBackPressed()
-                    },3000)
+                    AlertHelper.showServerError(this@SendMoney)
                 }
 
             })

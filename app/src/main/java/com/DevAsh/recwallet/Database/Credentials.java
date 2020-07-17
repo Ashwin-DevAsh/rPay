@@ -11,7 +11,31 @@ public class Credentials extends RealmObject {
     public String token;
 
 
-     public Credentials(String name, String phoneNumber, String email, String password, String token, Boolean isLogin ){
+    public void setLogin(Boolean login) {
+        isLogin = login;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Credentials(String name, String phoneNumber, String email, String password, String token, Boolean isLogin ){
          this.isLogin = isLogin;
          this.name = name;
          this.phoneNumber = phoneNumber;

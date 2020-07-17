@@ -3,7 +3,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_add_money.*
 
@@ -26,10 +26,10 @@ class AddMoney : AppCompatActivity(){
                     startActivity(intent)
 
                 }else{
-                    SnackBarHelper.showError(v,"Invalid Amount")
+                    AlertHelper.showError("Invalid Amount", this)
                 }
             }catch (e:java.lang.Exception){
-                SnackBarHelper.showError(v,"Invalid Amount")
+                AlertHelper.showError("Invalid Amount", this)
             }
 
         }

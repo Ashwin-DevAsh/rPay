@@ -29,8 +29,7 @@ class NotificationService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(p0: RemoteMessage) {
-        println("Notification Received")
-        println(p0.data)
+
         if (p0.data["type"]=="awake"){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(Intent(this,SocketService::class.java))
@@ -56,7 +55,7 @@ class NotificationService : FirebaseMessagingService() {
                 val builder: Notification.Builder = Notification.Builder(this, "Payment")
                     .setContentTitle("Rec Pay")
                     .setContentText("Received $amount ₿ from $fromName")
-                    .setSmallIcon(R.drawable.bitcoin)
+                    .setSmallIcon(R.drawable.rpay_notification)
                     .setActions(Notification.Action(R.drawable.coin,"Tap to view",PendingIntent.getActivity(
                         this, 0, Intent(this,SplashScreen::class.java), PendingIntent.FLAG_UPDATE_CURRENT
                     )))
@@ -67,7 +66,7 @@ class NotificationService : FirebaseMessagingService() {
                 val builder = NotificationCompat.Builder(this)
                     .setContentTitle("Rec Pay")
                     .setContentText("Received $amount ₿ from $fromName")
-                    .setSmallIcon(R.drawable.bitcoin)
+                    .setSmallIcon(R.drawable.rpay_notification)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(true)
                 val notification: Notification = builder.build()

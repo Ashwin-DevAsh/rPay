@@ -6,15 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.view.ViewParent
 import android.view.inputmethod.InputMethodManager
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.AlertHelper.showAlertDialog
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -29,6 +28,7 @@ class ChangePassword : AppCompatActivity() {
     lateinit var oldPasswordText:String
     lateinit var newPasswordText:String
     var newHashedPassword:String? = null
+    var context=this
     lateinit var parentView:View
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,14 +38,14 @@ class ChangePassword : AppCompatActivity() {
         done.setOnClickListener{v ->
             oldPasswordText = oldPassword.text.toString()
             newPasswordText = password.text.toString()
-            if(oldPassword.text.length<8 || password.text.length<8 || confirmPassword.text.length<8){
-                SnackBarHelper.showError(v,"Invalid Credentials")
+            if(oldPassword.text.toString() != PasswordHashing.decryptMsg(DetailsContext.password!!)){
+                AlertHelper.showError("Invalid old password", this@ChangePassword)
             }else if(oldPassword.text.toString() == password.text.toString()){
-                SnackBarHelper.showError(v,"old password must not be new password")
-            }else if(oldPassword.text.toString() != PasswordHashing.decryptMsg(DetailsContext.password!!)){
-                SnackBarHelper.showError(v,"Invalid old password")
+                AlertHelper.showError("old password must not be new password", this@ChangePassword)
+            }else if(oldPassword.text.length<8 || password.text.length<8 || confirmPassword.text.length<8){
+                AlertHelper.showError("Password must contain at least 8 characters", this@ChangePassword)
             }else if(password.text.toString() != confirmPassword.text.toString()){
-                SnackBarHelper.showError(v,"password not matching")
+                AlertHelper.showError("password not matching", this@ChangePassword)
             }else{
                changePassword(v)
             }
@@ -74,23 +74,43 @@ class ChangePassword : AppCompatActivity() {
             .build()
             .getAsJSONObject(object:JSONObjectRequestListener{
                 override fun onResponse(response: JSONObject?) {
-                    if(response?.getString("message")=="Done"){
-                          updateDatabase(newHashedPassword!!)
-                        finish()
-                        SnackBarHelper.showError(parentView,"Password Changed Successfully")
-
-                    }else{
-                        SnackBarHelper.showError(parentView,"Failed")
-                    }
                     mainContent.visibility=View.VISIBLE
+                    if(response?.getString("message")=="done"){
+                          updateDatabase(newHashedPassword!!)
+                    }else{
+                        showAlertDialog(
+                            this@ChangePassword,
+                            "Failed !","There is some issue with our server",
+                            object: AlertHelper.AlertDialogCallback {
+                                override fun onDismiss() {
+                                    mainContent.visibility=View.VISIBLE
+                                }
 
+                                override fun onDone() {
+                                    mainContent.visibility=View.VISIBLE
+                                }
+
+                            }
+                        )
+                    }
                 }
 
                 override fun onError(anError: ANError?) {
                     mainContent.visibility=View.VISIBLE
-                    SnackBarHelper.showError(parentView,"Failed")
-                    println(anError)
+                    showAlertDialog(
+                        this@ChangePassword,
+                        "Failed !",
+                        "There is some issue with our server",
+                        object: AlertHelper.AlertDialogCallback {
+                            override fun onDismiss() {
+                                mainContent.visibility=View.VISIBLE
+                            }
 
+                            override fun onDone() {
+                                mainContent.visibility=View.VISIBLE
+                            }
+                        }
+                    )
                 }
             })
     }
@@ -98,9 +118,28 @@ class ChangePassword : AppCompatActivity() {
     fun updateDatabase(newPassword:String){
         Realm.getDefaultInstance().executeTransaction{r->
             val data = r.where(Credentials::class.java).findFirst()
-            data?.password = newPassword
+            data?.setPassword(newPassword)
+            DetailsContext.password = newPassword
+            showAlertDialog(
+                this@ChangePassword,
+                "Successful !",
+                "Your password has been changed successfully",
+                object: AlertHelper.AlertDialogCallback {
+                    override fun onDismiss() {
+                        mainContent.visibility=View.VISIBLE
+                        onBackPressed()
+                    }
+
+                    override fun onDone() {
+                        mainContent.visibility=View.VISIBLE
+                        onBackPressed()
+                    }
+                }
+            )
         }
     }
+
+
 
     private fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =

@@ -15,7 +15,7 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
-import com.DevAsh.recwallet.Helper.SnackBarHelper
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
@@ -25,8 +25,6 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_otp.*
@@ -63,6 +61,7 @@ class Otp : AppCompatActivity() {
         }
 
         verify.setOnClickListener { view ->
+            errorMessage.visibility= INVISIBLE
             if (otp.text.toString().length == 4) {
                 hideKeyboardFrom(context,view)
                 Handler().postDelayed({
@@ -135,7 +134,8 @@ class Otp : AppCompatActivity() {
                                                                         ),
                                                                         type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
                                                                             "Send"
-                                                                        else "Received"
+                                                                        else "Received",
+                                                                        transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString()
                                                                     )
                                                                 )
                                                             }
@@ -146,7 +146,7 @@ class Otp : AppCompatActivity() {
                                                         }
 
                                                         override fun onError(anError: ANError?) {
-                                                            println(anError)
+                                                            AlertHelper.showServerError(this@Otp)
                                                         }
 
                                                     })
@@ -160,24 +160,26 @@ class Otp : AppCompatActivity() {
 
                             } else {
                                 mainContent.visibility = VISIBLE
-                                SnackBarHelper.showError(view, "Invalid OTP")
+                                AlertHelper.showError("Invalid Otp",this@Otp)
                             }
                         }
 
                         override fun onError(anError: ANError?) {
-                            mainContent.visibility = VISIBLE
-                            SnackBarHelper.showError(view, anError.toString())
+                            AlertHelper.showServerError(this@Otp)
+                            errorMessage.visibility=VISIBLE
                         }
                     })
             } else {
                 mainContent.visibility = VISIBLE
-                SnackBarHelper.showError(view, "Invalid OTP")
             }
         }
     }
 
     override fun onBackPressed() {
-
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(startMain)
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

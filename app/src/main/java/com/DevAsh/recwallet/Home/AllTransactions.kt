@@ -2,6 +2,7 @@ package com.DevAsh.recwallet.Home
 
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.UiContext.colors
+import com.DevAsh.recwallet.Home.Transactions.TransactionDetails
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_all_transactions.*
@@ -64,7 +66,7 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllActivityViewHolder {
-        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_listtile_transaction, parent, false))
+        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_listtile_transaction, parent, false),context)
     }
 
     override fun onBindViewHolder(holder: AllActivityViewHolder, position: Int) {
@@ -77,11 +79,16 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
             holder.badge.textSize = 18F
         }
 
+        holder.item = items[position]
+
         try {
             holder.badge.setBackgroundColor(Color.parseColor(colorMap[items[position].number]))
+            holder.color = colorMap[items[position].number]
+
         }catch (e:Throwable){
             holder.badge.setBackgroundColor(Color.parseColor(colors[colorIndex]))
             colorMap[items[position].number] = colors[colorIndex]
+            holder.color = colors[colorIndex]
             colorIndex = (colorIndex+1)%colors.size
         }
 
@@ -94,7 +101,7 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#25ff9100"))
             holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"
             holder.badge.setBackgroundColor(context.getColor(R.color.highlightButton))
-
+            holder.color = "#035aa6"
 
         }else if(items[position].type=="Received"){
             holder.additionalInfo.setTextColor(Color.parseColor("#1b5e20"))
@@ -113,11 +120,21 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
     }
 }
 
-class AllActivityViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=null,var color:String?=null) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val subtitle = view.findViewById(R.id.subtitle) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
     val additionalInfo = view.findViewById(R.id.additionalInfo) as TextView
+
+
+
+    init {
+        view.setOnClickListener{
+             TransactionContext.selectedTransaction = item
+             TransactionContext.avatarColor = color!!
+             context.startActivity(Intent(context,TransactionDetails::class.java))
+        }
+    }
 }
 
 

@@ -5,5 +5,6 @@ class Transaction(
     var number: String,
     var time: String,
     var amount: String,
-    var type: String
+    var type: String,
+    var transactionId:String
 )
