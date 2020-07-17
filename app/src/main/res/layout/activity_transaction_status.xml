@@ -6,6 +6,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Home.Transactions.TransactionDetails">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </LinearLayout>
+    </ScrollView>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/appBar"
@@ -68,19 +78,32 @@
                             app:cardElevation="0dp"
                             android:layout_height="55dp"
                             >
-                            <TextView
+                            <FrameLayout
                                 android:layout_width="match_parent"
-                                android:layout_centerInParent="true"
-                                android:gravity="center"
-                                android:textColor="@android:color/white"
-                                android:textStyle="bold"
-                                android:background="@drawable/avatar"
-                                android:textSize="20sp"
-                                android:text="A"
-                                android:textAllCaps="true"
-                                android:paddingTop="5dp"
-                                android:id="@+id/badge"
-                                android:layout_height="match_parent"/>
+                                android:layout_height="match_parent">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_centerInParent="true"
+                                    android:gravity="center"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:background="@drawable/avatar"
+                                    android:textSize="20sp"
+                                    android:text="A"
+                                    android:textAllCaps="true"
+                                    android:paddingTop="5dp"
+                                    android:id="@+id/badge"
+                                    android:layout_height="match_parent"/>
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:id="@+id/logoContainer"
+                                    android:visibility="gone"
+                                    android:background="@color/highlightButton"
+                                    android:src="@drawable/rpay_notification"
+                                    android:padding="13dp"
+                                    android:layout_height="match_parent"/>
+                            </FrameLayout>
+
                         </androidx.cardview.widget.CardView>
                     </LinearLayout>
                     <LinearLayout
@@ -115,6 +138,7 @@
                         android:layout_width="match_parent"
                         android:text="paid to"
                         android:id="@+id/type"
+                        android:textStyle="bold"
                         android:textColor="@color/highlightButton"
                         android:gravity="center"
                         android:layout_height="30dp"/>
@@ -123,8 +147,11 @@
                         android:text="Ashwin"
                         android:textColor="@color/textColor"
                         android:gravity="center"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:layout_marginHorizontal="40dp"
                         android:id="@+id/selectedUserName"
-                        android:textSize="20dp"
+                        android:textSize="16dp"
                         android:layout_height="30dp"/>
 
                 </LinearLayout>
@@ -192,7 +219,7 @@
                         android:layout_marginHorizontal="25dp"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:text="rpay transaction ID"
+                            android:text="R Pay transaction ID"
                             android:layout_width="match_parent"
                             android:textSize="12dp"
                             android:layout_height="wrap_content"/>
@@ -228,6 +255,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="vertical"
+                        android:layout_marginBottom="100dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginHorizontal="25dp"
                         android:layout_height="wrap_content">

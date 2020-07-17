@@ -64,11 +64,12 @@
                 android:gravity="center"
                 android:id="@+id/qrName"
                 android:text="Name"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textSize="20dp"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:layout_height="40dp"/>
-
         </LinearLayout>
 
 

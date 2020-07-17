@@ -20,6 +20,7 @@
             android:id="@+id/statusContainer"
             android:layout_marginLeft="10dp"
             android:layout_height="70dp">
+
             <androidx.cardview.widget.CardView
                 android:layout_width="45dp"
                 app:cardCornerRadius="22.5dp"
@@ -31,20 +32,34 @@
                     android:layout_height="45dp"
                     >
 
-                    <TextView
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_centerInParent="true"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:background="@color/highlightButton"
+                        android:layout_height="match_parent">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:background="@color/highlightButton"
 
-                        android:textSize="20sp"
-                        android:text="A"
-                        android:textColor="@android:color/white"
-                        android:textAllCaps="true"
-                        android:paddingTop="5dp"
-                        android:id="@+id/badge"
-                        android:layout_height="match_parent"/>
+                            android:textSize="20sp"
+                            android:text="A"
+                            android:textColor="@android:color/white"
+                            android:textAllCaps="true"
+                            android:paddingTop="5dp"
+                            android:id="@+id/badge"
+                            android:layout_height="match_parent"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:id="@+id/logo"
+                            android:visibility="gone"
+                            android:background="@color/highlightButton"
+                            android:src="@drawable/rpay_notification"
+                            android:padding="13dp"
+                            android:layout_height="match_parent"/>
+
+                    </FrameLayout>
+
 
 
                 </RelativeLayout>
@@ -56,13 +71,17 @@
 
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:ellipsize="end"
             android:layout_toRightOf="@+id/statusContainer"
             android:text="Ashwin"
+            android:layout_toLeftOf="@id/additionalInfoContainer"
+            android:layout_marginRight="30dp"
             android:textColor="@android:color/black"
             android:textSize="15dp"
             android:gravity="bottom"
             android:id="@+id/title"
+            android:singleLine="true"
             android:textStyle="bold"
             android:layout_height="40dp"/>
         <TextView
@@ -78,6 +97,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
+            android:id="@+id/additionalInfoContainer"
             android:layout_alignParentRight="true"
             android:layout_marginRight="30dp"
             app:cardCornerRadius="12.5dp"

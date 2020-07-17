@@ -2,17 +2,22 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
+import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_transaction_status.*
+import kotlinx.android.synthetic.main.activity_transaction_status.badge
+import kotlinx.android.synthetic.main.widget_listtile_transaction.*
 
 class TransactionDetails : AppCompatActivity() {
 
@@ -27,14 +32,15 @@ class TransactionDetails : AppCompatActivity() {
         selectedUserName.text = TransactionContext.selectedTransaction?.name
         badge.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
         badge.text = TransactionContext.selectedTransaction?.name?.substring(0,1)
-        badge.text = TransactionContext.selectedUser?.name.toString()[0].toString()
+        badge.text = TransactionContext.selectedTransaction?.name.toString()[0].toString()
 
 
         transactionID.text = String.format("%020d", TransactionContext.selectedTransaction?.transactionId?.toInt())
 
         if(TransactionContext.selectedTransaction?.isGenerated!!){
+            logoContainer.visibility=View.VISIBLE
             subText.text = "Added  ${TransactionContext.selectedTransaction?.amount} ${TransactionContext.currency}"
-            type.text = "Added from"
+            type.text = "Added by"
         }else{
             subText.text =
                 "${if (TransactionContext.selectedTransaction?.type=="Send") "Paid" else TransactionContext.selectedTransaction?.type}  ${TransactionContext.selectedTransaction?.amount} ${TransactionContext.currency}"
@@ -61,7 +67,14 @@ class TransactionDetails : AppCompatActivity() {
         }
 
         share.setOnClickListener{
-            share()
+            val permissions = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if(packageManager.checkPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,packageName)== PackageManager.PERMISSION_GRANTED ){
+                Handler().postDelayed({
+                    share()
+                },0)
+            }else{
+                ActivityCompat.requestPermissions(this, permissions,0)
+            }
         }
 
         cancel.setOnClickListener{
@@ -98,6 +111,18 @@ class TransactionDetails : AppCompatActivity() {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.type = "image/png"
         startActivity(intent)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(requestCode==0){
+            if(grantResults[0]== PackageManager.PERMISSION_GRANTED ){
+                share()
+            }
+        }
     }
 
 }

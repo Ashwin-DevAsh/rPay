@@ -13,6 +13,7 @@ import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Home.HomePage
+import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
 import com.androidnetworking.AndroidNetworking
@@ -50,9 +51,6 @@ class SplashScreen : AppCompatActivity() {
 
         if(credentials?.isLogin==true){
             Handler().postDelayed({
-                StateContext.initRecentContact()
-            },0)
-            Handler().postDelayed({
                     DetailsContext.setData(
                         credentials!!.name,
                         credentials.phoneNumber,
@@ -75,14 +73,20 @@ class SplashScreen : AppCompatActivity() {
                                 val transactions = ArrayList<Transaction>()
                                 println(response)
                                 for (i in 0 until transactionObjectArray!!.length()) {
+                                    val name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                 transactionObjectArray.getJSONObject(i)["ToName"].toString()
+                                                       else transactionObjectArray.getJSONObject(i)["FromName"].toString()
+                                    val number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                 transactionObjectArray.getJSONObject(i)["To"].toString()
+                                                       else transactionObjectArray.getJSONObject(i)["From"].toString()
+
+                                    val merchant = Merchant(name,number)
+                                    if(!transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"))
+                                        StateContext.addRecentContact(merchant)
                                     transactions.add(
                                         0, Transaction(
-                                            name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
-                                                transactionObjectArray.getJSONObject(i)["ToName"].toString()
-                                            else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                            number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
-                                                transactionObjectArray.getJSONObject(i)["To"].toString()
-                                            else transactionObjectArray.getJSONObject(i)["From"].toString(),
+                                            name = name,
+                                            number = number,
                                             amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
                                             time = dateToString(
                                                 transactionObjectArray.getJSONObject(

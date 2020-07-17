@@ -11,6 +11,9 @@ import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Home.Transactions.Contacts
+import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -46,7 +49,6 @@ class NotificationService : FirebaseMessagingService() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
                 val channelId = "Payment"
                 val channelName: CharSequence = "Payment"
                 val importance = NotificationManager.IMPORTANCE_HIGH
@@ -54,11 +56,11 @@ class NotificationService : FirebaseMessagingService() {
                 notificationManager.createNotificationChannel(notificationChannel)
                 val builder: Notification.Builder = Notification.Builder(this, "Payment")
                     .setContentTitle("Rec Pay")
-                    .setContentText("Received $amount ₿ from $fromName")
+                    .setContentText("Received $amount ${TransactionContext.currency} from $fromName")
                     .setSmallIcon(R.drawable.rpay_notification)
-                    .setActions(Notification.Action(R.drawable.coin,"Tap to view",PendingIntent.getActivity(
-                        this, 0, Intent(this,SplashScreen::class.java), PendingIntent.FLAG_UPDATE_CURRENT
-                    )))
+                    .setContentIntent(
+                        PendingIntent.getActivity(this, 1,(Intent(applicationContext,SplashScreen::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
+                    )
                     .setAutoCancel(true)
                 val notification: Notification = builder.build()
                 notificationManager.notify(Random.nextInt(1000000000),notification)
@@ -68,6 +70,9 @@ class NotificationService : FirebaseMessagingService() {
                     .setContentText("Received $amount ₿ from $fromName")
                     .setSmallIcon(R.drawable.rpay_notification)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(
+                        PendingIntent.getActivity(this, 1,(Intent(applicationContext,SplashScreen::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
+                    )
                     .setAutoCancel(true)
                 val notification: Notification = builder.build()
                 (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(Random.nextInt(1000000000),notification)

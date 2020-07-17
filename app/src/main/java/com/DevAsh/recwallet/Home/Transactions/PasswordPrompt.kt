@@ -14,7 +14,6 @@ import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.TransactionContext.needToPay
 import com.DevAsh.recwallet.Database.RealmHelper
-import com.DevAsh.recwallet.Database.RecentContacts
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Models.Merchant
@@ -192,26 +191,8 @@ class PasswordPrompt : AppCompatActivity() {
     }
 
     private fun addRecent(){
-
-        Realm.getDefaultInstance().executeTransaction{realm->
-            var freq = 0
-            val isExist = realm.where(RecentContacts::class.java)
-                .contains("number", TransactionContext.selectedUser?.number!!).findFirst()
-            if(isExist==null){
-                StateContext.addRecentContact(Merchant(TransactionContext.selectedUser?.name!!,
-                    TransactionContext.selectedUser?.number!!,null))
-            }else{
-                freq = isExist.freq+1
-                isExist.deleteFromRealm()
-            }
-            val recentContacts=RecentContacts(
-                TransactionContext.selectedUser?.name,
-                TransactionContext.selectedUser?.number,
-                freq
-            )
-            realm.insertOrUpdate(recentContacts)
-        }
-
+        StateContext.addRecentContact(Merchant(TransactionContext.selectedUser?.name!!,
+            TransactionContext.selectedUser?.number!!,null))
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

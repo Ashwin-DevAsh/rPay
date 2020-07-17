@@ -9,6 +9,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -97,6 +98,7 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
         if(items[position].isGenerated){
 
             holder.badge.text = "RC"
+            holder.logo.visibility = View.VISIBLE
             holder.title.text="Added to wallet"
             holder.badge.textSize = 14F
             holder.additionalInfo.setTextColor(Color.parseColor("#ff9100"))
@@ -127,6 +129,7 @@ class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=n
     val subtitle = view.findViewById(R.id.subtitle) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
     val additionalInfo = view.findViewById(R.id.additionalInfo) as TextView
+    val logo = view.findViewById<ImageView>(R.id.logo)
 
     init {
         view.setOnClickListener{

@@ -1,6 +1,5 @@
 package com.DevAsh.recwallet.Context
 
-import com.DevAsh.recwallet.Database.RecentContacts
 import com.DevAsh.recwallet.Home.ViewModels.BalanceViewModel
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
@@ -23,27 +22,22 @@ object StateContext {
         model.allTransactions.value = ArrayList(initList)
     }
 
-    fun initRecentContact(){
-        val data=Realm.getDefaultInstance().where(RecentContacts::class.java).findAll()
-        var arrayList= ArrayList<Merchant>()
-        for(i in data){
-           arrayList.add(0,Merchant(i.name,i.number,null))
-        }
+    fun initRecentContact(arrayList:ArrayList<Merchant>){
         model.recentContacts.value=arrayList
     }
     fun addRecentContact(contact: Merchant){
-        println("Added")
-        val temp = model.recentContacts.value
-        temp?.add(0,contact)
-        model.recentContacts.value=temp
+        val temp = if(model.recentContacts.value!=null)model.recentContacts.value else ArrayList()
+        if(!temp?.contains(contact)!!){
+            temp.add(0,contact)
+            model.recentContacts.value=temp
+        }
+
     }
 
     fun addTransaction(transaction: Transaction){
         val temp = model.allTransactions.value
         temp?.add(0,transaction)
         model.allTransactions.value=temp
-
-
     }
 
     fun getBalance():String{

@@ -46,7 +46,7 @@ class AmountPrompt : AppCompatActivity() {
                     startActivity(Intent(context,PasswordPrompt::class.java))
                     finish()
                 }else{
-
+                   AlertHelper.showError("Invalid Amount", this)
                 }
             }catch (e:Throwable){
                 AlertHelper.showError("Invalid Amount", this)

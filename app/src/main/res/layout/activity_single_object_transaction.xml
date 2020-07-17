@@ -86,12 +86,13 @@
 
                     <TextView
                         android:layout_width="wrap_content"
-
                         android:text="Ashwin"
                         android:textSize="16dp"
                         android:gravity="bottom"
+                        android:layout_marginRight="40dp"
                         android:textColor="@android:color/black"
-
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:id="@+id/name"
                         android:textStyle="bold"
                         android:layout_height="23dp"/>
@@ -101,6 +102,7 @@
                         android:text="+919551574355"
                         android:textSize="11dp"
                         android:gravity="top"
+
                         android:textColor="@color/textNormal"
                         android:id="@+id/number"
                         android:layout_below="@id/title"

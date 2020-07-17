@@ -47,6 +47,9 @@ open class Migrations : RealmMigration {
             checkPoint.addField("freq",Integer::class.java)
 
         }
+        else if(oldVersion==8L){
+            schema.remove("RecentContacts")
+        }
 
     }
 
