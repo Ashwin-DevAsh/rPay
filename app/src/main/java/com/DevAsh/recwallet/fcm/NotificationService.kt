@@ -6,12 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.TransactionContext
-import com.DevAsh.recwallet.Home.AllTransactions
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -38,6 +35,7 @@ class NotificationService : FirebaseMessagingService() {
                  startService(Intent(this,SocketService::class.java))
             }
         }else{
+            TransactionContext.openTransactionPage = true
             val type =  p0.data["type"]!!.split(",")[0]
             val amount = p0.data["type"]!!.split(",")[3]
             val fromName = p0.data["type"]!!.split(",")[1]
@@ -60,11 +58,8 @@ class NotificationService : FirebaseMessagingService() {
     }
 
     private fun showNotification(title:String, subTitle:String){
+        var notificationID = Random.nextInt(1000000000)
         val intent = Intent(applicationContext,SplashScreen::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra("openTransactionPage",true)
-        val bundle=Bundle()
-        bundle.putBoolean("openTransactionPage",true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "Payment"
@@ -77,14 +72,13 @@ class NotificationService : FirebaseMessagingService() {
                 .setContentTitle(title)
                 .setContentText(subTitle)
                 .setSmallIcon(R.drawable.rpay_notification)
-                .setExtras(bundle)
                 .setContentIntent(
-                    PendingIntent.getActivities(this, 1, arrayOf(intent,Intent(this,AllTransactions::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
+                    PendingIntent.getActivities(this, 1, arrayOf(intent), PendingIntent.FLAG_UPDATE_CURRENT)
                 )
                 .setAutoCancel(true)
             val notification: Notification = builder.build()
-            notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
-            notificationManager.notify(Random.nextInt(1000000000),notification)
+            notification.flags = Notification.FLAG_INSISTENT or Notification.FLAG_AUTO_CANCEL
+            notificationManager.notify(notificationID,notification)
         } else {
             val builder = NotificationCompat.Builder(this)
                 .setContentTitle(title)
@@ -92,11 +86,11 @@ class NotificationService : FirebaseMessagingService() {
                 .setSmallIcon(R.drawable.rpay_notification)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(
-                    PendingIntent.getActivities(this, 1, arrayOf(intent,Intent(this,AllTransactions::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
+                    PendingIntent.getActivities(this, 1, arrayOf(intent), PendingIntent.FLAG_UPDATE_CURRENT)
                 )
                 .setAutoCancel(true)
             val notification: Notification = builder.build()
-            notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+            notification.flags = Notification.FLAG_INSISTENT or Notification.FLAG_AUTO_CANCEL
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(Random.nextInt(1000000000),notification)
         }
     }

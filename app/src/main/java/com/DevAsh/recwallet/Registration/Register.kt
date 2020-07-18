@@ -31,6 +31,8 @@ import kotlinx.android.synthetic.main.activity_register.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class Register : AppCompatActivity() {
@@ -44,7 +46,7 @@ class Register : AppCompatActivity() {
         setContentView(R.layout.activity_register)
         context=this
 
-        phoneNumber.setText("+${RegistrationContext.countryCode}${RegistrationContext.phoneNumber}")
+        phoneNumber.text = "+${RegistrationContext.countryCode}${RegistrationContext.phoneNumber}"
         cancel.setOnClickListener{
            finishAffinity()
         }
@@ -65,7 +67,10 @@ class Register : AppCompatActivity() {
                 || confirmPassword.isEmpty())
             {
                 AlertHelper.showError("Invalid Credentials", this)
-            }else if(password.length<8){
+            }else if( checkUserName(name)){
+                AlertHelper.showError("Username should not contain symbols", this)
+            }
+            else if(password.length<8){
                 AlertHelper.showError("Password must contain at least 8 characters", this)
             }else if(password!=confirmPassword){
                 AlertHelper.showError("Password not match", this)
@@ -143,5 +148,11 @@ class Register : AppCompatActivity() {
         val imm: InputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun checkUserName(name:String):Boolean{
+        val p = Pattern.compile("[^A-Za-z0-9]")
+        val m = p.matcher(name)
+        return m.find()
     }
 }

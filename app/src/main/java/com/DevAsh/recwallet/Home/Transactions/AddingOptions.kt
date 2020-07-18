@@ -91,7 +91,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                     val jsonData = JSONObject()
                                     jsonData.put("to",
                                         TransactionContext.selectedUser?.number.toString().replace("+",""))
-                                    SocketHelper.socket.emit("notifyPayment",jsonData)
+                                    SocketHelper.socket?.emit("notifyPayment",jsonData)
                                     val balance = response?.getInt("Balance")
                                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                     StateContext.setBalanceToModel(formatter.format(balance))

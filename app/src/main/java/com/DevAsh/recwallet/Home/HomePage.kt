@@ -53,13 +53,6 @@ class HomePage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
-        if(TransactionContext.openTransactionPage){
-            TransactionContext.openTransactionPage=false
-            Handler().postDelayed({
-                startActivity(Intent(this,AllTransactions::class.java))
-            },1000)
-        }
-
 
         merchantHolder.layoutManager = GridLayoutManager(context, 3)
         recent.layoutManager = GridLayoutManager(context, 3)
@@ -76,7 +69,7 @@ class HomePage : AppCompatActivity() {
         val hiddenPanel = findViewById<CardView>(R.id.scanContainer)
 
 
-        scroller.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        scroller.setOnScrollChangeListener { _, _, scrollY, _, _ ->
             if (scrollY >500) {
                 if(hiddenPanel.visibility==View.VISIBLE){
                     hiddenPanel.startAnimation(bottomDown)

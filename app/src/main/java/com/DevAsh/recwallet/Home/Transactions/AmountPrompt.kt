@@ -2,6 +2,7 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.DevAsh.recwallet.Context.StateContext
@@ -9,6 +10,12 @@ import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_amount_prompt.*
+import kotlinx.android.synthetic.main.activity_amount_prompt.amount
+import kotlinx.android.synthetic.main.activity_amount_prompt.back
+import kotlinx.android.synthetic.main.activity_amount_prompt.cancel
+import kotlinx.android.synthetic.main.activity_amount_prompt.done
+import kotlinx.android.synthetic.main.activity_password_prompt.*
+import kotlinx.android.synthetic.main.activity_password_prompt.badge
 
 class AmountPrompt : AppCompatActivity() {
 
@@ -21,6 +28,8 @@ class AmountPrompt : AppCompatActivity() {
 
         paymentText.text = "Paying ${TransactionContext.selectedUser?.name}"
         paymentBrief.text = "Your transaction to ${TransactionContext.selectedUser?.number} will verify"
+
+
 
         back.setOnClickListener{
             super.onBackPressed()

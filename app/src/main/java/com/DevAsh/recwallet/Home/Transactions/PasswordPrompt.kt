@@ -3,6 +3,7 @@ package com.DevAsh.recwallet.Home.Transactions
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -44,6 +45,13 @@ class PasswordPrompt : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password_prompt)
         RealmHelper.init(context)
+
+
+        badge.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
+        badge.text = TransactionContext.selectedUser?.name?.substring(0,1)
+        type.text = "Paying to ${TransactionContext.selectedUser?.name}"
+        selectedUserName.text = TransactionContext.selectedUser?.number
+        amount.text = TransactionContext.amount
 
         back.setOnClickListener{
             super.onBackPressed()
@@ -99,7 +107,7 @@ class PasswordPrompt : AppCompatActivity() {
                                         val jsonData = JSONObject()
                                         jsonData.put("to",
                                             TransactionContext.selectedUser?.number.toString().replace("+",""))
-                                        SocketHelper.socket.emit("notifyPayment",jsonData)
+                                        SocketHelper.socket?.emit("notifyPayment",jsonData)
                                         val balance = response?.getInt("Balance")
                                         StateContext.currentBalance = balance!!
                                         val formatter = DecimalFormat("##,##,##,##,##,##,##,###")

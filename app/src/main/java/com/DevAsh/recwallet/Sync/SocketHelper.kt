@@ -17,14 +17,14 @@ import java.text.DecimalFormat
 object SocketHelper {
 
     private val url = ApiContext.apiUrl+ ApiContext.syncPort
-    lateinit var socket:Socket
+    var socket:Socket? = null
     var newUser:Boolean = false
 
     fun connect(){
         socket = IO.socket(url)
-        socket.connect()
+        socket?.connect()
 
-        socket.on("connect") {
+        socket?.on("connect") {
             println("connecting ....")
             val data = JSONObject(
                mapOf(
@@ -32,20 +32,20 @@ object SocketHelper {
                    "fcmToken" to DetailsContext.fcmToken
                )
             )
-            socket.emit("getInformation",data)
+            socket?.emit("getInformation",data)
 
         }
 
-        socket.on("doUpdate"){
+        socket?.on("doUpdate"){
 
         }
 
 
-        socket.on("disconnect"){
+        socket?.on("disconnect"){
             println("disconnecting...")
         }
 
-        socket.on("receivedPayment"){
+        socket?.on("receivedPayment"){
             getMyState()
         }
 

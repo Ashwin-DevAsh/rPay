@@ -72,7 +72,7 @@ class SocketService : Service() {
             notificationManager.createNotificationChannel(notificationChannel)
             val builder: Notification.Builder = Notification.Builder(this, "DevAsh")
                 .setContentTitle("Verifying transactions")
-                .setContentText("Your device is a node in blockchain our network")
+                .setContentText("Your device is a node in our blockchain network")
                 .setSmallIcon(R.drawable.rpay_notification)
                 .setAutoCancel(true)
             val notification: Notification = builder.build()

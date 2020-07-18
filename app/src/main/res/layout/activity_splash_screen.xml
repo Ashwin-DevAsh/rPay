@@ -16,14 +16,17 @@
         <androidx.cardview.widget.CardView
             android:layout_width="100dp"
             android:layout_marginBottom="250dp"
-            app:cardCornerRadius="50dp"
+            app:cardElevation="0dp"
+            android:padding="0dp"
             app:cardBackgroundColor="@color/colorPrimary"
             android:background="@color/colorPrimary"
             android:layout_height="100dp">
             <ImageView
+                android:layout_margin="0dp"
                 android:layout_width="100dp"
+                android:layout_gravity="center"
                 android:scaleType="fitXY"
-                android:src="@mipmap/ic_launcher_round"
+                android:src="@drawable/ic_launcher_round"
                 android:layout_height="100dp">
             </ImageView>
         </androidx.cardview.widget.CardView>
