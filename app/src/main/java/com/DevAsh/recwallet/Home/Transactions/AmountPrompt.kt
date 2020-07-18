@@ -19,7 +19,7 @@ class AmountPrompt : AppCompatActivity() {
 
         context=this
 
-        paymentText.text = "Paying ${TransactionContext.selectedUser?.name?.replace(" ","")}"
+        paymentText.text = "Paying ${TransactionContext.selectedUser?.name}"
         paymentBrief.text = "Your transaction to ${TransactionContext.selectedUser?.number} will verify"
 
         back.setOnClickListener{
