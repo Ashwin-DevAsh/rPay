@@ -186,6 +186,30 @@ class HomePage : AppCompatActivity() {
 
         }
 
+        cashBack.setOnClickListener{
+            val intent = Intent(this,WebView::class.java)
+            intent.putExtra("page","cashbacks")
+            startActivity(intent)
+        }
+
+        merchant.setOnClickListener{
+            val intent = Intent(this,WebView::class.java)
+            intent.putExtra("page","merchant")
+            startActivity(intent)
+        }
+
+        support.setOnClickListener{
+            val intent = Intent(this,WebView::class.java)
+            intent.putExtra("page","support")
+            startActivity(intent)
+        }
+
+        safety.setOnClickListener{
+            val intent = Intent(this,WebView::class.java)
+            intent.putExtra("page","safety")
+            startActivity(intent)
+        }
+
     }
 
     override fun onRequestPermissionsResult(

@@ -214,6 +214,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/cashBack"
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content">
                 <ImageView
@@ -269,6 +270,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/merchant"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_width="50dp"
@@ -322,6 +324,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/support"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_width="50dp"
@@ -375,6 +378,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/safety"
                 android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content">
                 <ImageView
