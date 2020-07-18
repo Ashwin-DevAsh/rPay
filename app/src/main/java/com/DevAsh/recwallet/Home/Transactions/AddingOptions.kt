@@ -182,9 +182,8 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         co.setKeyID("rzp_test_txenFuJupWfNO6")
         try {
             val options = JSONObject()
-            options.put("name","R-Pay")
-            options.put("description","INR to RC")
-            options.put("image","https://s3.amazonaws.com/rzp-mobile/images/rzp.png")
+            options.put("name","Adding Money")
+            options.put("description","This process require a 2% commission")
             options.put("currency","INR")
             options.put("amount",((Integer.parseInt(amount)*100)+((Integer.parseInt(amount)*100)*0.02
                     )).toString())

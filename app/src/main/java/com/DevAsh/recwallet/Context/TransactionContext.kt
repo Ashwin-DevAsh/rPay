@@ -13,4 +13,6 @@ object TransactionContext {
     var currency = "RC"
 
     var selectedTransaction:Transaction?=null
+
+    var openTransactionPage = false
 }

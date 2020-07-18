@@ -6,21 +6,18 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.Icon
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.TransactionContext
-import com.DevAsh.recwallet.Home.Transactions.Contacts
-import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
+import com.DevAsh.recwallet.Home.AllTransactions
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.DevAsh.recwallet.Sync.SocketService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.lang.Exception
 import kotlin.random.Random
 
 
@@ -33,6 +30,7 @@ class NotificationService : FirebaseMessagingService() {
 
     override fun onMessageReceived(p0: RemoteMessage) {
 
+        println(p0.data["type"])
         if (p0.data["type"]=="awake"){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(Intent(this,SocketService::class.java))
@@ -40,45 +38,67 @@ class NotificationService : FirebaseMessagingService() {
                  startService(Intent(this,SocketService::class.java))
             }
         }else{
+            val type =  p0.data["type"]!!.split(",")[0]
             val amount = p0.data["type"]!!.split(",")[3]
             val fromName = p0.data["type"]!!.split(",")[1]
 
             try {
                 SocketHelper.getMyState()
-            } catch (e:Throwable){ }
+            } catch (e:Throwable){
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                val channelId = "Payment"
-                val channelName: CharSequence = "Payment"
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val notificationChannel = NotificationChannel(channelId, channelName, importance)
-                notificationManager.createNotificationChannel(notificationChannel)
-                val builder: Notification.Builder = Notification.Builder(this, "Payment")
-                    .setContentTitle("Rec Pay")
-                    .setContentText("Received $amount ${TransactionContext.currency} from $fromName")
-                    .setSmallIcon(R.drawable.rpay_notification)
-                    .setContentIntent(
-                        PendingIntent.getActivity(this, 1,(Intent(applicationContext,SplashScreen::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
-                    )
-                    .setAutoCancel(true)
-                val notification: Notification = builder.build()
-                notificationManager.notify(Random.nextInt(1000000000),notification)
-            } else {
-                val builder = NotificationCompat.Builder(this)
-                    .setContentTitle("Rec Pay")
-                    .setContentText("Received $amount ₿ from $fromName")
-                    .setSmallIcon(R.drawable.rpay_notification)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setContentIntent(
-                        PendingIntent.getActivity(this, 1,(Intent(applicationContext,SplashScreen::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
-                    )
-                    .setAutoCancel(true)
-                val notification: Notification = builder.build()
-                (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(Random.nextInt(1000000000),notification)
             }
+
+            if(type=="addedMoney"){
+                showNotification("Added Money","Your $amount ${TransactionContext.currency}s has been successfully added.")
+            }else{
+                showNotification(fromName,"You have received $amount ${TransactionContext.currency}s from $fromName.")
+            }
+
+
         }
         super.onMessageReceived(p0)
+    }
+
+    private fun showNotification(title:String, subTitle:String){
+        val intent = Intent(applicationContext,SplashScreen::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("openTransactionPage",true)
+        val bundle=Bundle()
+        bundle.putBoolean("openTransactionPage",true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channelId = "Payment"
+            val channelName: CharSequence = "Payment"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val notificationChannel = NotificationChannel(channelId, channelName, importance)
+            notificationManager.createNotificationChannel(notificationChannel)
+
+            val builder: Notification.Builder = Notification.Builder(this, "Payment")
+                .setContentTitle(title)
+                .setContentText(subTitle)
+                .setSmallIcon(R.drawable.rpay_notification)
+                .setExtras(bundle)
+                .setContentIntent(
+                    PendingIntent.getActivities(this, 1, arrayOf(intent,Intent(this,AllTransactions::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
+                )
+                .setAutoCancel(true)
+            val notification: Notification = builder.build()
+            notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+            notificationManager.notify(Random.nextInt(1000000000),notification)
+        } else {
+            val builder = NotificationCompat.Builder(this)
+                .setContentTitle(title)
+                .setContentText(subTitle)
+                .setSmallIcon(R.drawable.rpay_notification)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(
+                    PendingIntent.getActivities(this, 1, arrayOf(intent,Intent(this,AllTransactions::class.java)), PendingIntent.FLAG_UPDATE_CURRENT)
+                )
+                .setAutoCancel(true)
+            val notification: Notification = builder.build()
+            notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(Random.nextInt(1000000000),notification)
+        }
     }
 
 }

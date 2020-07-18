@@ -25,13 +25,17 @@ object StateContext {
     fun initRecentContact(arrayList:ArrayList<Merchant>){
         model.recentContacts.value=arrayList
     }
+
     fun addRecentContact(contact: Merchant){
-        val temp = if(model.recentContacts.value!=null)model.recentContacts.value else ArrayList()
-        if(!temp?.contains(contact)!!){
+        val temp:ArrayList<Merchant> = if(model.recentContacts.value!=null) model.recentContacts.value!! else ArrayList()
+        if(!temp.contains(contact)){
+            temp.add(0,contact)
+            model.recentContacts.value=temp
+        }else{
+            temp.remove(contact)
             temp.add(0,contact)
             model.recentContacts.value=temp
         }
-
     }
 
     fun addTransaction(transaction: Transaction){

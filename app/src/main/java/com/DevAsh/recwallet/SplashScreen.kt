@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
@@ -34,6 +35,17 @@ class SplashScreen : AppCompatActivity() {
     lateinit var context: Context
     lateinit var parentLayout: View
 
+    override fun onNewIntent(intent: Intent) {
+        val extras = intent.extras
+        if (extras != null) {
+            if (extras.containsKey("openTransactionPage")) {
+                TransactionContext.openTransactionPage=true
+            }
+        }
+        super.onNewIntent(intent)
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
        RealmHelper.init(this)
 
@@ -50,6 +62,7 @@ class SplashScreen : AppCompatActivity() {
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
 
         if(credentials?.isLogin==true){
+            StateContext.initRecentContact(arrayListOf())
             Handler().postDelayed({
                     DetailsContext.setData(
                         credentials!!.name,
@@ -80,7 +93,7 @@ class SplashScreen : AppCompatActivity() {
                                                                  transactionObjectArray.getJSONObject(i)["To"].toString()
                                                        else transactionObjectArray.getJSONObject(i)["From"].toString()
 
-                                    val merchant = Merchant(name,number)
+                                    val merchant = Merchant(name, "+$number")
                                     if(!transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"))
                                         StateContext.addRecentContact(merchant)
                                     transactions.add(

@@ -62,6 +62,7 @@ class Otp : AppCompatActivity() {
         }
 
         verify.setOnClickListener { view ->
+            StateContext.initRecentContact(arrayListOf())
             errorMessage.visibility= INVISIBLE
             if (otp.text.toString().length == 4) {
                 hideKeyboardFrom(context,view)

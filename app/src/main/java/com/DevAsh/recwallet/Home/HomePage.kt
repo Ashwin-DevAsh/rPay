@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,9 +53,12 @@ class HomePage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
 
-       val message =  PasswordHashing.encryptMsg("12345678")
-
-
+        if(TransactionContext.openTransactionPage){
+            TransactionContext.openTransactionPage=false
+            Handler().postDelayed({
+                startActivity(Intent(this,AllTransactions::class.java))
+            },1000)
+        }
 
 
         merchantHolder.layoutManager = GridLayoutManager(context, 3)
@@ -212,6 +216,8 @@ class HomePage : AppCompatActivity() {
 
     }
 
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -269,6 +275,8 @@ class HomePage : AppCompatActivity() {
             mBottomSheetDialog.cancel()
         }
     }
+
+
 
     class BottomSheetPeople(val context:Context):BottomSheet{
         val mBottomSheetDialog = BottomSheetDialog(context)

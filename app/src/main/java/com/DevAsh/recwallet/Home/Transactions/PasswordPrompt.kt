@@ -191,8 +191,9 @@ class PasswordPrompt : AppCompatActivity() {
     }
 
     private fun addRecent(){
-        StateContext.addRecentContact(Merchant(TransactionContext.selectedUser?.name!!,
-            TransactionContext.selectedUser?.number!!,null))
+        val account = Merchant(TransactionContext.selectedUser?.name!!,TransactionContext.selectedUser?.number!!)
+        StateContext.addRecentContact(account)
+
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {
