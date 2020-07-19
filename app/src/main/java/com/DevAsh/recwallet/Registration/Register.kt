@@ -88,6 +88,26 @@ class Register : AppCompatActivity() {
                         .build()
                         .getAsJSONArray(object:JSONArrayRequestListener {
                             override fun onResponse(response: JSONArray?) {
+                               println(response)
+                                try{
+                                    if( response!!.getJSONObject(0)["message"].toString()=="User already exist"){
+                                        mainContent.visibility=VISIBLE
+                                        AlertHelper.showError("phone number or email already exist",this@Register)
+                                        return
+                                    }
+                                }catch (e:Throwable){
+
+                                }
+                                try{
+                                    if( response!!.getJSONObject(0)["message"].toString()=="failed"){
+                                        mainContent.visibility=VISIBLE
+                                        AlertHelper.showError("Failed !",this@Register)
+                                        return
+                                    }
+                                }catch (e:Throwable){
+
+                                }
+
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)
                                     val token =  response!!.getJSONObject(0)["token"].toString()

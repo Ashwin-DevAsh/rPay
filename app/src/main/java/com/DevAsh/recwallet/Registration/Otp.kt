@@ -47,14 +47,9 @@ class Otp : AppCompatActivity() {
 
         context = this
 
-        topNumber.text =
-            "Verify +${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
-        verifyNumber.text = "+${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
+        topNumber.text = "Verify +${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
+        info.text = "Waiting to automatically detect an SMS sent to +${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
 
-        wrongNumber.setOnClickListener {
-            startActivity(Intent(context, Login::class.java))
-            finish()
-        }
 
         cancel.setOnClickListener{
             startActivity(Intent(context, Login::class.java))
