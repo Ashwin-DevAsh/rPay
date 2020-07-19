@@ -172,6 +172,7 @@ class Otp : AppCompatActivity() {
                         }
                     })
             } else {
+                AlertHelper.showError("Invalid Otp",this@Otp)
                 mainContent.visibility = VISIBLE
             }
         }

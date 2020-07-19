@@ -31,11 +31,15 @@ import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
+import com.DevAsh.recwallet.Sync.SocketHelper
 import com.DevAsh.recwallet.Sync.SocketService
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.iid.FirebaseInstanceId
 import com.synnapps.carouselview.CarouselView
 import com.synnapps.carouselview.ImageListener
 import kotlinx.android.synthetic.main.activity_home_page.*
+import java.net.Socket
 
 
 class HomePage : AppCompatActivity() {
@@ -112,7 +116,18 @@ class HomePage : AppCompatActivity() {
         carouselView.pageCount = sampleImages.size
         carouselView.setImageListener(imageListener)
 
-        startService(Intent(this, SocketService::class.java))
+//        startService(Intent(this, SocketService::class.java))
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    println("Failed . . . .")
+                    return@OnCompleteListener
+                } else {
+                    println("success . . . .")
+                    DetailsContext.fcmToken = task.result?.token!!
+                    SocketHelper.connect()
+                }
+            })
 
         val balanceObserver = Observer<String> { currentBalance ->
              balance.text = currentBalance

@@ -25,14 +25,22 @@ class NotificationService : FirebaseMessagingService() {
         super.onNewToken(p0)
     }
 
+    override fun onCreate() {
+        intent = Intent(this,SocketService::class.java)
+        super.onCreate()
+    }
+
+    lateinit var intent :Intent
+
     override fun onMessageReceived(p0: RemoteMessage) {
 
         println(p0.data["type"])
         if (p0.data["type"]=="awake"){
+            stopService(intent)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(Intent(this,SocketService::class.java))
+                 startForegroundService(intent)
             } else {
-                 startService(Intent(this,SocketService::class.java))
+                 startService(intent)
             }
         }else{
             TransactionContext.openTransactionPage = true

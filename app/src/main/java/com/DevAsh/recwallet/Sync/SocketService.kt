@@ -7,7 +7,9 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
@@ -22,13 +24,14 @@ import io.realm.Realm
 
 class SocketService : Service() {
 
+    val handler = Handler(Looper.getMainLooper())
 
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
 
     override fun onCreate() {
-        println("creating ....")
+
 
         if (DetailsContext.name == null) {
             RealmHelper.init(this)
@@ -61,6 +64,10 @@ class SocketService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        handler.postDelayed({
+            println("Try to destroy")
+            onDestroy()
+        },1*60*1000)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

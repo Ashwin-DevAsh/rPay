@@ -27,7 +27,7 @@ class AmountPrompt : AppCompatActivity() {
         context=this
 
         paymentText.text = "Paying ${TransactionContext.selectedUser?.name}"
-        paymentBrief.text = "Your transaction to ${TransactionContext.selectedUser?.number} will verify"
+        paymentBrief.text = "Your transaction to ${TransactionContext.selectedUser?.number} will be verify by our server"
 
 
 
