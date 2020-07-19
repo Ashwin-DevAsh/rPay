@@ -64,10 +64,10 @@ class SocketService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        handler.postDelayed({
-            println("Try to destroy")
-            onDestroy()
-        },1*60*1000)
+//        handler.postDelayed({
+//            println("Try to destroy")
+//            onDestroy()
+//        },1*60*1000)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

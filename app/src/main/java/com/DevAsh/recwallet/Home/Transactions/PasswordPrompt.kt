@@ -96,8 +96,8 @@ class PasswordPrompt : AppCompatActivity() {
                 .build()
                 .getAsJSONObject(object : JSONObjectRequestListener {
                     override fun onResponse(response: JSONObject?) {
-                        transactionSuccessful()
                         if(response?.get("message")=="done"){
+                            transactionSuccessful()
                             AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                                 .addHeaders("jwtToken",DetailsContext.token)
                                 .setPriority(Priority.IMMEDIATE)
