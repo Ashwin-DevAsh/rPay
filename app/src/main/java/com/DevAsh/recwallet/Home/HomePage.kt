@@ -23,6 +23,7 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.UiContext.colors
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.Contacts
@@ -86,14 +87,14 @@ class HomePage : AppCompatActivity() {
         }
 
         merchantHolder.adapter = MerchantViewAdapter(arrayListOf(
-            Merchant("Hut Cafe","1234567890",R.drawable.hut_cafe),
-            Merchant("Tamil cafe","1234567890",R.drawable.tamil_cafe),
-            Merchant("Rec Mart","1234567890",R.drawable.rec_mart),
-            Merchant("A2Z","1234567890",R.drawable.ug),
-            Merchant("CCD","1234567890",R.drawable.ccd),
-            Merchant("Rec bill","1234567890",R.drawable.rec_bill),
-            Merchant("Fine Payment","1234567890",R.drawable.fine),
-            Merchant("zerox","1234567890",R.drawable.xrox),
+            Merchant("Hut Cafe","@hutcafe",R.drawable.hut_cafe),
+            Merchant("Tamil cafe","@tamilcafe",R.drawable.tamil_cafe),
+            Merchant("Rec Mart","@recmart",R.drawable.rec_mart),
+            Merchant("A2Z","@a2z",R.drawable.ug),
+            Merchant("CCD","@ccd",R.drawable.ccd),
+            Merchant("Rec bill","@recbill",R.drawable.rec_bill),
+            Merchant("Fine Payment","@finepayment",R.drawable.fine),
+            Merchant("zerox","@zerox",R.drawable.xrox),
             Merchant("More","1234567890",R.drawable.more)
             ),context,BottomSheetMerchant(context))
         peopleViewAdapter = PeopleViewAdapter(arrayListOf(),this,BottomSheetPeople(context))
@@ -241,22 +242,22 @@ class HomePage : AppCompatActivity() {
             val merchantContainer = sheetView.findViewById<RecyclerView>(R.id.merchantContainer)
             merchantContainer.layoutManager = GridLayoutManager(context, 3)
             merchantContainer.adapter = MerchantViewAdapter(arrayListOf(
-                Merchant("Hut Cafe","1234567890",R.drawable.hut_cafe),
-                Merchant("Tamil cafe","1234567890",R.drawable.tamil_cafe),
-                Merchant("Rec Mart","1234567890",R.drawable.rec_mart),
-                Merchant("A2Z","1234567890",R.drawable.ug),
-                Merchant("CCD","1234567890",R.drawable.ccd),
-                Merchant("Rec bill","1234567890",R.drawable.rec_bill),
-                Merchant("Fine Payment","1234567890",R.drawable.fine),
-                Merchant("zerox","1234567890",R.drawable.xrox),
-                Merchant("Hut Cafe","1234567890",R.drawable.hut_cafe),
-                Merchant("Tamil cafe","1234567890",R.drawable.tamil_cafe),
-                Merchant("Rec Mart","1234567890",R.drawable.rec_mart),
-                Merchant("A2Z","1234567890",R.drawable.ug),
-                Merchant("CCD","1234567890",R.drawable.ccd),
-                Merchant("Rec bill","1234567890",R.drawable.rec_bill),
-                Merchant("Fine Payment","1234567890",R.drawable.fine),
-                Merchant("zerox","1234567890",R.drawable.xrox)
+                Merchant("Hut Cafe","@hutcafe",R.drawable.hut_cafe),
+                Merchant("Tamil cafe","@tamilcafe",R.drawable.tamil_cafe),
+                Merchant("Rec Mart","@recmart",R.drawable.rec_mart),
+                Merchant("A2Z","@a2z",R.drawable.ug),
+                Merchant("CCD","@ccd",R.drawable.ccd),
+                Merchant("Rec bill","@recbill",R.drawable.rec_bill),
+                Merchant("Fine Payment","@finepayment",R.drawable.fine),
+                Merchant("zerox","@zerox",R.drawable.xrox),
+                Merchant("Hut Cafe","@hutcafe",R.drawable.hut_cafe),
+                Merchant("Tamil cafe","@tamilcafe",R.drawable.tamil_cafe),
+                Merchant("Rec Mart","@recmart",R.drawable.rec_mart),
+                Merchant("A2Z","@a2z",R.drawable.ug),
+                Merchant("CCD","@ccd",R.drawable.ccd),
+                Merchant("Rec bill","@recbill",R.drawable.rec_bill),
+                Merchant("Fine Payment","@finepayment",R.drawable.fine),
+                Merchant("zerox","@zerox",R.drawable.xrox)
             ),context,this)
             mBottomSheetDialog.setContentView(sheetView)
         }

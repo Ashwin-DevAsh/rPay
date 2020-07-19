@@ -95,6 +95,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                     val balance = response?.getInt("Balance")
                                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                     StateContext.setBalanceToModel(formatter.format(balance))
+                                    StateContext.currentBalance= balance!!
                                     val transactionObjectArray = response?.getJSONArray("Transactions")
                                     val transactions = ArrayList<Transaction>()
                                     for (i in 0 until transactionObjectArray!!.length()) {

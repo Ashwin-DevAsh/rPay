@@ -15,10 +15,10 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -31,7 +31,6 @@ import kotlinx.android.synthetic.main.activity_register.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
@@ -68,7 +67,7 @@ class Register : AppCompatActivity() {
             {
                 AlertHelper.showError("Invalid Credentials", this)
             }else if( checkUserName(name)){
-                AlertHelper.showError("Username should not contain symbols", this)
+                AlertHelper.showError("Username should not contain symbols or numbers", this)
             }
             else if(password.length<8){
                 AlertHelper.showError("Password must contain at least 8 characters", this)
@@ -79,8 +78,6 @@ class Register : AppCompatActivity() {
                 Handler().postDelayed({
                     mainContent.visibility = INVISIBLE
                 },300)
-
-
                     AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
                         .addBodyParameter("name",name)
                         .addBodyParameter("email",email)
@@ -150,9 +147,11 @@ class Register : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun checkUserName(name:String):Boolean{
-        val p = Pattern.compile("[^A-Za-z0-9]")
+    private fun checkUserName(name:String):Boolean{
+        val p = Pattern.compile("[^A-Za-z_\\s]+")
         val m = p.matcher(name)
         return m.find()
     }
+
+
 }

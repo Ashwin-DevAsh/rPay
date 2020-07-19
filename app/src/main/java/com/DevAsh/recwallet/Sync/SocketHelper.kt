@@ -62,6 +62,7 @@ object SocketHelper {
                     StateContext.currentBalance = balance!!
                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                     StateContext.setBalanceToModel(formatter.format(balance))
+                    StateContext.currentBalance= balance!!
                     val transactionObjectArray = response?.getJSONArray("Transactions")
                     val transactions = ArrayList<Transaction>()
                     for (i in 0 until transactionObjectArray!!.length()) {
