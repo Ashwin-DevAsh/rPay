@@ -48,11 +48,13 @@ class SplashScreen : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-       RealmHelper.init(this)
 
         AndroidNetworking.initialize(applicationContext)
         AndroidNetworking.setParserFactory(JacksonParserFactory())
         super.onCreate(savedInstanceState)
+
+        RealmHelper.init(this)
+
 
 
         setContentView(R.layout.activity_splash_screen)

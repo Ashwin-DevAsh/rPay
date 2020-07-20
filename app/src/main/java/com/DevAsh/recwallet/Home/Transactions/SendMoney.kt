@@ -31,6 +31,8 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import kotlinx.android.synthetic.main.activity_send_money.*
 import org.json.JSONArray
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SendMoney : AppCompatActivity() {
@@ -71,8 +73,10 @@ class SendMoney : AppCompatActivity() {
                 searchHandler = Handler()
                 searchHandler.postDelayed({
                     val updatedList = ArrayList<Contacts>()
-                    for(i in TransactionContext.allUsers){
-                        if(i.name.toLowerCase().contains((s.toString().toLowerCase()))){
+                    for(i in TransactionContext.allUsers) {
+                        if(i.name.toLowerCase(Locale.ROOT).contains((s.toString().toLowerCase(Locale.ROOT)))
+                            || i.number.contains((s.toString().toLowerCase(Locale.ROOT)))
+                        ) {
                             updatedList.add(i)
                         }
                     }

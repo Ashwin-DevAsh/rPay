@@ -1,22 +1,35 @@
 package com.DevAsh.recwallet.Home.Transactions
 
+import android.Manifest.permission.USE_FINGERPRINT
 import android.app.Activity
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
+import android.hardware.fingerprint.FingerprintManager
+import android.opengl.Visibility
+import android.os.*
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyPermanentlyInvalidatedException
+import android.security.keystore.KeyProperties
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.TransactionContext.needToPay
+import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
-import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
@@ -29,22 +42,77 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
-
 import kotlinx.android.synthetic.main.activity_password_prompt.*
-import kotlinx.android.synthetic.main.activity_password_prompt.cancel
-import kotlinx.android.synthetic.main.activity_password_prompt.password
 import org.json.JSONObject
+import java.io.IOException
+import java.security.*
+import java.security.cert.CertificateException
 import java.text.DecimalFormat
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.NoSuchPaddingException
+import javax.crypto.SecretKey
 
 
 class PasswordPrompt : AppCompatActivity() {
 
-     var context: Context = this
+    var context: Context = this
+    private lateinit var keyStore: KeyStore
+    private lateinit var keyGenerator: KeyGenerator
+    private val KEY_NAME = "my_key"
+    lateinit var cipher:Cipher
+    lateinit var  fingerprintManager:FingerprintManager
+    lateinit var keyguardManager:KeyguardManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password_prompt)
         RealmHelper.init(context)
+
+        val extraValues = Realm.getDefaultInstance().where(ExtraValues::class.java).findFirst()
+
+
+        if (checkLockScreen()) {
+
+            generateKey()
+            if (initCipher()) {
+                var cryptoObject:FingerprintManager.CryptoObject
+                cipher.let {
+                    cryptoObject = FingerprintManager.CryptoObject(it)
+                }
+                val helper = FingerprintHelper(this,object :CallBack{
+                    override fun onSuccess() {
+                        if(extraValues==null || !extraValues.isEnteredPasswordOnce!!){
+                            animateBell("Enter password for 1st time")
+                        }else{
+                            startVibrate(200)
+                            Handler().postDelayed({
+                                needToPay = true
+                                transaction()
+                            },200)
+                        }
+                    }
+
+                    override fun onFailed() {
+                        startVibrate(500)
+                        animateBell()
+                    }
+
+                    override fun onTooManyAttempt() {
+                        fingerPrint.setColorFilter(Color.GRAY)
+                        errorMessage.setTextColor(Color.GRAY)
+                        errorMessage.text = "Too many attempts"
+                    }
+
+                })
+
+                if (fingerprintManager != null && cryptoObject != null) {
+                    helper.startAuth(fingerprintManager, cryptoObject)
+                }
+            }
+        }
+
 
 
         badge.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
@@ -57,6 +125,7 @@ class PasswordPrompt : AppCompatActivity() {
             super.onBackPressed()
         }
 
+
         done.setOnClickListener{v->
             if(PasswordHashing.decryptMsg(DetailsContext.password!!)==password.text.toString()){
                 needToPay = true
@@ -64,18 +133,23 @@ class PasswordPrompt : AppCompatActivity() {
                 Handler().postDelayed({
                     transaction()
                 },500)
+
+                if(extraValues==null || extraValues.isEnteredPasswordOnce!!){
+                    Realm.getDefaultInstance().executeTransactionAsync{
+                        val extraValues = ExtraValues(true)
+                        it.insert(extraValues)
+                    }
+                }
             }else{
                 println(PasswordHashing.decryptMsg(DetailsContext.password!!)+" actual password")
                 println(password.text.toString()+" actual password")
-                AlertHelper.showAlertDialog(this,"Incorrect Password !","The password you entered is incorrect, kindly check your password")
-//                AlertHelper.showError(v,"Invalid Password")
+//                AlertHelper.showAlertDialog(this,"Incorrect Password !","The password you entered is incorrect, kindly check your password")
+                AlertHelper.showError("Invalid Password",this@PasswordPrompt)
             }
 
         }
 
-        cancel.setOnClickListener{
-            super.onBackPressed()
-        }
+
     }
 
     fun transaction(){
@@ -209,4 +283,187 @@ class PasswordPrompt : AppCompatActivity() {
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+    private fun checkLockScreen(): Boolean {
+        keyguardManager = getSystemService(Context.KEYGUARD_SERVICE)
+                as KeyguardManager
+         fingerprintManager = getSystemService(Context.FINGERPRINT_SERVICE)
+                as FingerprintManager
+        if (!keyguardManager.isKeyguardSecure) {
+            Toast.makeText(this,
+                "Lock screen security not enabled",
+                Toast.LENGTH_LONG).show()
+            return false
+        }
+
+        if (ActivityCompat.checkSelfPermission(this,
+                USE_FINGERPRINT) !=
+            PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this,
+                "Permission not enabled (Fingerprint)",
+                Toast.LENGTH_LONG).show()
+
+            return false
+        }
+
+        if (!fingerprintManager.hasEnrolledFingerprints()) {
+            Toast.makeText(this,
+                "No fingerprint registered, please register",
+                Toast.LENGTH_LONG).show()
+            return false
+        }
+        return true
+    }
+
+    private fun generateKey() {
+        try {
+            keyStore = KeyStore.getInstance("AndroidKeyStore")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
+            keyGenerator = KeyGenerator.getInstance(
+                KeyProperties.KEY_ALGORITHM_AES,
+                "AndroidKeyStore")
+        } catch (e: NoSuchAlgorithmException) {
+            throw RuntimeException(
+                "Failed to get KeyGenerator instance", e)
+        } catch (e: NoSuchProviderException) {
+            throw RuntimeException("Failed to get KeyGenerator instance", e)
+        }
+
+        try {
+            keyStore.load(null)
+            keyGenerator.init(
+                KeyGenParameterSpec.Builder(KEY_NAME,
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                    .setUserAuthenticationRequired(true)
+                    .setEncryptionPaddings(
+                        KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                    .build())
+            keyGenerator.generateKey()
+        } catch (e: NoSuchAlgorithmException) {
+            throw RuntimeException(e)
+        } catch (e: InvalidAlgorithmParameterException) {
+            throw RuntimeException(e)
+        } catch (e: CertificateException) {
+            throw RuntimeException(e)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+    }
+
+    private fun initCipher(): Boolean {
+
+        try {
+            cipher = Cipher.getInstance(
+                KeyProperties.KEY_ALGORITHM_AES + "/"
+                        + KeyProperties.BLOCK_MODE_CBC + "/"
+                        + KeyProperties.ENCRYPTION_PADDING_PKCS7)
+        } catch (e: NoSuchAlgorithmException) {
+            throw RuntimeException("Failed to get Cipher", e)
+        } catch (e: NoSuchPaddingException) {
+            throw RuntimeException("Failed to get Cipher", e)
+        }
+
+        try {
+            keyStore.load(null)
+            val key = keyStore.getKey(KEY_NAME, null) as SecretKey
+            cipher.init(Cipher.ENCRYPT_MODE, key)
+            return true
+        } catch (e: KeyPermanentlyInvalidatedException) {
+            return false
+        } catch (e: KeyStoreException) {
+            throw RuntimeException("Failed to init Cipher", e)
+        } catch (e: CertificateException) {
+            throw RuntimeException("Failed to init Cipher", e)
+        } catch (e: UnrecoverableKeyException) {
+            throw RuntimeException("Failed to init Cipher", e)
+        } catch (e: IOException) {
+            throw RuntimeException("Failed to init Cipher", e)
+        } catch (e: NoSuchAlgorithmException) {
+            throw RuntimeException("Failed to init Cipher", e)
+        } catch (e: InvalidKeyException) {
+            throw RuntimeException("Failed to init Cipher", e)
+        }
+    }
+
+    private fun startVibrate(time:Long){
+        val v: Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            //deprecated in API 26
+            v.vibrate(time)
+        }
+    }
+
+    fun animateBell(message:String="Authentication Failed") {
+
+        val imgBell: ImageView = findViewById<View>(R.id.fingerPrint) as ImageView
+        imgBell.setColorFilter(Color.RED)
+        errorMessage.text=message
+        errorMessage.visibility=View.VISIBLE
+        errorMessage.setTextColor(Color.RED)
+
+        val shake: Animation = AnimationUtils.loadAnimation(this, R.anim.shakeanimation)
+        imgBell.animation = shake
+        imgBell.startAnimation(shake)
+//
+//        Handler().postDelayed({
+//            imgBell.setColorFilter(resources.getColor(R.color.textDark))
+//            errorMessage.visibility=View.GONE
+//
+//        },2000)
+    }
+}
+
+class FingerprintHelper(private val appContext: Activity, private val callBack: CallBack) : FingerprintManager.AuthenticationCallback() {
+
+    private lateinit var cancellationSignal: CancellationSignal
+
+    fun startAuth(manager: FingerprintManager,
+                  cryptoObject: FingerprintManager.CryptoObject) {
+
+        cancellationSignal = CancellationSignal()
+
+        if (ActivityCompat.checkSelfPermission(appContext,
+                USE_FINGERPRINT) !=
+            PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        manager.authenticate(cryptoObject, cancellationSignal, 0, this, null)
+    }
+
+    override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
+//        AlertHelper.showError(
+//            "Authentication error $errString",
+//            appContext)
+        callBack.onTooManyAttempt()
+    }
+
+    override fun onAuthenticationHelp(helpMsgId: Int,
+                                      helpString: CharSequence) {
+        AlertHelper.showError(
+            "Authentication help $helpString",
+            appContext)
+    }
+
+    override fun onAuthenticationFailed() {
+
+        callBack.onFailed()
+    }
+
+    override fun onAuthenticationSucceeded(
+        result: FingerprintManager.AuthenticationResult) {
+        callBack.onSuccess()
+    }
+}
+
+interface CallBack{
+    fun onSuccess()
+    fun onFailed()
+    fun onTooManyAttempt()
 }
