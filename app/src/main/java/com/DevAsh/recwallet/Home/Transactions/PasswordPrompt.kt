@@ -438,21 +438,15 @@ class FingerprintHelper(private val appContext: Activity, private val callBack: 
     }
 
     override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
-//        AlertHelper.showError(
-//            "Authentication error $errString",
-//            appContext)
         callBack.onTooManyAttempt()
     }
 
-    override fun onAuthenticationHelp(helpMsgId: Int,
-                                      helpString: CharSequence) {
-        AlertHelper.showError(
-            "Authentication help $helpString",
-            appContext)
+    override fun onAuthenticationHelp(helpMsgId: Int,helpString: CharSequence) {
+        callBack.onFailed()
+
     }
 
     override fun onAuthenticationFailed() {
-
         callBack.onFailed()
     }
 
