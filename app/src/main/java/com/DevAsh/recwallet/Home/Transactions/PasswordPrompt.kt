@@ -86,7 +86,7 @@ class PasswordPrompt : AppCompatActivity() {
                         if(extraValues==null || !extraValues.isEnteredPasswordOnce!!){
                             animateBell("Enter password for 1st time")
                         }else{
-                            startVibrate(200)
+                            startVibrate(100)
                             Handler().postDelayed({
                                 needToPay = true
                                 transaction()
@@ -95,7 +95,7 @@ class PasswordPrompt : AppCompatActivity() {
                     }
 
                     override fun onFailed() {
-                        startVibrate(500)
+                        startVibrate(200)
                         animateBell()
                     }
 
