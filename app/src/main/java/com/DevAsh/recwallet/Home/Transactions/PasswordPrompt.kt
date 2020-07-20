@@ -63,6 +63,7 @@ class PasswordPrompt : AppCompatActivity() {
     lateinit var cipher:Cipher
     lateinit var  fingerprintManager:FingerprintManager
     lateinit var keyguardManager:KeyguardManager
+    var isTooManyAttempts = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +100,14 @@ class PasswordPrompt : AppCompatActivity() {
                         animateBell()
                     }
 
+                    override fun onDirtyRead() {
+                        startVibrate(200)
+                        animateBell("Could'nt process fingerprint")
+                    }
+
                     override fun onTooManyAttempt() {
+                        isTooManyAttempts=true
+                        handler.removeCallbacksAndMessages(1)
                         fingerPrint.setColorFilter(Color.GRAY)
                         errorMessage.setTextColor(Color.GRAY)
                         errorMessage.text = "Too many attempts"
@@ -400,6 +408,8 @@ class PasswordPrompt : AppCompatActivity() {
         }
     }
 
+    val handler= Handler()
+
     fun animateBell(message:String="Authentication Failed") {
 
         val imgBell: ImageView = findViewById<View>(R.id.fingerPrint) as ImageView
@@ -411,12 +421,14 @@ class PasswordPrompt : AppCompatActivity() {
         val shake: Animation = AnimationUtils.loadAnimation(this, R.anim.shakeanimation)
         imgBell.animation = shake
         imgBell.startAnimation(shake)
-//
-//        Handler().postDelayed({
-//            imgBell.setColorFilter(resources.getColor(R.color.textDark))
-//            errorMessage.visibility=View.GONE
-//
-//        },2000)
+
+        handler.postDelayed({
+            if(!isTooManyAttempts){
+                imgBell.setColorFilter(resources.getColor(R.color.textDark))
+                errorMessage.text="Touch the fingerprint sensor"
+                errorMessage.setTextColor(resources.getColor(R.color.textDark))
+             }
+        },1500)
     }
 }
 
@@ -442,7 +454,7 @@ class FingerprintHelper(private val appContext: Activity, private val callBack: 
     }
 
     override fun onAuthenticationHelp(helpMsgId: Int,helpString: CharSequence) {
-        callBack.onFailed()
+        callBack.onDirtyRead()
 
     }
 
@@ -459,5 +471,6 @@ class FingerprintHelper(private val appContext: Activity, private val callBack: 
 interface CallBack{
     fun onSuccess()
     fun onFailed()
+    fun onDirtyRead()
     fun onTooManyAttempt()
 }
