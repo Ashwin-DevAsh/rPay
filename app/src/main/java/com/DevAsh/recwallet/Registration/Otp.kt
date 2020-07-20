@@ -1,14 +1,14 @@
 package com.DevAsh.recwallet.Registration
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
@@ -26,17 +26,23 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
+import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.Status
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_otp.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.security.cert.Extension
 import java.text.DecimalFormat
 
 
 class Otp : AppCompatActivity() {
 
     lateinit var context: Context
+
+    private val smsBroadcastReceiver by lazy { OtpReceiver() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,130 +57,161 @@ class Otp : AppCompatActivity() {
         info.text = "Waiting to automatically detect an SMS sent to +${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
 
 
+
+        val client = SmsRetriever.getClient(this)
+        val retriever = client.startSmsRetriever()
+        retriever.addOnSuccessListener {
+            val listener = object : OtpReceiver.Listener {
+                override fun onSMSReceived(otpCode: String) {
+                   println(otpCode)
+                    try{
+                        Integer.parseInt(otpCode)
+                        otp.setText(otpCode)
+                        Handler().postDelayed({
+                            verify()
+                        },200)
+                    }catch (e:Throwable){
+                        AlertHelper.showError("Unable to detect OTP",this@Otp)
+                    }
+                }
+                override fun onTimeOut() {
+
+                }
+            }
+            smsBroadcastReceiver.injectListener(listener)
+            registerReceiver(smsBroadcastReceiver,IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION))
+        }
+
+
         cancel.setOnClickListener{
             startActivity(Intent(context, Login::class.java))
             finish()
         }
 
-        verify.setOnClickListener { view ->
-            StateContext.initRecentContact(arrayListOf())
-            errorMessage.visibility= INVISIBLE
-            if (otp.text.toString().length == 4) {
-                hideKeyboardFrom(context,view)
-                Handler().postDelayed({
-                    mainContent.visibility = INVISIBLE
+        verify.setOnClickListener {
+            verify()
+        }
+    }
 
-                },300)
-                AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/setOtp")
-                    .addBodyParameter("otpNumber", otp.text.toString())
-                    .addBodyParameter(
-                        "number",
-                        RegistrationContext.countryCode + RegistrationContext.phoneNumber
-                    )
-                    .setPriority(Priority.IMMEDIATE)
-                    .build()
-                    .getAsJSONArray(object : JSONArrayRequestListener {
-                        override fun onResponse(response: JSONArray?) {
-                            val otpObject = response?.getJSONObject(0)
-                            if (otpObject != null && otpObject["message"] == "verified") {
-                                try {
+    private fun verify(){
+        val view = findViewById<View>(R.id.mainContent)
+        StateContext.initRecentContact(arrayListOf())
+        errorMessage.visibility= INVISIBLE
+        if (otp.text.toString().length == 4) {
+            hideKeyboardFrom(context,view)
+            Handler().postDelayed({
+                mainContent.visibility = INVISIBLE
 
-                                    println(otpObject["user"])
-                                    val user: JSONObject = otpObject["user"] as JSONObject
-                                        Realm.getDefaultInstance().executeTransaction { realm ->
-                                            realm.delete(Credentials::class.java)
-                                            val credentials = Credentials(
-                                                user["name"].toString(),
-                                                user["number"].toString(),
-                                                user["email"].toString(),
-                                                user["password"].toString(),
-                                                otpObject["token"].toString(),
-                                                true
-                                            )
-                                            realm.insert(credentials)
-                                            DetailsContext.setData(
-                                                credentials!!.name,
-                                                credentials.phoneNumber,
-                                                credentials.email,
-                                                credentials.password,
-                                                credentials.token
-                                            )
-                                            Handler().postDelayed({
-                                                AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
-                                                    .addHeaders("jwtToken",DetailsContext.token)
-                                                    .setPriority(Priority.IMMEDIATE)
-                                                    .build()
-                                                    .getAsJSONObject(object: JSONObjectRequestListener {
-                                                        override fun onResponse(response: JSONObject?) {
-                                                            val balance = response?.getInt("Balance")
-                                                            StateContext.currentBalance = balance!!
-                                                            val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
-                                                            StateContext.setBalanceToModel(formatter.format(balance))
-                                                            val transactionObjectArray = response?.getJSONArray("Transactions")
-                                                            val transactions = ArrayList<Transaction>()
-                                                            for (i in 0 until transactionObjectArray!!.length()) {
-                                                                val name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
-                                                                    transactionObjectArray.getJSONObject(i)["ToName"].toString()
-                                                                else transactionObjectArray.getJSONObject(i)["FromName"].toString()
-                                                                val number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
-                                                                    transactionObjectArray.getJSONObject(i)["To"].toString()
-                                                                else transactionObjectArray.getJSONObject(i)["From"].toString()
+            },300)
+            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/setOtp")
+                .addBodyParameter("otpNumber", otp.text.toString())
+                .addBodyParameter(
+                    "number",
+                    RegistrationContext.countryCode + RegistrationContext.phoneNumber
+                )
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsJSONArray(object : JSONArrayRequestListener {
+                    override fun onResponse(response: JSONArray?) {
+                        val otpObject = response?.getJSONObject(0)
+                        if (otpObject != null && otpObject["message"] == "verified") {
+                            try {
 
-                                                                val merchant = Merchant(name,number)
-                                                                if(!transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"))
-                                                                     StateContext.addRecentContact(merchant)
-                                                                transactions.add(
-                                                                    0, Transaction(
-                                                                        name = name,
-                                                                        number = number,
-                                                                        amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
-                                                                        time = SplashScreen.dateToString(
-                                                                            transactionObjectArray.getJSONObject(
-                                                                                i
-                                                                            )["TransactionTime"].toString()
-                                                                        ),
-                                                                        type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
-                                                                            "Send"
-                                                                        else "Received",
-                                                                        transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
-                                                                        isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
-                                                                    )
-                                                                )
-                                                            }
+                                println(otpObject["user"])
+                                val user: JSONObject = otpObject["user"] as JSONObject
+                                Realm.getDefaultInstance().executeTransaction { realm ->
+                                    realm.delete(Credentials::class.java)
+                                    val credentials = Credentials(
+                                        user["name"].toString(),
+                                        user["number"].toString(),
+                                        user["email"].toString(),
+                                        user["password"].toString(),
+                                        otpObject["token"].toString(),
+                                        true
+                                    )
+                                    realm.insert(credentials)
+                                    DetailsContext.setData(
+                                        credentials!!.name,
+                                        credentials.phoneNumber,
+                                        credentials.email,
+                                        credentials.password,
+                                        credentials.token
+                                    )
+                                    Handler().postDelayed({
+                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+                                            .addHeaders("jwtToken",DetailsContext.token)
+                                            .setPriority(Priority.IMMEDIATE)
+                                            .build()
+                                            .getAsJSONObject(object: JSONObjectRequestListener {
+                                                override fun onResponse(response: JSONObject?) {
+                                                    val balance = response?.getInt("Balance")
+                                                    StateContext.currentBalance = balance!!
+                                                    val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
+                                                    StateContext.setBalanceToModel(formatter.format(balance))
+                                                    val transactionObjectArray = response?.getJSONArray("Transactions")
+                                                    val transactions = ArrayList<Transaction>()
+                                                    for (i in 0 until transactionObjectArray!!.length()) {
+                                                        val name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                            transactionObjectArray.getJSONObject(i)["ToName"].toString()
+                                                        else transactionObjectArray.getJSONObject(i)["FromName"].toString()
+                                                        val number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                            transactionObjectArray.getJSONObject(i)["To"].toString()
+                                                        else transactionObjectArray.getJSONObject(i)["From"].toString()
 
-                                                            StateContext.initAllTransaction(transactions)
-                                                            startActivity(Intent(context, HomePage::class.java))
-                                                            finish()
-                                                        }
+                                                        val merchant = Merchant(name,number)
+                                                        if(!transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"))
+                                                            StateContext.addRecentContact(merchant)
+                                                        transactions.add(
+                                                            0, Transaction(
+                                                                name = name,
+                                                                number = number,
+                                                                amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
+                                                                time = SplashScreen.dateToString(
+                                                                    transactionObjectArray.getJSONObject(
+                                                                        i
+                                                                    )["TransactionTime"].toString()
+                                                                ),
+                                                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                    "Send"
+                                                                else "Received",
+                                                                transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
+                                                                isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
+                                                            )
+                                                        )
+                                                    }
 
-                                                        override fun onError(anError: ANError?) {
-                                                            AlertHelper.showServerError(this@Otp)
-                                                        }
+                                                    StateContext.initAllTransaction(transactions)
+                                                    startActivity(Intent(context, HomePage::class.java))
+                                                    finish()
+                                                }
 
-                                                    })
-                                            },0)
-                                        }
+                                                override fun onError(anError: ANError?) {
+                                                    AlertHelper.showServerError(this@Otp)
+                                                }
 
-                                } catch (e: Exception) {
-                                    startActivity(Intent(context, Register::class.java))
-                                    finish()
+                                            })
+                                    },0)
                                 }
 
-                            } else {
-                                mainContent.visibility = VISIBLE
-                                AlertHelper.showError("Invalid Otp",this@Otp)
+                            } catch (e: Exception) {
+                                startActivity(Intent(context, Register::class.java))
+                                finish()
                             }
-                        }
 
-                        override fun onError(anError: ANError?) {
-                            AlertHelper.showServerError(this@Otp)
-                            errorMessage.visibility=VISIBLE
+                        } else {
+                            mainContent.visibility = VISIBLE
+                            AlertHelper.showError("Invalid Otp",this@Otp)
                         }
-                    })
-            } else {
-                AlertHelper.showError("Invalid Otp",this@Otp)
-                mainContent.visibility = VISIBLE
-            }
+                    }
+
+                    override fun onError(anError: ANError?) {
+                        AlertHelper.showServerError(this@Otp)
+                        errorMessage.visibility=VISIBLE
+                    }
+                })
+        } else {
+            AlertHelper.showError("Invalid Otp",this@Otp)
+            mainContent.visibility = VISIBLE
         }
     }
 
@@ -190,4 +227,13 @@ class Otp : AppCompatActivity() {
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions!!, grantResults!!)
+    }
+
 }

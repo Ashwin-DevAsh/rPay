@@ -15,7 +15,7 @@ object StateContext {
     }
 
     fun setBalanceToModel(amount: String){
-         model.currentBalance.value = "$amount\tRC".replace("-","")
+         model.currentBalance.value = "$amount ${TransactionContext.currency}"
     }
 
     fun initAllTransaction(initList:ArrayList<Transaction>){

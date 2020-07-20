@@ -16,6 +16,9 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
+import com.google.android.gms.auth.api.credentials.Credential
+import com.google.android.gms.auth.api.credentials.Credentials
+import com.google.android.gms.auth.api.credentials.HintRequest
 import com.jacksonandroidnetworking.JacksonParserFactory
 import kotlinx.android.synthetic.main.activity_login.*
 import org.json.JSONArray
@@ -30,6 +33,10 @@ class Login : AppCompatActivity() {
         AndroidNetworking.setParserFactory(JacksonParserFactory())
 
         context = this
+
+        Handler().postDelayed({
+            requestHint()
+        },500)
 
         cancel.setOnClickListener{
             onBackPressed()
@@ -78,6 +85,37 @@ class Login : AppCompatActivity() {
         val imm: InputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun requestHint() {
+        val hintRequest = HintRequest.Builder()
+            .setPhoneNumberIdentifierSupported(true)
+            .build()
+        val credentialsClient = Credentials.getClient(this)
+        val intent = credentialsClient.getHintPickerIntent(hintRequest)
+        startIntentSenderForResult(
+            intent.intentSender,
+           1,
+            null, 0, 0, 0
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                val credential: Credential = data?.getParcelableExtra(Credential.EXTRA_KEY)!!
+                try {
+                    val number = credential.id
+                    val numberWithoutCountryCode = number.substring(number.length-10,number.length)
+                    phoneNumber.setText(numberWithoutCountryCode)
+                }catch (e:Throwable){
+                    AlertHelper.showError("Error while parse number !",this)
+                }
+
+
+            }
+        }
     }
 }
 

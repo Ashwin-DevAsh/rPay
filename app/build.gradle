@@ -70,4 +70,8 @@ dependencies {
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.4'
     implementation 'io.jsonwebtoken:jjwt:0.7.0'
     implementation 'com.nispok:snackbar:2.11.+'
+    implementation 'com.google.android.gms:play-services-base:11.6.0'
+    //Optional for phone number hint
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.4.0'
 }

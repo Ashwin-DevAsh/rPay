@@ -152,7 +152,26 @@ class HomePage : AppCompatActivity() {
             }
         }
 
-        greetings.text=("Hii, "+DetailsContext.name)
+        fun getText():String{
+            var name = DetailsContext.name.toString()
+            if(name.length>10){
+                val splitedText = name.split(" ")
+                if(splitedText.size>1){
+                    val firstName = splitedText[0]
+                    val secondName = splitedText[1]
+                    if(firstName.length<3){
+                        return secondName
+                    }
+                    return firstName
+                }else{
+                    return splitedText[0]
+                }
+            }else{
+                return name
+            }
+        }
+
+        greetings.text=("Hii, "+getText())
         StateContext.model.currentBalance.observe(this,balanceObserver)
         StateContext.model.recentContacts.observe(this,recentContactsObserver)
 

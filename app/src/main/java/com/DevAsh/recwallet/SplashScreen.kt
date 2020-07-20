@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
@@ -13,7 +14,6 @@ import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
-import com.DevAsh.recwallet.Home.AllTransactions
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
@@ -24,7 +24,6 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_all_transactions.*
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.text.ParseException
@@ -54,6 +53,9 @@ class SplashScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         RealmHelper.init(this)
+
+        val appSignatureHelper = GetHash(this)
+        println(appSignatureHelper.appSignatures[0]+"App Sign")
 
 
 
