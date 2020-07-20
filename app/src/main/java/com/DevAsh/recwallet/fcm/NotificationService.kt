@@ -85,7 +85,7 @@ class NotificationService : FirebaseMessagingService() {
                 )
                 .setAutoCancel(true)
             val notification: Notification = builder.build()
-            notification.flags = Notification.FLAG_INSISTENT or Notification.FLAG_AUTO_CANCEL
+            notification.flags = Notification.FLAG_AUTO_CANCEL
             notificationManager.notify(notificationID,notification)
         } else {
             val builder = NotificationCompat.Builder(this)
@@ -98,7 +98,7 @@ class NotificationService : FirebaseMessagingService() {
                 )
                 .setAutoCancel(true)
             val notification: Notification = builder.build()
-            notification.flags = Notification.FLAG_INSISTENT or Notification.FLAG_AUTO_CANCEL
+            notification.flags = Notification.FLAG_AUTO_CANCEL
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(Random.nextInt(1000000000),notification)
         }
     }
