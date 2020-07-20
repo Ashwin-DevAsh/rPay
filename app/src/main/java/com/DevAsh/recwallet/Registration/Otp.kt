@@ -93,6 +93,11 @@ class Otp : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        unregisterReceiver(smsBroadcastReceiver)
+        super.onDestroy()
+    }
+
     private fun verify(){
         val view = findViewById<View>(R.id.mainContent)
         StateContext.initRecentContact(arrayListOf())

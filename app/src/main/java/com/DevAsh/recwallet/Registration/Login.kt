@@ -42,35 +42,38 @@ class Login : AppCompatActivity() {
             onBackPressed()
         }
 
-        sendOtp.setOnClickListener{view->
-
-           if(phoneNumber.text.toString().length==10){
-               hideKeyboardFrom(context,view)
-               Handler().postDelayed({
-                   mainContent.visibility= View.GONE
-               },500)
-               RegistrationContext.phoneNumber = phoneNumber.text.toString()
-               AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getOtp?number=${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
-                   .setPriority(Priority.IMMEDIATE)
-                   .build()
-                   .getAsJSONArray(object : JSONArrayRequestListener {
-                       override fun onResponse(response: JSONArray?) {
-                           startActivity(Intent(context,Otp::class.java))
-                           finish()
-                       }
-
-                       override fun onError(anError: ANError?) {
-                           AlertHelper.showServerError(this@Login)
-
-                       }
-                   })
-
-           }else{
-
-           }
-
+        sendOtp.setOnClickListener{
+              next()
         }
 
+    }
+
+    fun next(){
+        if(phoneNumber.text.toString().length==10){
+            val view = findViewById<View>(R.id.mainContent)
+            hideKeyboardFrom(context,view)
+            Handler().postDelayed({
+                mainContent.visibility= View.GONE
+            },500)
+            RegistrationContext.phoneNumber = phoneNumber.text.toString()
+            AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getOtp?number=${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
+                .setPriority(Priority.IMMEDIATE)
+                .build()
+                .getAsJSONArray(object : JSONArrayRequestListener {
+                    override fun onResponse(response: JSONArray?) {
+                        startActivity(Intent(context,Otp::class.java))
+                        finish()
+                    }
+
+                    override fun onError(anError: ANError?) {
+                        AlertHelper.showServerError(this@Login)
+
+                    }
+                })
+
+        }else{
+
+        }
     }
 
     override fun onBackPressed() {
@@ -109,6 +112,9 @@ class Login : AppCompatActivity() {
                     val number = credential.id
                     val numberWithoutCountryCode = number.substring(number.length-10,number.length)
                     phoneNumber.setText(numberWithoutCountryCode)
+                    Handler().postDelayed({
+                        next()
+                    },200)
                 }catch (e:Throwable){
                     AlertHelper.showError("Error while parse number !",this)
                 }
