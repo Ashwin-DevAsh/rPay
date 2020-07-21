@@ -43,9 +43,7 @@
                         android:textSize="30dp"
                         android:scrollHorizontally="true"
                         android:ellipsize="end"
-
                         android:maxLines="1"
-
                         android:textColor="@color/textColor"
                         android:layout_height="wrap_content"/>
                     <TextView
@@ -467,6 +465,8 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:id="@+id/pay"
+                            android:textStyle="bold"
+                            android:textSize="13dp"
                             android:textColor="@color/highlightButton"
                             android:layout_marginLeft="20dp"
                             android:text="Find people to pay"

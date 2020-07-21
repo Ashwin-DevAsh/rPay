@@ -61,22 +61,32 @@ class SplashScreen : AppCompatActivity() {
 
         setContentView(R.layout.activity_splash_screen)
         context = this
-
         parentLayout = findViewById(android.R.id.content)
+
 
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
 
-        if(credentials?.isLogin==true){
+
+        if(credentials!=null && credentials.isLogin==true){
             StateContext.initRecentContact(arrayListOf())
             Handler().postDelayed({
-                    DetailsContext.setData(
-                        credentials!!.name,
-                        credentials.phoneNumber,
-                        credentials.email,
-                        credentials.password,
-                        credentials.token
-                    )
-                    AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+                  try {
+                      DetailsContext.setData(
+                          credentials.name,
+                          credentials.phoneNumber,
+                          credentials.email,
+                          credentials.password,
+                          credentials.token
+                      )
+                  }catch (e:Throwable){
+
+                      Handler().postDelayed({
+                          startActivity(Intent(context,Login::class.java))
+                          finish()
+                      },2000)
+                      return@postDelayed
+                  }
+                  AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
                         .addHeaders("jwtToken",DetailsContext.token)
                         .setPriority(Priority.IMMEDIATE)
                         .build()

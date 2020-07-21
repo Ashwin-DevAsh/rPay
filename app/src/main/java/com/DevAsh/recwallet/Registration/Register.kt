@@ -51,13 +51,13 @@ class Register : AppCompatActivity() {
         }
 
         done.setOnClickListener{view->
-            val phoneNumebr = RegistrationContext.countryCode+RegistrationContext.phoneNumber
+            val phoneNumber = RegistrationContext.countryCode+RegistrationContext.phoneNumber
             val name = name.text.toString()
             val email = email.text.toString()
             val password = password.text.toString()
             val confirmPassword = confirmPassword.text.toString()
 
-            if( phoneNumebr.length<10
+            if( phoneNumber.length<10
                 || name.length<2
                 || email.length<8
                 || !email.contains("@")
@@ -68,6 +68,8 @@ class Register : AppCompatActivity() {
                 AlertHelper.showError("Invalid Credentials", this)
             }else if( checkUserName(name)){
                 AlertHelper.showError("Username should not contain symbols or numbers", this)
+            }else if(name.split(" ").size>2){
+                AlertHelper.showError("Username should not contain more white space", this)
             }
             else if(password.length<8){
                 AlertHelper.showError("Password must contain at least 8 characters", this)
@@ -111,7 +113,7 @@ class Register : AppCompatActivity() {
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)
                                     val token =  response!!.getJSONObject(0)["token"].toString()
-                                    val credentials = Credentials(name,phoneNumebr,email,  PasswordHashing.encryptMsg(password),token,true)
+                                    val credentials = Credentials(name,phoneNumber,email,  PasswordHashing.encryptMsg(password),token,true)
                                     realm.insert(credentials)
                                     DetailsContext.setData(
                                         credentials.name,

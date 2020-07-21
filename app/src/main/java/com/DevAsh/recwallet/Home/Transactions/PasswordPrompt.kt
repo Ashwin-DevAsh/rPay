@@ -59,7 +59,7 @@ class PasswordPrompt : AppCompatActivity() {
     var context: Context = this
     private lateinit var keyStore: KeyStore
     private lateinit var keyGenerator: KeyGenerator
-    private val KEY_NAME = "my_key"
+    private val KEY_NAME = ApiContext.key
     lateinit var cipher:Cipher
     lateinit var  fingerprintManager:FingerprintManager
     lateinit var keyguardManager:KeyguardManager
@@ -85,7 +85,7 @@ class PasswordPrompt : AppCompatActivity() {
                 val helper = FingerprintHelper(this,object :CallBack{
                     override fun onSuccess() {
                         if(extraValues==null || !extraValues.isEnteredPasswordOnce!!){
-                            animateBell("Enter password for 1st time")
+                            animateBell("Enter password to enable fingerprint")
                         }else{
                             startVibrate(100)
                             Handler().postDelayed({
@@ -401,7 +401,7 @@ class PasswordPrompt : AppCompatActivity() {
     private fun startVibrate(time:Long){
         val v: Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+            v.vibrate(VibrationEffect.createOneShot(time, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             //deprecated in API 26
             v.vibrate(time)
