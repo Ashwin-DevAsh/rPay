@@ -83,11 +83,14 @@ class PasswordPrompt : AppCompatActivity() {
                     cryptoObject = FingerprintManager.CryptoObject(it)
                 }
                 val helper = FingerprintHelper(this,object :CallBack{
-                    override fun onSuccess() {
+                    override fun onSuccess(){
                         if(extraValues==null || !extraValues.isEnteredPasswordOnce!!){
                             animateBell("Enter password to enable fingerprint")
                         }else{
                             startVibrate(100)
+                            fingerPrint.setColorFilter(Color.parseColor("#4BB543"))
+                            errorMessage.setTextColor(Color.parseColor("#4BB543"))
+                            errorMessage.text = "Authentication success !"
                             Handler().postDelayed({
                                 needToPay = true
                                 transaction()
@@ -95,12 +98,12 @@ class PasswordPrompt : AppCompatActivity() {
                         }
                     }
 
-                    override fun onFailed() {
+                    override fun onFailed(){
                         startVibrate(200)
                         animateBell()
                     }
 
-                    override fun onDirtyRead() {
+                    override fun onDirtyRead(){
                         startVibrate(200)
                         animateBell("Could'nt process fingerprint")
                     }
@@ -110,9 +113,8 @@ class PasswordPrompt : AppCompatActivity() {
                         handler.removeCallbacksAndMessages(1)
                         fingerPrint.setColorFilter(Color.GRAY)
                         errorMessage.setTextColor(Color.GRAY)
-                        errorMessage.text = "Too many attempts"
+                        errorMessage.text = "Fingerprint disabled"
                     }
-
                 })
 
                 if (fingerprintManager != null && cryptoObject != null) {
@@ -298,26 +300,26 @@ class PasswordPrompt : AppCompatActivity() {
          fingerprintManager = getSystemService(Context.FINGERPRINT_SERVICE)
                 as FingerprintManager
         if (!keyguardManager.isKeyguardSecure) {
-            Toast.makeText(this,
+           AlertHelper.showError(
                 "Lock screen security not enabled",
-                Toast.LENGTH_LONG).show()
+               this)
             return false
         }
 
         if (ActivityCompat.checkSelfPermission(this,
                 USE_FINGERPRINT) !=
             PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this,
+          AlertHelper.showError(
                 "Permission not enabled (Fingerprint)",
-                Toast.LENGTH_LONG).show()
+              this)
 
             return false
         }
 
         if (!fingerprintManager.hasEnrolledFingerprints()) {
-            Toast.makeText(this,
+            AlertHelper.showError(
                 "No fingerprint registered, please register",
-                Toast.LENGTH_LONG).show()
+                this)
             return false
         }
         return true
@@ -423,7 +425,7 @@ class PasswordPrompt : AppCompatActivity() {
         imgBell.startAnimation(shake)
 
         handler.postDelayed({
-            if(!isTooManyAttempts){
+            if(!isTooManyAttempts && !message.startsWith("Enter")){
                 imgBell.setColorFilter(resources.getColor(R.color.textDark))
                 errorMessage.text="Touch the fingerprint sensor"
                 errorMessage.setTextColor(resources.getColor(R.color.textDark))
