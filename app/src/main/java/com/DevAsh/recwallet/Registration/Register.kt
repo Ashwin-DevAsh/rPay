@@ -133,6 +133,7 @@ class Register : AppCompatActivity() {
                                                 override fun onResponse(response: JSONObject?) {
                                                     SocketHelper.newUser=true
                                                     val formatter = DecimalFormat("##,##,##,##,##,##,###")
+                                                    StateContext.currentBalance=0
                                                     StateContext.setBalanceToModel(formatter.format(response?.get(DetailsContext.phoneNumber!!).toString().toInt()))
                                                     startActivity(Intent(context,HomePage::class.java))
                                                     finish()

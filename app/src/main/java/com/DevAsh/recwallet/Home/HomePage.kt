@@ -140,7 +140,9 @@ class HomePage : AppCompatActivity() {
             }catch (e:Throwable){
                 ArrayList(recentContacts.subList(0,recentContacts.size))
             }
-            newList.add(Merchant("More","",R.drawable.more))
+            if(newList.size==8){
+                newList.add(Merchant("More","",R.drawable.more))
+            }
 
             peopleViewAdapter.updateList(ArrayList(newList))
             if(recentContacts.size!=0){
