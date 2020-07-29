@@ -51,8 +51,9 @@ class QrScanner : AppCompatActivity() {
             runOnUiThread {
                 try {
 
+
                     val people = Jwts.parser().setSigningKey(ApiContext.key).parseClaimsJws(it.text).body
-                    TransactionContext.selectedUser= Contacts(people["name"].toString(), people["number"].toString(),people["id"].toString())
+                    TransactionContext.selectedUser= Contacts(people["name"].toString(), "+"+people["number"].toString(),people["id"].toString())
                     startActivity(
                         Intent(context, SingleObjectTransaction::class.java)
                     )

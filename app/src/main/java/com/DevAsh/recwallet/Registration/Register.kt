@@ -26,6 +26,8 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_register.*
 import org.json.JSONArray
@@ -80,12 +82,18 @@ class Register : AppCompatActivity() {
                 Handler().postDelayed({
                     mainContent.visibility = INVISIBLE
                 },300)
+                val jwt = Jwts.builder().claim("name", name)
+                    .claim("number", RegistrationContext.countryCode+RegistrationContext.phoneNumber)
+                    .claim("id", "rpay@${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
+                    .signWith(SignatureAlgorithm.HS256, ApiContext.key)
+                    .compact()
                     AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
                         .addBodyParameter("name",name)
                         .addBodyParameter("email",email)
                         .addBodyParameter("number",RegistrationContext.countryCode+RegistrationContext.phoneNumber)
                         .addBodyParameter("password",PasswordHashing.encryptMsg(password))
                         .addBodyParameter("fcmToken","fcmToken")
+                        .addBodyParameter("qrCode",jwt)
                         .setPriority(Priority.IMMEDIATE)
                         .build()
                         .getAsJSONArray(object:JSONArrayRequestListener {
