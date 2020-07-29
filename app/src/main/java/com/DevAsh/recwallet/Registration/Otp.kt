@@ -8,7 +8,6 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
@@ -27,14 +26,11 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.common.api.Status
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_otp.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.security.cert.Extension
 import java.text.DecimalFormat
 
 
@@ -143,7 +139,7 @@ class Otp : AppCompatActivity() {
                                         credentials.token
                                     )
                                     Handler().postDelayed({
-                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
                                             .addHeaders("jwtToken",DetailsContext.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()
@@ -163,20 +159,20 @@ class Otp : AppCompatActivity() {
                                                             transactionObjectArray.getJSONObject(i)["To"].toString()
                                                         else transactionObjectArray.getJSONObject(i)["From"].toString()
 
-                                                        val merchant = Merchant(name,number)
+                                                        val merchant = Merchant(name, "+${number.split("@")[number.split("@").size-1]}","$number")
                                                         if(!transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"))
                                                             StateContext.addRecentContact(merchant)
                                                         transactions.add(
                                                             0, Transaction(
                                                                 name = name,
-                                                                number = number,
+                                                                id = number,
                                                                 amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
                                                                 time = SplashScreen.dateToString(
                                                                     transactionObjectArray.getJSONObject(
                                                                         i
                                                                     )["TransactionTime"].toString()
                                                                 ),
-                                                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                                     "Send"
                                                                 else "Received",
                                                                 transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),

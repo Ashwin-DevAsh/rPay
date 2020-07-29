@@ -124,6 +124,7 @@ class SendMoney : AppCompatActivity() {
                           val user = Contacts(
                                response.getJSONObject(i)["name"].toString()
                               ,"+"+response.getJSONObject(i)["number"].toString()
+                              ,response.getJSONObject(i)["id"].toString()
                           )
                           if(user.number!="+"+DetailsContext.phoneNumber) TransactionContext.allUsers.add(user)
                       }
@@ -168,6 +169,8 @@ class UserAdapter(private var items : ArrayList<Contacts>, val context: Context)
 
         holder.color = colors[position%colors.size]
 
+        holder.contact = items[position]
+
         if (items[position].name.startsWith("+")) {
             holder.badge.text = items[position].name.subSequence(1, 3)
             holder.badge.textSize = 18F
@@ -187,25 +190,27 @@ class ViewHolder (view: View,context: Context) : RecyclerView.ViewHolder(view) {
     val avatarContainer = view.findViewById(R.id.avatarContainer) as RelativeLayout
     lateinit var color: String
 
+    var contact:Contacts?=null
+
 
     init {
         view.setOnClickListener{
            TransactionContext.avatarColor = color
-           TransactionContext.selectedUser= Contacts(title.text.toString(),subtitle.text.toString())
+           TransactionContext.selectedUser= Contacts(contact?.name!!,contact?.number!!,contact?.id!!)
            startActivity(context,Intent(context,SingleObjectTransaction::class.java),null)
         }
     }
 }
 
 
-class Contacts(val name: String, val number: String){
+class Contacts(val name: String, val number: String,val id:String){
     override fun equals(other: Any?): Boolean {
-        return (other as Contacts).number == this.number
+        return (other as Contacts).id == this.id
     }
 
     override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + number.hashCode()
+        var result = id.hashCode()
+        result = 31 * result + id.hashCode()
         return result
     }
 }

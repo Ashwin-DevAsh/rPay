@@ -83,12 +83,12 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
         holder.item = items[position]
 
         try {
-            holder.badge.setBackgroundColor(Color.parseColor(colorMap[items[position].number]))
-            holder.color = colorMap[items[position].number]
+            holder.badge.setBackgroundColor(Color.parseColor(colorMap[items[position].id]))
+            holder.color = colorMap[items[position].id]
 
         }catch (e:Throwable){
             holder.badge.setBackgroundColor(Color.parseColor(colors[colorIndex]))
-            colorMap[items[position].number] = colors[colorIndex]
+            colorMap[items[position].id] = colors[colorIndex]
             holder.color = colors[colorIndex]
             colorIndex = (colorIndex+1)%colors.size
         }

@@ -17,7 +17,6 @@ import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_transaction_status.*
 import kotlinx.android.synthetic.main.activity_transaction_status.badge
-import kotlinx.android.synthetic.main.widget_listtile_transaction.*
 
 class TransactionDetails : AppCompatActivity() {
 
@@ -50,19 +49,19 @@ class TransactionDetails : AppCompatActivity() {
 
         if (TransactionContext.selectedTransaction?.type=="Send"){
             toDetails.text = "To: ${TransactionContext.selectedTransaction?.name}"
-            toID.text = "+${TransactionContext.selectedTransaction?.number}"
+            toID.text = "${TransactionContext.selectedTransaction?.id}"
 
             fromDetails.text = "From: ${DetailsContext.name}"
-            fromID.text = "+${DetailsContext.phoneNumber}"
+            fromID.text = "${DetailsContext.id}"
         }else{
             toDetails.text = "To: ${DetailsContext.name}"
-            toID.text = "+${DetailsContext.phoneNumber}"
+            toID.text = "${DetailsContext.id}"
             if(TransactionContext.selectedTransaction?.isGenerated!!){
                 fromDetails.text = "${TransactionContext.selectedTransaction?.name} ID"
-                fromID.text = "${TransactionContext.selectedTransaction?.number}"
+                fromID.text = "${TransactionContext.selectedTransaction?.id}"
             }else{
                 fromDetails.text = "From: ${TransactionContext.selectedTransaction?.name}"
-                fromID.text = "+${TransactionContext.selectedTransaction?.number}".trim()
+                fromID.text = "${TransactionContext.selectedTransaction?.id}".trim()
             }
         }
 

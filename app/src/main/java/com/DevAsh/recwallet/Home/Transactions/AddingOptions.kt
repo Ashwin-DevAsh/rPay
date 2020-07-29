@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
@@ -71,7 +70,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             .addHeaders("jwtToken", DetailsContext.token)
             .addApplicationJsonBody(object{
                 var from = p0
-                var to = DetailsContext.phoneNumber
+                var to = DetailsContext.id
                 var amount = amount
                 var toName = DetailsContext.name
                 var fromName = addingOption
@@ -82,7 +81,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                 override fun onResponse(response: JSONObject?) {
                     loadingScreen.visibility = View.VISIBLE
                     if(response?.get("message")=="done"){
-                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
                             .addHeaders("jwtToken", DetailsContext.token)
                             .setPriority(Priority.IMMEDIATE)
                             .build()
@@ -101,10 +100,10 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                     for (i in 0 until transactionObjectArray!!.length()) {
                                         transactions.add(
                                             0, Transaction(
-                                                name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                     transactionObjectArray.getJSONObject(i)["ToName"].toString()
                                                 else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                                number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                id = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                     transactionObjectArray.getJSONObject(i)["To"].toString()
                                                 else transactionObjectArray.getJSONObject(i)["From"].toString(),
                                                 amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
@@ -113,7 +112,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                                         i
                                                     )["TransactionTime"].toString()
                                                 ),
-                                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                     "Send"
                                                 else "Received",
                                                 transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),

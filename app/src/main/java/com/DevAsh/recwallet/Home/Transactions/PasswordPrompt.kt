@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.fingerprint.FingerprintManager
-import android.opengl.Visibility
 import android.os.*
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
@@ -18,7 +17,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.ApiContext
@@ -170,8 +168,8 @@ class PasswordPrompt : AppCompatActivity() {
                 .setContentType("application/json; charset=utf-8")
                 .addHeaders("jwtToken", DetailsContext.token)
                 .addApplicationJsonBody(object{
-                    var from = DetailsContext.phoneNumber
-                    var to = TransactionContext.selectedUser?.number.toString().replace("+","")
+                    var from = DetailsContext.id
+                    var to = TransactionContext.selectedUser?.id.toString().replace("+","")
                     var amount = TransactionContext.amount
                     var toName = TransactionContext.selectedUser?.name.toString()
                     var fromName = DetailsContext.name
@@ -182,7 +180,7 @@ class PasswordPrompt : AppCompatActivity() {
                     override fun onResponse(response: JSONObject?) {
                         if(response?.get("message")=="done"){
                             transactionSuccessful()
-                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
                                 .addHeaders("jwtToken",DetailsContext.token)
                                 .setPriority(Priority.IMMEDIATE)
                                 .build()
@@ -190,7 +188,7 @@ class PasswordPrompt : AppCompatActivity() {
                                     override fun onResponse(response: JSONObject?) {
                                         val jsonData = JSONObject()
                                         jsonData.put("to",
-                                            TransactionContext.selectedUser?.number.toString().replace("+",""))
+                                            TransactionContext.selectedUser?.id.toString().replace("+",""))
                                         SocketHelper.socket?.emit("notifyPayment",jsonData)
                                         val balance = response?.getInt("Balance")
                                         StateContext.currentBalance = balance!!
@@ -201,10 +199,10 @@ class PasswordPrompt : AppCompatActivity() {
                                         for (i in 0 until transactionObjectArray!!.length()) {
                                             transactions.add(
                                                 0, Transaction(
-                                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                         transactionObjectArray.getJSONObject(i)["ToName"].toString()
                                                     else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                                    number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                    id = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                         transactionObjectArray.getJSONObject(i)["To"].toString()
                                                     else transactionObjectArray.getJSONObject(i)["From"].toString(),
                                                     amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
@@ -213,7 +211,7 @@ class PasswordPrompt : AppCompatActivity() {
                                                             i
                                                         )["TransactionTime"].toString()
                                                     ),
-                                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                                         "Send"
                                                     else "Received",
                                                     transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
@@ -283,7 +281,7 @@ class PasswordPrompt : AppCompatActivity() {
     }
 
     private fun addRecent(){
-        val account = Merchant(TransactionContext.selectedUser?.name!!,TransactionContext.selectedUser?.number!!)
+        val account = Merchant(TransactionContext.selectedUser?.name!!,TransactionContext.selectedUser?.number!!,TransactionContext.selectedUser?.id!!)
         StateContext.addRecentContact(account)
 
     }

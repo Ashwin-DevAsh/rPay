@@ -134,7 +134,7 @@ class Register : AppCompatActivity() {
                                                     SocketHelper.newUser=true
                                                     val formatter = DecimalFormat("##,##,##,##,##,##,###")
                                                     StateContext.currentBalance=0
-                                                    StateContext.setBalanceToModel(formatter.format(response?.get(DetailsContext.phoneNumber!!).toString().toInt()))
+                                                    StateContext.setBalanceToModel(formatter.format(0))
                                                     startActivity(Intent(context,HomePage::class.java))
                                                     finish()
                                                 }

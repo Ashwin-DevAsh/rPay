@@ -66,7 +66,7 @@ class ChangePassword : AppCompatActivity() {
         AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/changePassword")
             .addHeaders("token",DetailsContext.token)
             .addBodyParameter(object{
-                val id = DetailsContext.phoneNumber
+                val id = DetailsContext.id
                 val oldPassword = PasswordHashing.encryptMsg(oldPasswordText)
                 val newPassword = newHashedPassword
             })

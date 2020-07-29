@@ -24,7 +24,7 @@ class WebView : AppCompatActivity() {
         page = intent.getStringExtra("page")
 
         setContentView(R.layout.activity_web_view)
-        webView.getSettings().setJavaScriptEnabled(true)
+        webView.settings.javaScriptEnabled = true
         webView.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(

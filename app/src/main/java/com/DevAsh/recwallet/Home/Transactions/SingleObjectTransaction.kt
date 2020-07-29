@@ -2,14 +2,10 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +27,6 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import kotlinx.android.synthetic.main.activity_single_object_transaction.back
 import kotlinx.android.synthetic.main.activity_single_object_transaction.cancel
-import kotlinx.android.synthetic.main.activity_transaction_status.*
 import org.json.JSONArray
 
 class SingleObjectTransaction : AppCompatActivity() {
@@ -115,7 +110,7 @@ class SingleObjectTransaction : AppCompatActivity() {
             AndroidNetworking.get(
                 ApiContext.apiUrl
                     + ApiContext.paymentPort
-                    + "/getTransactionsBetweenObjects?number1=${DetailsContext.phoneNumber}&number2=${TransactionContext.selectedUser!!.number.replace("+","")}")
+                    + "/getTransactionsBetweenObjects?id1=${DetailsContext.id}&id2=${TransactionContext.selectedUser!!.id.replace("+","")}")
                 .addHeaders("jwtToken", DetailsContext.token)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -127,21 +122,21 @@ class SingleObjectTransaction : AppCompatActivity() {
                         for (i in 0 until transactionObjectArray.length()) {
                             transactions.add(
                                 Transaction(
-                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                         transactionObjectArray.getJSONObject(i)["ToName"].toString()
                                     else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                    number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                    id = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                         transactionObjectArray.getJSONObject(i)["To"].toString()
                                     else transactionObjectArray.getJSONObject(i)["From"].toString(),
                                     amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
-                                    time =(if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                    time =(if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                         "Paid  "
                                     else "Received  ")+ SplashScreen.dateToString(
                                         transactionObjectArray.getJSONObject(
                                             i
                                         )["TransactionTime"].toString()
                                     ),
-                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                         "Send"
                                     else "Received",
                                     transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),

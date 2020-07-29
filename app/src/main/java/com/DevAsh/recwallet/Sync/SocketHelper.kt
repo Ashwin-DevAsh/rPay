@@ -28,7 +28,7 @@ object SocketHelper {
             println("connecting ....")
             val data = JSONObject(
                mapOf(
-                   "number"  to DetailsContext.phoneNumber,
+                   "id"  to DetailsContext.id,
                    "fcmToken" to DetailsContext.fcmToken
                )
             )
@@ -52,7 +52,7 @@ object SocketHelper {
     }
 
    fun getMyState(){
-        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?number=${DetailsContext.phoneNumber}")
+        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
             .addHeaders("jwtToken",DetailsContext.token)
             .setPriority(Priority.IMMEDIATE)
             .build()
@@ -68,10 +68,10 @@ object SocketHelper {
                     for (i in 0 until transactionObjectArray!!.length()) {
                         transactions.add(
                             0, Transaction(
-                                name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                     transactionObjectArray.getJSONObject(i)["ToName"].toString()
                                 else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                id = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                     transactionObjectArray.getJSONObject(i)["To"].toString()
                                 else transactionObjectArray.getJSONObject(i)["From"].toString(),
                                 amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
@@ -80,7 +80,7 @@ object SocketHelper {
                                         i
                                     )["TransactionTime"].toString()
                                 ),
-                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.phoneNumber)
+                                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                     "Send"
                                 else "Received",
                                 transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),

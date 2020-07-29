@@ -7,6 +7,7 @@ object DetailsContext {
    var password: String? = null
    var token: String? = null
    var fcmToken:String=""
+   var id :String=""
 
    fun setData(name: String, phoneNumber: String, email: String, password: String, token: String) {
       this.name = name
@@ -14,6 +15,7 @@ object DetailsContext {
       this.email = email
       this.phoneNumber = phoneNumber
       this.token = token
+      this.id= "rpay@$phoneNumber"
    }
 
 }
