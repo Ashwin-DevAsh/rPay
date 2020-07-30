@@ -28,6 +28,7 @@ import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
+import com.DevAsh.recwallet.Home.Recovery.RecoveryOptions
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
@@ -134,6 +135,10 @@ class PasswordPrompt : AppCompatActivity() {
 
         back.setOnClickListener{
             super.onBackPressed()
+        }
+
+        forget.setOnClickListener{
+            startActivity(Intent(this, RecoveryOptions::class.java))
         }
 
 

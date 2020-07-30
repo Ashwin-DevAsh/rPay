@@ -10,11 +10,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-feature android:name="android.hardware.fingerprint"
-        android:required="false"/>
+
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -24,10 +27,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Home.WebView"></activity>
+        <activity android:name=".Home.Recovery.NewPassword"
+                  android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Home.Recovery.RecoveryOtp"
+                  android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Home.Recovery.RecoveryOptions"
+                  android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Home.WebView"
+                  android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.ChangePassword"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".Home.Transactions.Successful" />
         <activity android:name=".Home.Profile" />
         <activity android:name=".Home.QrScanner" />
@@ -39,6 +49,7 @@
         <receiver android:name=".Sync.RebootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
