@@ -52,7 +52,9 @@ class AmountPrompt : AppCompatActivity() {
 
             try {
                if(TransactionContext.amount!!.toInt()>0){
-                    startActivity(Intent(context,PasswordPrompt::class.java))
+                   TransactionContext.needToPay = true
+
+                   startActivity(Intent(context,PasswordPrompt::class.java))
                     finish()
                 }else{
                    AlertHelper.showError("Invalid Amount", this)

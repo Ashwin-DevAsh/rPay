@@ -1,10 +1,7 @@
 package com.DevAsh.recwallet.Home
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.util.JsonReader
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
@@ -17,8 +14,6 @@ import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.R
 import com.budiyev.android.codescanner.*
 import io.jsonwebtoken.Jwts
-import kotlinx.android.synthetic.main.activity_change_password.*
-import org.json.JSONObject
 
 
 class QrScanner : AppCompatActivity() {
@@ -52,7 +47,7 @@ class QrScanner : AppCompatActivity() {
                 try {
 
 
-                    val people = Jwts.parser().setSigningKey(ApiContext.key).parseClaimsJws(it.text).body
+                    val people = Jwts.parser().setSigningKey(ApiContext.qrKey).parseClaimsJws(it.text).body
                     TransactionContext.selectedUser= Contacts(people["name"].toString(), "+"+people["number"].toString(),people["id"].toString())
                     startActivity(
                         Intent(context, SingleObjectTransaction::class.java)

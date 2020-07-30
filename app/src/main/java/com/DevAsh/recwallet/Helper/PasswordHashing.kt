@@ -2,7 +2,6 @@ package com.DevAsh.recwallet.Helper
 
 import android.util.Base64.*
 import com.DevAsh.recwallet.Context.ApiContext
-import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
@@ -12,7 +11,7 @@ object PasswordHashing{
 
 
     private fun generateKey(): SecretKey? {
-        return SecretKeySpec(ApiContext.key.toByteArray(), "AES")
+        return SecretKeySpec(ApiContext.qrKey.toByteArray(), "AES")
     }
     fun encryptMsg(message: String): String {
         val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")

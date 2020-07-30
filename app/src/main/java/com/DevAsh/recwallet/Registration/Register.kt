@@ -85,7 +85,7 @@ class Register : AppCompatActivity() {
                 val jwt = Jwts.builder().claim("name", name)
                     .claim("number", RegistrationContext.countryCode+RegistrationContext.phoneNumber)
                     .claim("id", "rpay@${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
-                    .signWith(SignatureAlgorithm.HS256, ApiContext.key)
+                    .signWith(SignatureAlgorithm.HS256, ApiContext.qrKey)
                     .compact()
                     AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.registrationPort+"/addUser")
                         .addBodyParameter("name",name)

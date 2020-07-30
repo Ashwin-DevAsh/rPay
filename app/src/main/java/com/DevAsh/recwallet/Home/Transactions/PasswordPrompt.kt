@@ -37,6 +37,8 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
@@ -46,10 +48,12 @@ import java.io.IOException
 import java.security.*
 import java.security.cert.CertificateException
 import java.text.DecimalFormat
+import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.SecretKey
+import kotlin.collections.ArrayList
 
 
 class PasswordPrompt : AppCompatActivity() {
@@ -57,7 +61,7 @@ class PasswordPrompt : AppCompatActivity() {
     var context: Context = this
     private lateinit var keyStore: KeyStore
     private lateinit var keyGenerator: KeyGenerator
-    private val KEY_NAME = ApiContext.key
+    private val KEY_NAME = ApiContext.qrKey
     lateinit var cipher:Cipher
     lateinit var  fingerprintManager:FingerprintManager
     lateinit var keyguardManager:KeyguardManager
@@ -90,7 +94,6 @@ class PasswordPrompt : AppCompatActivity() {
                             errorMessage.setTextColor(Color.parseColor("#4BB543"))
                             errorMessage.text = "Authentication success !"
                             Handler().postDelayed({
-                                needToPay = true
                                 transaction()
                             },200)
                         }
@@ -136,7 +139,6 @@ class PasswordPrompt : AppCompatActivity() {
 
         done.setOnClickListener{v->
             if(PasswordHashing.decryptMsg(DetailsContext.password!!)==password.text.toString()){
-                needToPay = true
                 hideKeyboardFrom(context,v)
                 Handler().postDelayed({
                     transaction()
@@ -164,6 +166,7 @@ class PasswordPrompt : AppCompatActivity() {
         if(needToPay){
             loadingScreen.visibility= View.VISIBLE
             needToPay=false
+
             AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/pay")
                 .setContentType("application/json; charset=utf-8")
                 .addHeaders("jwtToken", DetailsContext.token)
@@ -269,6 +272,7 @@ class PasswordPrompt : AppCompatActivity() {
         }
     }
 
+
     fun transactionSuccessful(){
         val intent = Intent(this,Successful::class.java)
         intent.putExtra("type","transaction")
@@ -283,7 +287,6 @@ class PasswordPrompt : AppCompatActivity() {
     private fun addRecent(){
         val account = Merchant(TransactionContext.selectedUser?.name!!,TransactionContext.selectedUser?.number!!,TransactionContext.selectedUser?.id!!)
         StateContext.addRecentContact(account)
-
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

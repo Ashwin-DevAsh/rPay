@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
@@ -20,13 +19,11 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.zxing.WriterException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_profile.*
-import org.json.JSONObject
 
 
 class Profile : AppCompatActivity() {
@@ -48,7 +45,7 @@ class Profile : AppCompatActivity() {
         val jwt = Jwts.builder().claim("name", DetailsContext.name)
             .claim("number", DetailsContext.phoneNumber)
             .claim("id",DetailsContext.id)
-            .signWith(SignatureAlgorithm.HS256, ApiContext.key)
+            .signWith(SignatureAlgorithm.HS256, ApiContext.qrKey)
             .compact()
 
         val qrgEncoder =
