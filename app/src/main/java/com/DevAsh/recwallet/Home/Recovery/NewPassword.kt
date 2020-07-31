@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
+import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
@@ -108,6 +109,8 @@ class NewPassword : AppCompatActivity() {
             val data = r.where(Credentials::class.java).findFirst()
             data?.setPassword(newPassword)
             DetailsContext.password = newPassword
+            val extraValues=  r.where(ExtraValues::class.java).findFirst()
+            extraValues?.isEnteredPasswordOnce=false
             AlertHelper.showAlertDialog(
                 this@NewPassword,
                 "Successful !",
