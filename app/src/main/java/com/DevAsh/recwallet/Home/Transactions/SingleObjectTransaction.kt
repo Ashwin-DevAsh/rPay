@@ -64,7 +64,7 @@ class SingleObjectTransaction : AppCompatActivity() {
         badge.text = TransactionContext.selectedUser!!.name[0].toString()
 
         try {
-            allActivityAdapter = Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.number.replace("+","")]!!
+            allActivityAdapter = Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.id.replace("+","")]!!
             transactionContainer.layoutManager = LinearLayoutManager(context)
             transactionContainer.adapter = allActivityAdapter
 
@@ -150,7 +150,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                             transactionContainer.layoutManager = LinearLayoutManager(context)
                             allActivityAdapter = AllActivityAdapter(transaction, context)
                             transactionContainer.adapter = allActivityAdapter
-                            Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.number.replace("+","")] = allActivityAdapter!!
+                            Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.id.replace("+","")] = allActivityAdapter!!
                             scrollContainer.post {
                                 scrollContainer.fullScroll(View.FOCUS_DOWN)
                                 Handler().postDelayed({
