@@ -4,6 +4,7 @@
 
 -keepattributes JavascriptInterface
 -keepattributes *Annotation*
+-keep class androidx.appcompat.widget.** { *; }
 
 -dontwarn com.razorpay.**
 -keep class com.razorpay.** {*;}

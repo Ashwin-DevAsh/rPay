@@ -22,6 +22,7 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
+import com.squareup.picasso.Picasso
 import io.realm.Realm
 import org.json.JSONObject
 import java.text.DecimalFormat

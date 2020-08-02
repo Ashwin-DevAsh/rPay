@@ -75,10 +75,18 @@
                         <androidx.cardview.widget.CardView
                             android:layout_width="55dp"
                             app:cardCornerRadius="27.5dp"
-                            app:cardElevation="0dp"
                             android:layout_height="55dp"
                             >
                             <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:id="@+id/profile"
+                                android:visibility="invisible"
+                                android:layout_height="match_parent"/>
+                            <FrameLayout
+                                android:id="@+id/avatarContainer"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
                                 <TextView
@@ -102,6 +110,7 @@
                                     android:src="@drawable/rpay_notification"
                                     android:padding="13dp"
                                     android:layout_height="match_parent"/>
+                            </FrameLayout>
                             </FrameLayout>
 
                         </androidx.cardview.widget.CardView>

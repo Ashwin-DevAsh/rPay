@@ -19,10 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.TransactionContext.needToPay
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
@@ -44,6 +41,11 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
 import kotlinx.android.synthetic.main.activity_password_prompt.*
+import kotlinx.android.synthetic.main.activity_password_prompt.avatarContainer
+import kotlinx.android.synthetic.main.activity_password_prompt.badge
+import kotlinx.android.synthetic.main.activity_password_prompt.loadingScreen
+import kotlinx.android.synthetic.main.activity_password_prompt.profile
+import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import org.json.JSONObject
 import java.io.IOException
 import java.security.*
@@ -133,6 +135,8 @@ class PasswordPrompt : AppCompatActivity() {
         selectedUserName.text = TransactionContext.selectedUser?.number
         amount.text = TransactionContext.amount
 
+        loadAvatar()
+
         back.setOnClickListener{
             super.onBackPressed()
         }
@@ -140,6 +144,7 @@ class PasswordPrompt : AppCompatActivity() {
         forget.setOnClickListener{
             startActivity(Intent(this, RecoveryOptions::class.java))
         }
+
 
 
         done.setOnClickListener{v->
@@ -166,6 +171,24 @@ class PasswordPrompt : AppCompatActivity() {
 
 
     }
+
+    private fun loadAvatar(){
+        UiContext.loadProfileImage(context,TransactionContext.selectedUser?.id!!,object:
+            LoadProfileCallBack {
+            override fun onSuccess() {
+                avatarContainer.visibility=View.GONE
+                profile.visibility = View.VISIBLE
+            }
+
+            override fun onFailure() {
+                avatarContainer.visibility= View.VISIBLE
+                profile.visibility = View.GONE
+
+            }
+
+        },profile)
+    }
+
 
     fun transaction(){
         if(needToPay){

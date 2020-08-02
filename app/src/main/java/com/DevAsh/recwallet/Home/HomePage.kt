@@ -19,9 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.UiContext.colors
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
@@ -36,9 +34,11 @@ import com.DevAsh.recwallet.Sync.SocketService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.iid.FirebaseInstanceId
+import com.squareup.picasso.Picasso
 import com.synnapps.carouselview.CarouselView
 import com.synnapps.carouselview.ImageListener
 import kotlinx.android.synthetic.main.activity_home_page.*
+import kotlinx.android.synthetic.main.people_avatar.view.*
 import java.net.Socket
 
 
@@ -61,6 +61,8 @@ class HomePage : AppCompatActivity() {
 
         merchantHolder.layoutManager = GridLayoutManager(context, 3)
         recent.layoutManager = GridLayoutManager(context, 3)
+
+    loadProfilePicture()
 
         val bottomDown: Animation = AnimationUtils.loadAnimation(
             context,
@@ -246,6 +248,23 @@ class HomePage : AppCompatActivity() {
 
     }
 
+     private fun loadProfilePicture(){
+        UiContext.loadProfileImage(
+            context,
+            DetailsContext.id,
+            object :LoadProfileCallBack{
+                override fun onSuccess() {
+
+                }
+
+                override fun onFailure() {
+
+                }
+            },
+            profile,
+            R.drawable.profile
+        )
+    }
 
 
     override fun onRequestPermissionsResult(
@@ -262,6 +281,15 @@ class HomePage : AppCompatActivity() {
                 startActivity(Intent(context, QrScanner::class.java))
             }
         }
+    }
+
+    override fun onResume() {
+        if(UiContext.isProfilePictureChanged){
+            println("Uploaded")
+            UiContext.UpdateImage(profile)
+            UiContext.isProfilePictureChanged=false
+        }
+        super.onResume()
     }
 
     override fun onBackPressed() {
@@ -418,6 +446,21 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
                 holder.badge.textSize = 18F
             }
 
+        UiContext.loadProfileImage(context,items[position].id,object: LoadProfileCallBack {
+            override fun onSuccess() {
+                holder.badge.visibility=View.GONE
+                holder.profile.visibility = View.VISIBLE
+
+            }
+
+            override fun onFailure() {
+                holder.badge.visibility= View.VISIBLE
+                holder.profile.visibility = View.GONE
+
+            }
+
+        },holder.profile)
+
     }
 
     fun updateList(updatedList : ArrayList<Merchant>){
@@ -430,6 +473,7 @@ class PeopleViewHolder (view: View, context: Context,val openBottomSheetCallback
     val title = view.findViewById(R.id.title) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
     val avatar = view.findViewById(R.id.avatar) as ImageView
+    val profile = view.profile
     lateinit var color: String
     lateinit var people: Merchant
 

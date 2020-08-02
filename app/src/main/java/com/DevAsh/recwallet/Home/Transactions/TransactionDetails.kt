@@ -15,12 +15,17 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.R
+import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import kotlinx.android.synthetic.main.activity_transaction_status.*
+import kotlinx.android.synthetic.main.activity_transaction_status.avatarContainer
+import kotlinx.android.synthetic.main.activity_transaction_status.back
 import kotlinx.android.synthetic.main.activity_transaction_status.badge
+import kotlinx.android.synthetic.main.activity_transaction_status.cancel
+import kotlinx.android.synthetic.main.activity_transaction_status.profile
 
 class TransactionDetails : AppCompatActivity() {
 
-    lateinit var context: Context
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +41,8 @@ class TransactionDetails : AppCompatActivity() {
 
         transactionID.text = String.format("%020d", TransactionContext.selectedTransaction?.transactionId?.toInt())
 
+        loadAvatar()
+
         if(TransactionContext.selectedTransaction?.isGenerated!!){
             logoContainer.visibility=View.VISIBLE
             subText.text = "Added  ${TransactionContext.selectedTransaction?.amount} ${TransactionContext.currency}"
@@ -46,6 +53,8 @@ class TransactionDetails : AppCompatActivity() {
             type.text = if (TransactionContext.selectedTransaction?.type=="Send") "Paid to" else "Received from"
 
         }
+
+
 
         if (TransactionContext.selectedTransaction?.type=="Send"){
             toDetails.text = "To: ${TransactionContext.selectedTransaction?.name}"
@@ -92,11 +101,28 @@ class TransactionDetails : AppCompatActivity() {
            badge.textSize = 18F
         }
 
-        context=this
+
 
 
 
     }
+
+    private fun loadAvatar(){
+        UiContext.loadProfileImage(this, TransactionContext.selectedTransaction?.id!!,object:LoadProfileCallBack{
+            override fun onSuccess() {
+                avatarContainer.visibility=View.GONE
+                profile.visibility = View.VISIBLE
+            }
+
+            override fun onFailure() {
+                avatarContainer.visibility= View.VISIBLE
+                profile.visibility = View.GONE
+
+            }
+
+        },profile)
+    }
+
 
     private fun share(){
         val view = findViewById<View>(R.id.mainContent)

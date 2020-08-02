@@ -43,9 +43,16 @@
                     android:layout_height="65dp">
                     <androidx.cardview.widget.CardView
                         android:layout_width="42dp"
-                        app:cardElevation="0dp"
                         app:cardCornerRadius="21dp"
                         android:layout_height="42dp">
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:id="@+id/profile"
+                            android:visibility="invisible"
+                            android:layout_height="match_parent"/>
                         <RelativeLayout
                             android:layout_width="42dp"
                             android:translationZ="10dp"
@@ -68,6 +75,7 @@
 
 
                         </RelativeLayout>
+                        </FrameLayout>
 
                     </androidx.cardview.widget.CardView>
 
