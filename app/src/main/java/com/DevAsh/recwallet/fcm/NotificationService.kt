@@ -7,14 +7,22 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.widget.ImageView
 import androidx.core.app.NotificationCompat
+import com.DevAsh.recwallet.Context.ApiContext
+import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.DevAsh.recwallet.Sync.SocketService
+import com.google.android.gms.common.api.Api
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 import kotlin.random.Random
 
 
@@ -42,7 +50,21 @@ class NotificationService : FirebaseMessagingService() {
             } else {
                  startService(intent)
             }
-        }else{
+        }else if(p0.data["type"]?.startsWith("updateProfilePicture")!!){
+              println("Updated")
+              println(p0.data)
+              try{
+                  val id = p0.data["type"]?.split(",")!![1]
+                  Picasso.get().invalidate(UiContext.buildURL(id))
+                  Picasso.get().load(UiContext.buildURL(id))
+                      .memoryPolicy(MemoryPolicy.NO_CACHE)
+                      .networkPolicy(NetworkPolicy.NO_CACHE)
+              }catch (e:Throwable){
+                  println(e)
+              }
+
+        }
+        else{
             TransactionContext.openTransactionPage = true
             val type =  p0.data["type"]!!.split(",")[0]
             val amount = p0.data["type"]!!.split(",")[3]

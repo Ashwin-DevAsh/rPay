@@ -21,8 +21,10 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.LoadProfileCallBack
 import com.DevAsh.recwallet.Context.UiContext
+import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
+import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -175,10 +177,16 @@ class Profile : AppCompatActivity() {
                     bytesUploaded, totalBytes -> println("$bytesUploaded $totalBytes")
             }.getAsJSONObject(object :JSONObjectRequestListener{
                 override fun onResponse(response: JSONObject?) {
-                    profilePicture.setImageBitmap(newImage)
                     println(response)
-                    UiContext.isProfilePictureChanged = true
-                    UiContext.newProfile = newImage
+                    if(response?.getString("message")=="done"){
+                        loadProfileNoCache()
+                        UiContext.isProfilePictureChanged = true
+                        UiContext.newProfile = newImage
+                        SocketHelper.updateProfilePicture()
+                    }else{
+                        AlertHelper.showError("Error while uploading",this@Profile)
+                    }
+
                 }
 
                 override fun onError(anError: ANError?) {
@@ -187,6 +195,8 @@ class Profile : AppCompatActivity() {
 
             })
     }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -204,11 +214,27 @@ class Profile : AppCompatActivity() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
-
     }
 
     private fun loadProfilePicture(){
         UiContext.loadProfileImage(
+            this,
+            DetailsContext.id,
+            object : LoadProfileCallBack {
+                override fun onSuccess() {
+
+                }
+
+                override fun onFailure() {
+
+                }
+            },
+            profilePicture,
+            R.drawable.profile
+        )
+    }
+    private fun loadProfileNoCache(){
+        UiContext.loadProfileNoCache(
             this,
             DetailsContext.id,
             object : LoadProfileCallBack {

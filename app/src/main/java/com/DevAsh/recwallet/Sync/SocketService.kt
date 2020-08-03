@@ -40,7 +40,7 @@ class SocketService : Service() {
             val credentials =
                 Realm.getDefaultInstance().where(Credentials::class.java).findFirst() ?: return
             DetailsContext.setData(
-                credentials!!.name,
+                credentials.name,
                 credentials.phoneNumber,
                 credentials.email,
                 credentials.password,

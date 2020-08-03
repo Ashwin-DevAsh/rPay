@@ -51,6 +51,12 @@ object SocketHelper {
 
     }
 
+    fun updateProfilePicture(){
+        socket?.emit("updateProfilePicture",JSONObject( mapOf(
+            "id" to DetailsContext.id
+        )))
+    }
+
    fun getMyState(){
         AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
             .addHeaders("jwtToken",DetailsContext.token)
