@@ -19,12 +19,14 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.TransactionContext.needToPay
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
+import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.Recovery.RecoveryOptions
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
@@ -176,6 +178,11 @@ class PasswordPrompt : AppCompatActivity() {
         UiContext.loadProfileImage(context,TransactionContext.selectedUser?.id!!,object:
             LoadProfileCallBack {
             override fun onSuccess() {
+                if(!TransactionContext.selectedUser?.id!!.contains("rpay")){
+                    profile.setBackgroundColor( context.resources.getColor(R.color.textDark))
+                    profile.setColorFilter(Color.WHITE,  android.graphics.PorterDuff.Mode.SRC_IN)
+                    profile.setPadding(35,35,35,35)
+                }
                 avatarContainer.visibility=View.GONE
                 profile.visibility = View.VISIBLE
             }
@@ -226,31 +233,7 @@ class PasswordPrompt : AppCompatActivity() {
                                         val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                         StateContext.setBalanceToModel(formatter.format(balance))
                                         val transactionObjectArray = response?.getJSONArray("Transactions")
-                                        val transactions = ArrayList<Transaction>()
-                                        for (i in 0 until transactionObjectArray!!.length()) {
-                                            transactions.add(
-                                                0, Transaction(
-                                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                                        transactionObjectArray.getJSONObject(i)["ToName"].toString()
-                                                    else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                                    id = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                                        transactionObjectArray.getJSONObject(i)["To"].toString()
-                                                    else transactionObjectArray.getJSONObject(i)["From"].toString(),
-                                                    amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
-                                                    time = SplashScreen.dateToString(
-                                                        transactionObjectArray.getJSONObject(
-                                                            i
-                                                        )["TransactionTime"].toString()
-                                                    ),
-                                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                                        "Send"
-                                                    else "Received",
-                                                    transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
-                                                    isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
-                                                )
-                                            )
-                                        }
-                                        StateContext.initAllTransaction(transactions)
+                                        StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
                                     }
                                     override fun onError(anError: ANError?) {
                                         AlertHelper.showServerError(this@PasswordPrompt)
@@ -305,17 +288,10 @@ class PasswordPrompt : AppCompatActivity() {
         val intent = Intent(this,Successful::class.java)
         intent.putExtra("type","transaction")
         intent.putExtra("amount",TransactionContext.amount)
-        Handler().postDelayed({
-            addRecent()
-        },0)
         startActivity(intent)
         finish()
     }
 
-    private fun addRecent(){
-        val account = Merchant(TransactionContext.selectedUser?.name!!,TransactionContext.selectedUser?.number!!,TransactionContext.selectedUser?.id!!)
-        StateContext.addRecentContact(account)
-    }
 
     private fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =

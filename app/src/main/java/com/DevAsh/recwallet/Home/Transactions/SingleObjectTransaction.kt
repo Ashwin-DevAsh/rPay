@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,9 +25,13 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
+import kotlinx.android.synthetic.main.activity_password_prompt.*
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
+import kotlinx.android.synthetic.main.activity_single_object_transaction.avatarContainer
 import kotlinx.android.synthetic.main.activity_single_object_transaction.back
 import kotlinx.android.synthetic.main.activity_single_object_transaction.cancel
+import kotlinx.android.synthetic.main.activity_single_object_transaction.loadingScreen
+import kotlinx.android.synthetic.main.activity_single_object_transaction.profile
 import org.json.JSONArray
 
 class SingleObjectTransaction : AppCompatActivity() {
@@ -49,7 +54,7 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         avatarContainer.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
 
-        val transactionObserver = Observer<ArrayList<Transaction>> {updatedList->
+        val transactionObserver = Observer<ArrayList<Transaction>> {
             try{
                 getData()
             }catch (e:Throwable){ }
@@ -105,6 +110,11 @@ class SingleObjectTransaction : AppCompatActivity() {
     private fun loadAvatar(){
         UiContext.loadProfileImage(context,TransactionContext.selectedUser?.id!!,object:LoadProfileCallBack{
             override fun onSuccess() {
+                if(!TransactionContext.selectedUser?.id!!.contains("rpay")){
+                    profile.setBackgroundColor( context.resources.getColor(R.color.textDark))
+                    profile.setColorFilter(Color.WHITE,  android.graphics.PorterDuff.Mode.SRC_IN)
+                    profile.setPadding(35,35,35,35)
+                }
                 avatarContainer.visibility=View.GONE
                 profile.visibility = View.VISIBLE
             }
@@ -131,7 +141,6 @@ class SingleObjectTransaction : AppCompatActivity() {
                 .build()
                 .getAsJSONArray(object: JSONArrayRequestListener {
                     override fun onResponse(response: JSONArray?) {
-
                         val transactions = ArrayList<Transaction>()
                         val transactionObjectArray = response!!
                         for (i in 0 until transactionObjectArray.length()) {
@@ -174,9 +183,6 @@ class SingleObjectTransaction : AppCompatActivity() {
                                 },300)
                             }
                         }
-
-
-
                     }
 
                     override fun onError(anError: ANError?) {

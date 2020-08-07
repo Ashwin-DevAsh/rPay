@@ -2,10 +2,12 @@ package com.DevAsh.recwallet
 
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
@@ -13,17 +15,23 @@ import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.HomePage
+import com.DevAsh.recwallet.Home.Transactions.Contacts
+import com.DevAsh.recwallet.Home.Transactions.UserAdapter
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
+import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
 import com.squareup.picasso.Picasso
 import io.realm.Realm
+import kotlinx.android.synthetic.main.activity_send_money.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.text.ParseException
@@ -79,7 +87,6 @@ class SplashScreen : AppCompatActivity() {
                           credentials.token
                       )
                   }catch (e:Throwable){
-
                       Handler().postDelayed({
                           startActivity(Intent(context,Login::class.java))
                           finish()
@@ -92,46 +99,17 @@ class SplashScreen : AppCompatActivity() {
                         .build()
                         .getAsJSONObject(object: JSONObjectRequestListener {
                             override fun onResponse(response: JSONObject?) {
-                                println(DetailsContext.token)
                                 val balance = response?.getInt("Balance")
                                 StateContext.currentBalance = balance!!
                                 val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                 StateContext.setBalanceToModel(formatter.format(balance))
-                                val transactionObjectArray = response?.getJSONArray("Transactions")
-                                val transactions = ArrayList<Transaction>()
-                                println(response)
-                                for (i in 0 until transactionObjectArray!!.length()) {
-                                    val name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                                                 transactionObjectArray.getJSONObject(i)["ToName"].toString()
-                                                       else transactionObjectArray.getJSONObject(i)["FromName"].toString()
-                                    val number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                                                 transactionObjectArray.getJSONObject(i)["To"].toString()
-                                                       else transactionObjectArray.getJSONObject(i)["From"].toString()
+                                getMerchants()
 
-                                    val merchant = Merchant(name, "+${number.split("@")[number.split("@").size-1]}","$number")
-                                    if(!transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"))
-                                        StateContext.addRecentContact(merchant)
-                                    transactions.add(
-                                        0, Transaction(
-                                            name = name,
-                                            id = number,
-                                            amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
-                                            time = dateToString(
-                                                transactionObjectArray.getJSONObject(
-                                                    i
-                                                )["TransactionTime"].toString()
-                                            ),
-                                            type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                                  "Send"
-                                            else "Received",
-                                            transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
-                                            isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
-                                        )
-                                    )
-                                }
-                                StateContext.initAllTransaction(transactions)
-                                startActivity(Intent(context, HomePage::class.java))
-                                finish()
+                                Handler().postDelayed({
+                                    val transactionObjectArray = response.getJSONArray("Transactions")
+                                    StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
+                                },0)
+
                             }
                             override fun onError(anError: ANError?) {
                                   AlertHelper.showServerError(this@SplashScreen)
@@ -146,6 +124,35 @@ class SplashScreen : AppCompatActivity() {
         }
 
 
+    }
+
+    fun getMerchants(){
+        AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getMerchants")
+            .setPriority(Priority.IMMEDIATE)
+            .build()
+            .getAsJSONArray(object : JSONArrayRequestListener {
+                override fun onResponse(response: JSONArray?) {
+                    println(response)
+                    if(response!=null){
+                        var merchantTemp = ArrayList<Merchant>()
+                        for(i in 0 until response.length()){
+                            val user = Merchant(
+                                response.getJSONObject(i)["storeName"].toString()
+                                ,"+"+response.getJSONObject(i)["number"].toString()
+                                ,response.getJSONObject(i)["id"].toString()
+                            )
+                            merchantTemp.add(user)
+                        }
+                        StateContext.initMerchant(merchantTemp)
+                        startActivity(Intent(context, HomePage::class.java))
+                        finish()
+                    }
+
+                }
+                override fun onError(anError: ANError?) {
+                    AlertHelper.showServerError(this@SplashScreen)
+                }
+            })
     }
 
     companion object{

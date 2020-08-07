@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -53,6 +54,7 @@ class HomePage : AppCompatActivity() {
     )
 
     lateinit var peopleViewAdapter: PeopleViewAdapter
+    lateinit var merchantViewAdapter: MerchantViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +64,7 @@ class HomePage : AppCompatActivity() {
         merchantHolder.layoutManager = GridLayoutManager(context, 3)
         recent.layoutManager = GridLayoutManager(context, 3)
 
-    loadProfilePicture()
+        loadProfilePicture()
 
         val bottomDown: Animation = AnimationUtils.loadAnimation(
             context,
@@ -77,14 +79,14 @@ class HomePage : AppCompatActivity() {
 
 
         scroller.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            if (scrollY >500) {
+            if (scrollY >200) {
                 if(hiddenPanel.visibility==View.VISIBLE){
                     hiddenPanel.startAnimation(bottomDown)
                     hiddenPanel.visibility=View.GONE
                 }
 
             }
-            if(scrollY < 500){
+            if(scrollY < 200){
                 if(hiddenPanel.visibility==View.GONE){
                     hiddenPanel.visibility=View.VISIBLE
                     hiddenPanel.startAnimation(bottomUp)
@@ -92,31 +94,12 @@ class HomePage : AppCompatActivity() {
             }
         }
 
-        merchantHolder.adapter = MerchantViewAdapter(arrayListOf(
-            Merchant("Hut Cafe","@hutcafe","@hutcafe",R.drawable.hut_cafe),
-            Merchant("Tamil cafe","@tamilcafe","@tamilcafe",R.drawable.tamil_cafe),
-            Merchant("Rec Mart","@recmart","@recmart",R.drawable.rec_mart),
-            Merchant("A2Z","@a2z","@a2z",R.drawable.ug),
-            Merchant("CCD","@ccd","@ccd",R.drawable.ccd),
-            Merchant("Rec bill","@recbill","@recbill",R.drawable.rec_bill),
-            Merchant("Fine Payment","@finepayment","@finepayment",R.drawable.fine),
-            Merchant("zerox","@zerox","@zerox",R.drawable.xrox),
-            Merchant("More","1234567890","1234567890",R.drawable.more)
-            ),context,BottomSheetMerchant(context))
+        merchantViewAdapter =  MerchantViewAdapter(arrayListOf(),context,BottomSheetMerchant(context))
         peopleViewAdapter = PeopleViewAdapter(arrayListOf(),this,BottomSheetPeople(context))
         recent.adapter = peopleViewAdapter
+        merchantHolder.adapter = merchantViewAdapter
 
-        val imageListener =
-            ImageListener { position, imageView ->
-                imageView.setImageResource(sampleImages[position])
-                imageView.scaleType=ImageView.ScaleType.CENTER_INSIDE
-                imageView.adjustViewBounds=true
-                imageView.setBackgroundColor(Color.WHITE)
-            }
 
-        carouselView = findViewById(R.id.carouselView)
-        carouselView.pageCount = sampleImages.size
-        carouselView.setImageListener(imageListener)
 
 //        startService(Intent(this, SocketService::class.java))
         FirebaseInstanceId.getInstance().instanceId
@@ -136,7 +119,6 @@ class HomePage : AppCompatActivity() {
         }
 
         val recentContactsObserver = Observer<ArrayList<Merchant>> {recentContacts->
-            println("Updating...")
             val newList = try{
                 ArrayList(recentContacts.subList(0,8))
             }catch (e:Throwable){
@@ -153,6 +135,26 @@ class HomePage : AppCompatActivity() {
             }else{
                 info.visibility = View.VISIBLE
                 recent.visibility = View.GONE
+            }
+        }
+
+        val merchantObserver = Observer<ArrayList<Merchant>> {merchant->
+            val newList = try{
+                ArrayList(merchant.subList(0,8))
+            }catch (e:Throwable){
+                ArrayList(merchant.subList(0,merchant.size))
+            }
+            if(newList.size==8){
+                newList.add(Merchant("More","","",R.drawable.more))
+            }
+
+            merchantViewAdapter .updateList(ArrayList(newList))
+            if(merchant.size!=0){
+                noMerchant.visibility = View.GONE
+                merchantHolder.visibility = View.VISIBLE
+            }else{
+                noMerchant.visibility = View.VISIBLE
+                merchantHolder.visibility = View.GONE
             }
         }
 
@@ -178,7 +180,7 @@ class HomePage : AppCompatActivity() {
         greetings.text=("Hii, "+getText())
         StateContext.model.currentBalance.observe(this,balanceObserver)
         StateContext.model.recentContacts.observe(this,recentContactsObserver)
-
+        StateContext.model.merchants.observe(this,merchantObserver)
 
         sendMoney.setOnClickListener {
 //            val permissions = arrayOf(android.Manifest.permission.READ_CONTACTS)
@@ -305,24 +307,8 @@ class HomePage : AppCompatActivity() {
         init {
             val merchantContainer = sheetView.findViewById<RecyclerView>(R.id.merchantContainer)
             merchantContainer.layoutManager = GridLayoutManager(context, 3)
-            merchantContainer.adapter = MerchantViewAdapter(arrayListOf(
-                Merchant("Hut Cafe","@hutcafe","@hutcafe",R.drawable.hut_cafe),
-                Merchant("Tamil cafe","@tamilcafe","@tamilcafe",R.drawable.tamil_cafe),
-                Merchant("Rec Mart","@recmart","@recmart",R.drawable.rec_mart),
-                Merchant("A2Z","@a2z","@a2z",R.drawable.ug),
-                Merchant("CCD","@ccd","@ccd",R.drawable.ccd),
-                Merchant("Rec bill","@recbill","@recbill",R.drawable.rec_bill),
-                Merchant("Fine Payment","@finepayment","@finepayment",R.drawable.fine),
-                Merchant("zerox","@zerox","@zerox",R.drawable.xrox),
-                Merchant("Hut Cafe","@hutcafe","@hutcafe",R.drawable.hut_cafe),
-                Merchant("Tamil cafe","@tamilcafe","@tamilcafe",R.drawable.tamil_cafe),
-                Merchant("Rec Mart","@recmart","@recmart",R.drawable.rec_mart),
-                Merchant("A2Z","@a2z","@a2z",R.drawable.ug),
-                Merchant("CCD","@ccd","@ccd",R.drawable.ccd),
-                Merchant("Rec bill","@recbill","@recbill",R.drawable.rec_bill),
-                Merchant("Fine Payment","@finepayment","@finepayment",R.drawable.fine),
-                Merchant("zerox","@zerox","@zerox",R.drawable.xrox)
-            ),context,this)
+            merchantContainer.adapter = MerchantViewAdapter(
+             StateContext.model.merchants.value!!,context,this)
             mBottomSheetDialog.setContentView(sheetView)
         }
         override fun openBottomSheet(){
@@ -376,9 +362,26 @@ class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: 
         holder.title.text = items[position].name
         holder.merchant = items[position]
 
-        if(items[position].image!=null){
-            holder.badge.setImageDrawable(context.getDrawable(items[position].image!!))
+        if(items[position].name=="More" ){
+            holder.avatar.visibility = View.VISIBLE
+            holder.badge.visibility=View.GONE
+        }else{
+            holder.avatar.visibility = View.GONE
+            holder.badge.visibility=View.VISIBLE
         }
+
+        holder.badge.text = items[position].name[0].toString()
+
+        UiContext.loadProfileImage(context,items[position].id,object: LoadProfileCallBack {
+            override fun onSuccess() {
+                holder.avatarContainer .visibility=View.GONE
+                holder.profile.visibility = View.VISIBLE
+            }
+            override fun onFailure(){
+                holder.avatarContainer.visibility= View.VISIBLE
+                holder.profile.visibility = View.GONE
+            }
+        },holder.profile)
 
     }
     fun updateList(updatedList : ArrayList<Merchant>){
@@ -389,7 +392,10 @@ class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: 
 
 class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: BottomSheet?) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
-    val badge = view.findViewById(R.id.avatar) as ImageView
+    val badge = view.findViewById(R.id.badge) as TextView
+    val avatar = view.findViewById(R.id.avatar) as ImageView
+    val avatarContainer = view.findViewById(R.id.avatarContainer) as FrameLayout
+    val profile = view.findViewById(R.id.profile) as ImageView
     lateinit var merchant:Merchant
 
 

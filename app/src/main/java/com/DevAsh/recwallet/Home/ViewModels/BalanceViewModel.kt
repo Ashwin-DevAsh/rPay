@@ -12,4 +12,7 @@ class BalanceViewModel: ViewModel() {
     var currentBalance = MutableLiveData<String>()
     var allTransactions = MutableLiveData<ArrayList<Transaction>>()
     var recentContacts = MutableLiveData<ArrayList<Merchant>>()
+    var merchants = MutableLiveData<ArrayList<Merchant>>(ArrayList())
+    var isMerchantLoaded = MutableLiveData<Boolean>(false)
+
 }

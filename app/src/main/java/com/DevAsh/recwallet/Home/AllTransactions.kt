@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,8 @@ import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_all_transactions.*
 import kotlinx.android.synthetic.main.activity_all_transactions.activity
+import kotlinx.android.synthetic.main.activity_password_prompt.*
+import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import kotlinx.android.synthetic.main.widget_listtile_transaction.view.*
 import kotlin.collections.ArrayList
 
@@ -100,6 +103,12 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
             override fun onSuccess() {
                 holder.badge.visibility=View.GONE
                 holder.profile.visibility = View.VISIBLE
+                if(!items[position].id.contains("rpay")){
+
+                    holder.profile.setBackgroundColor( context.resources.getColor(R.color.textDark))
+                    holder.profile.setColorFilter(Color.WHITE,  android.graphics.PorterDuff.Mode.SRC_IN)
+                    holder.profile.setPadding(35,35,35,35)
+                }
 
             }
 
@@ -147,7 +156,7 @@ class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=n
     val badge = view.findViewById(R.id.badge) as TextView
     val additionalInfo = view.findViewById(R.id.additionalInfo) as TextView
     val logo = view.findViewById<ImageView>(R.id.logo)
-    val profile = view.profile
+    val profile = view.findViewById<ImageView>(R.id.profile)
 
     init {
         view.setOnClickListener{
