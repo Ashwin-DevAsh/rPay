@@ -151,10 +151,11 @@ class Otp : AppCompatActivity() {
                                                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                                     StateContext.setBalanceToModel(formatter.format(balance))
                                                     val transactionObjectArray = response.getJSONArray("Transactions")
-                                                    StateContext.initAllTransaction(
-                                                        TransactionsHelper.addTransaction(transactionObjectArray))
-                                                    startActivity(Intent(context, HomePage::class.java))
-                                                    finish()
+                                                    Handler().postDelayed({
+                                                        StateContext.initAllTransaction(
+                                                            TransactionsHelper.addTransaction(transactionObjectArray))
+                                                    },0)
+                                                   getMerchants()
                                                 }
 
                                                 override fun onError(anError: ANError?) {
@@ -187,12 +188,43 @@ class Otp : AppCompatActivity() {
         }
     }
 
+    fun getMerchants(){
+        AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getMerchants")
+            .setPriority(Priority.IMMEDIATE)
+            .build()
+            .getAsJSONArray(object : JSONArrayRequestListener {
+                override fun onResponse(response: JSONArray?) {
+                    println(response)
+                    if(response!=null){
+                        var merchantTemp = ArrayList<Merchant>()
+                        for(i in 0 until response.length()){
+                            val user = Merchant(
+                                response.getJSONObject(i)["storeName"].toString()
+                                ,"+"+response.getJSONObject(i)["number"].toString()
+                                ,response.getJSONObject(i)["id"].toString()
+                            )
+                            merchantTemp.add(user)
+                        }
+                        StateContext.initMerchant(merchantTemp)
+                        startActivity(Intent(context, HomePage::class.java))
+                        finish()
+                    }
+
+                }
+                override fun onError(anError: ANError?) {
+                    AlertHelper.showServerError(this@Otp)
+                }
+            })
+    }
+
     override fun onBackPressed() {
         val startMain = Intent(Intent.ACTION_MAIN)
         startMain.addCategory(Intent.CATEGORY_HOME)
         startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(startMain)
     }
+
+
 
     private fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =

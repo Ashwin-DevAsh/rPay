@@ -18,6 +18,7 @@ import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.HomePage
+import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
@@ -143,8 +144,7 @@ class Register : AppCompatActivity() {
                                                     val formatter = DecimalFormat("##,##,##,##,##,##,###")
                                                     StateContext.currentBalance=0
                                                     StateContext.setBalanceToModel(formatter.format(0))
-                                                    startActivity(Intent(context,HomePage::class.java))
-                                                    finish()
+                                                    getMerchants()
                                                 }
                                                 override fun onError(anError: ANError?) {
                                                     AlertHelper.showServerError(this@Register)
@@ -163,6 +163,35 @@ class Register : AppCompatActivity() {
                     })
             }
         }
+    }
+
+    fun getMerchants(){
+        AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getMerchants")
+            .setPriority(Priority.IMMEDIATE)
+            .build()
+            .getAsJSONArray(object : JSONArrayRequestListener {
+                override fun onResponse(response: JSONArray?) {
+                    println(response)
+                    if(response!=null){
+                        var merchantTemp = ArrayList<Merchant>()
+                        for(i in 0 until response.length()){
+                            val user = Merchant(
+                                response.getJSONObject(i)["storeName"].toString()
+                                ,"+"+response.getJSONObject(i)["number"].toString()
+                                ,response.getJSONObject(i)["id"].toString()
+                            )
+                            merchantTemp.add(user)
+                        }
+                        StateContext.initMerchant(merchantTemp)
+                        startActivity(Intent(context, HomePage::class.java))
+                        finish()
+                    }
+
+                }
+                override fun onError(anError: ANError?) {
+                    AlertHelper.showServerError(this@Register)
+                }
+            })
     }
 
     override fun onBackPressed() {
