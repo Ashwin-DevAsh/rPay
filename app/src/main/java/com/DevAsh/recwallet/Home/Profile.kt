@@ -180,13 +180,13 @@ class Profile : AppCompatActivity() {
                     println(response)
                     if(response?.getString("message")=="done"){
                         loadProfileNoCache()
+                        AlertHelper.showToast("Successfully Changed!",this@Profile)
                         UiContext.isProfilePictureChanged = true
                         UiContext.newProfile = newImage
                         SocketHelper.updateProfilePicture()
                     }else{
                         AlertHelper.showError("Error while uploading",this@Profile)
                     }
-
                 }
 
                 override fun onError(anError: ANError?) {
