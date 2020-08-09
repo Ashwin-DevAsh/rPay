@@ -13,6 +13,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.TransactionContext
 import com.DevAsh.recwallet.Context.UiContext
+import com.DevAsh.recwallet.Helper.MerchantHelper
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -62,7 +63,9 @@ class NotificationService : FirebaseMessagingService() {
               }catch (e:Throwable){
                   println(e)
               }
-
+        }else if(p0.data["type"]?.startsWith("merchantStatus")!!){
+              println("Added New Merchant....")
+              MerchantHelper.updateMerchant()
         }
         else{
             TransactionContext.openTransactionPage = true
