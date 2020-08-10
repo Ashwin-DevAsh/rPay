@@ -11,25 +11,27 @@ import org.json.JSONArray
 object TransactionsHelper {
     fun addTransaction(transactionObjectArray:JSONArray):ArrayList<Transaction>{
         val transactions = ArrayList<Transaction>()
-        for (i in 0 until transactionObjectArray!!.length()) {
-            val name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                transactionObjectArray.getJSONObject(i)["ToName"].toString()
-            else transactionObjectArray.getJSONObject(i)["FromName"].toString()
-            val number = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                transactionObjectArray.getJSONObject(i)["To"].toString()
-            else transactionObjectArray.getJSONObject(i)["From"].toString()
+        for (i in 0 until transactionObjectArray.length()) {
 
-            val contacts = Contacts(name, "+${number.split("@")[number.split("@").size-1]}","$number","")
+            val from = transactionObjectArray.getJSONObject(i).getJSONObject("From")
+            val to = transactionObjectArray.getJSONObject(i).getJSONObject("To")
+            val isSend = isSend(DetailsContext.id,from.getString("Id"))
+
+            val name = if (isSend) to.getString("Name") else from.getString("Name")
+            val number = if (isSend) to.getString("Number") else from.getString("Number")
+            val email = if (isSend) to.getString("Email") else from.getString("Email")
+            val id = if (isSend) to.getString("Id") else from.getString("Id")
+
+            val contacts = Contacts(name, number,id,email)
             val transaction = Transaction(
-                name = name,
-                id = number,
+                contacts=contacts,
                 amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
                 time = SplashScreen.dateToString(
                     transactionObjectArray.getJSONObject(
                         i
                     )["TransactionTime"].toString()
                 ),
-                type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
+                type = if (isSend)
                     "Send"
                 else "Received",
                 transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
@@ -38,16 +40,18 @@ object TransactionsHelper {
             transactions.add(0, transaction)
             addRecent(transaction,contacts)
         }
+
         return transactions
     }
 
     private fun addRecent(transaction: Transaction, contacts: Contacts){
-        println("entering "+transaction.id)
-        if(!transaction.isGenerated && !transaction.id.contains("rbusiness")){
-            println("entered "+transaction.id)
+        if(!transaction.isGenerated && !transaction.contacts.id.contains("rbusiness")){
             StateContext.addRecentContact(contacts)
         }
     }
+
+    fun isSend(myId:String,fromId:String):Boolean = myId == fromId
+
 
 
 

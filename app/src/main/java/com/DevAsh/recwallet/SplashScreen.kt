@@ -106,6 +106,7 @@ class SplashScreen : AppCompatActivity() {
 
                                 Handler().postDelayed({
                                     val transactionObjectArray = response.getJSONArray("Transactions")
+                                    println(transactionObjectArray)
                                     StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
                                 },0)
 

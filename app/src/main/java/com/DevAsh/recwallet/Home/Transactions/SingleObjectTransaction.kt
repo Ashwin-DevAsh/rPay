@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.TransactionsHelper
+import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
@@ -145,14 +147,20 @@ class SingleObjectTransaction : AppCompatActivity() {
                         val transactionObjectArray = response!!
                         println(transactionObjectArray)
                         for (i in 0 until transactionObjectArray.length()) {
+                            val from = transactionObjectArray.getJSONObject(i).getJSONObject("From")
+                            val to = transactionObjectArray.getJSONObject(i).getJSONObject("To")
+                            val isSend =
+                                TransactionsHelper.isSend(DetailsContext.id, from.getString("Id"))
+
+                            val name = if (isSend) to.getString("Name") else from.getString("Name")
+                            val number = if (isSend) to.getString("Number") else from.getString("Number")
+                            val email = if (isSend) to.getString("Email") else from.getString("Email")
+                            val id = if (isSend) to.getString("Id") else from.getString("Id")
+
+                            val contacts = Contacts(name, number,id,email)
                             transactions.add(
                                 Transaction(
-                                    name = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                        transactionObjectArray.getJSONObject(i)["ToName"].toString()
-                                    else transactionObjectArray.getJSONObject(i)["FromName"].toString(),
-                                    id = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
-                                        transactionObjectArray.getJSONObject(i)["To"].toString()
-                                    else transactionObjectArray.getJSONObject(i)["From"].toString(),
+                                    contacts = contacts,
                                     amount = transactionObjectArray.getJSONObject(i)["Amount"].toString(),
                                     time =(if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
                                         "Paid  "
@@ -161,7 +169,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                                             i
                                         )["TransactionTime"].toString()
                                     ),
-                                    type = if (transactionObjectArray.getJSONObject(i)["From"] == DetailsContext.id)
+                                    type = if (isSend)
                                         "Send"
                                     else "Received",
                                     transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
