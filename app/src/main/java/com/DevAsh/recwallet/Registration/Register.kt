@@ -85,6 +85,7 @@ class Register : AppCompatActivity() {
                 },300)
                 val jwt = Jwts.builder().claim("name", name)
                     .claim("number", RegistrationContext.countryCode+RegistrationContext.phoneNumber)
+                    .claim("email",email)
                     .claim("id", "rpay@${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
                     .signWith(SignatureAlgorithm.HS256, ApiContext.qrKey)
                     .compact()
@@ -179,6 +180,7 @@ class Register : AppCompatActivity() {
                                 response.getJSONObject(i)["storeName"].toString()
                                 ,"+"+response.getJSONObject(i)["number"].toString()
                                 ,response.getJSONObject(i)["id"].toString()
+                                ,response.getJSONObject(i)["email"].toString()
                             )
                             merchantTemp.add(user)
                         }
@@ -186,7 +188,6 @@ class Register : AppCompatActivity() {
                         startActivity(Intent(context, HomePage::class.java))
                         finish()
                     }
-
                 }
                 override fun onError(anError: ANError?) {
                     AlertHelper.showServerError(this@Register)

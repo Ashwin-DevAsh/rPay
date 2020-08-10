@@ -1,6 +1,6 @@
 package com.DevAsh.recwallet.Context
 
-import com.DevAsh.recwallet.Home.Transactions.Contacts
+import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Transaction
 
 object TransactionContext {

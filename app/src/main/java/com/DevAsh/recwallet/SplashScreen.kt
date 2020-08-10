@@ -17,7 +17,6 @@ import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.HomePage
-import com.DevAsh.recwallet.Home.Transactions.Contacts
 import com.DevAsh.recwallet.Home.Transactions.UserAdapter
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
@@ -140,6 +139,7 @@ class SplashScreen : AppCompatActivity() {
                                 response.getJSONObject(i)["storeName"].toString()
                                 ,"+"+response.getJSONObject(i)["number"].toString()
                                 ,response.getJSONObject(i)["id"].toString()
+                                ,response.getJSONObject(i)["email"].toString()
                             )
                             merchantTemp.add(user)
                         }

@@ -62,6 +62,7 @@ class Profile : AppCompatActivity() {
 
         val jwt = Jwts.builder().claim("name", DetailsContext.name)
             .claim("number", DetailsContext.phoneNumber)
+            .claim("email",DetailsContext.email)
             .claim("id",DetailsContext.id)
             .signWith(SignatureAlgorithm.HS256, ApiContext.qrKey)
             .compact()

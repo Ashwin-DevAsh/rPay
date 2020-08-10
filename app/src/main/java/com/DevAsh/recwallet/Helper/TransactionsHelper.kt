@@ -2,6 +2,7 @@ package com.DevAsh.recwallet.Helper
 
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.SplashScreen
@@ -18,7 +19,7 @@ object TransactionsHelper {
                 transactionObjectArray.getJSONObject(i)["To"].toString()
             else transactionObjectArray.getJSONObject(i)["From"].toString()
 
-            val merchant = Merchant(name, "+${number.split("@")[number.split("@").size-1]}","$number")
+            val contacts = Contacts(name, "+${number.split("@")[number.split("@").size-1]}","$number","")
             val transaction = Transaction(
                 name = name,
                 id = number,
@@ -35,16 +36,16 @@ object TransactionsHelper {
                 isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
             )
             transactions.add(0, transaction)
-            addRecent(transaction,merchant)
+            addRecent(transaction,contacts)
         }
         return transactions
     }
 
-    private fun addRecent(transaction: Transaction, merchant: Merchant){
+    private fun addRecent(transaction: Transaction, contacts: Contacts){
         println("entering "+transaction.id)
         if(!transaction.isGenerated && !transaction.id.contains("rbusiness")){
             println("entered "+transaction.id)
-            StateContext.addRecentContact(merchant)
+            StateContext.addRecentContact(contacts)
         }
     }
 

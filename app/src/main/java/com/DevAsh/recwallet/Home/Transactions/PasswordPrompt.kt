@@ -206,11 +206,19 @@ class PasswordPrompt : AppCompatActivity() {
                 .setContentType("application/json; charset=utf-8")
                 .addHeaders("jwtToken", DetailsContext.token)
                 .addApplicationJsonBody(object{
-                    var from = DetailsContext.id
-                    var to = TransactionContext.selectedUser?.id.toString().replace("+","")
+                    var from = object {
+                        var id = DetailsContext.id
+                        var name = DetailsContext.name
+                        var number = DetailsContext.phoneNumber
+                        var email = DetailsContext.email
+                    }
+                    var to = object {
+                        var id =  TransactionContext.selectedUser?.id
+                        var name =  TransactionContext.selectedUser?.name
+                        var number =  TransactionContext.selectedUser?.number
+                        var email =  TransactionContext.selectedUser?.email
+                    }
                     var amount = TransactionContext.amount
-                    var toName = TransactionContext.selectedUser?.name.toString()
-                    var fromName = DetailsContext.name
                 })
                 .setPriority(Priority.IMMEDIATE)
                 .build()

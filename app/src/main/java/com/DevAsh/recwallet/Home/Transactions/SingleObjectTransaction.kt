@@ -143,6 +143,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                     override fun onResponse(response: JSONArray?) {
                         val transactions = ArrayList<Transaction>()
                         val transactionObjectArray = response!!
+                        println(transactionObjectArray)
                         for (i in 0 until transactionObjectArray.length()) {
                             transactions.add(
                                 Transaction(

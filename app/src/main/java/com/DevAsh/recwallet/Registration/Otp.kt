@@ -202,6 +202,7 @@ class Otp : AppCompatActivity() {
                                 response.getJSONObject(i)["storeName"].toString()
                                 ,"+"+response.getJSONObject(i)["number"].toString()
                                 ,response.getJSONObject(i)["id"].toString()
+                                ,response.getJSONObject(i)["email"].toString()
                             )
                             merchantTemp.add(user)
                         }

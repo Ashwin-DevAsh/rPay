@@ -48,7 +48,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             payUsingUpi(amount,"9840176511@ybl","Barath","R-pay")
         }
 
-        razorpay.setOnClickListener{v->
+        razorpay.setOnClickListener{
             addingOption = "Gateway transaction"
             loadingScreen.visibility = View.VISIBLE
             Handler().postDelayed({
@@ -70,17 +70,26 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             .setContentType("application/json; charset=utf-8")
             .addHeaders("jwtToken", DetailsContext.token)
             .addApplicationJsonBody(object{
-                var from = p0
-                var to = DetailsContext.id
                 var amount = amount
-                var toName = DetailsContext.name
-                var fromName = addingOption
+                var to = object {
+                    var id = DetailsContext.id
+                    var name = DetailsContext.name
+                    var number = DetailsContext.phoneNumber
+                    var email = DetailsContext.email
+                }
+                var from = object {
+                    var id = p0
+                    var name = addingOption
+                    var number = "None"
+                    var email = "None"
+                }
             })
             .setPriority(Priority.IMMEDIATE)
             .build()
             .getAsJSONObject(object : JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject?) {
                     loadingScreen.visibility = View.VISIBLE
+                    println(response)
                     if(response?.get("message")=="done"){
                         AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
                             .addHeaders("jwtToken", DetailsContext.token)
@@ -107,14 +116,14 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                 override fun onError(anError: ANError?) {
                                     AlertHelper.showAlertDialog(this@AddingOptions,
                                         "Failed !",
-                                        "your transaction of ${TransactionContext.amount} ${TransactionContext.currency} is failed. if any amount debited it will refund soon"
+                                        "your transaction of $amount ${TransactionContext.currency} is failed. if any amount debited it will refund soon"
                                     )
                                 }
                             })
                     }else{
                         AlertHelper.showAlertDialog(this@AddingOptions,
                             "Failed !",
-                            "your transaction of ${TransactionContext.amount} ${TransactionContext.currency} is failed. if any amount debited it will refund soon"
+                            "your transaction of $amount ${TransactionContext.currency} is failed. if any amount debited it will refund soon"
                         )
                     }
                 }

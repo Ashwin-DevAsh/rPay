@@ -25,9 +25,9 @@ import com.DevAsh.recwallet.Context.UiContext.colors
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
-import com.DevAsh.recwallet.Home.Transactions.Contacts
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
+import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -118,16 +118,15 @@ class HomePage : AppCompatActivity() {
              balance.text = currentBalance
         }
 
-        val recentContactsObserver = Observer<ArrayList<Merchant>> {recentContacts->
+        val recentContactsObserver = Observer<ArrayList<Contacts>> {recentContacts->
             val newList = try{
                 ArrayList(recentContacts.subList(0,8))
             }catch (e:Throwable){
                 ArrayList(recentContacts.subList(0,recentContacts.size))
             }
             if(newList.size==8){
-                newList.add(Merchant("More","","",R.drawable.more))
+                newList.add(Contacts("More","","","",R.drawable.more))
             }
-
             peopleViewAdapter.updateList(ArrayList(newList))
             if(recentContacts.size!=0){
                 info.visibility = View.GONE
@@ -145,16 +144,14 @@ class HomePage : AppCompatActivity() {
                 ArrayList(merchant.subList(0,merchant.size))
             }
             if(newList.size==8){
-                newList.add(Merchant("More","","",R.drawable.more))
+                newList.add(Merchant("More","","","",R.drawable.more))
             }
 
             merchantViewAdapter .updateList(ArrayList(newList))
             if(merchant.size!=0){
-                noMerchant.visibility = View.GONE
-                merchantHolder.visibility = View.VISIBLE
+                merchantContainer.visibility = View.VISIBLE
             }else{
-                noMerchant.visibility = View.VISIBLE
-                merchantHolder.visibility = View.GONE
+                merchantContainer.visibility = View.GONE
             }
         }
 
@@ -400,13 +397,12 @@ class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: Botto
 
 
     init {
-
         view.setOnClickListener{
             if(merchant.name=="More"){
                   bottomSheetCallback?.openBottomSheet()
             }else{
                 bottomSheetCallback?.closeBottomSheet()
-                TransactionContext.selectedUser= Contacts(merchant.name,merchant.phoneNumber,merchant.id)
+                TransactionContext.selectedUser= Contacts(merchant.name,merchant.phoneNumber,merchant.id,merchant.email)
                 TransactionContext.avatarColor = "#035aa6"
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
@@ -419,7 +415,7 @@ class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: Botto
 
 
 
-class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<PeopleViewHolder>() {
+class PeopleViewAdapter(private var items : ArrayList<Contacts>, val context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<PeopleViewHolder>() {
 
 
     override fun getItemCount(): Int {
@@ -469,7 +465,7 @@ class PeopleViewAdapter(private var items : ArrayList<Merchant>, val context: Co
 
     }
 
-    fun updateList(updatedList : ArrayList<Merchant>){
+    fun updateList(updatedList : ArrayList<Contacts>){
         this.items = updatedList
         notifyDataSetChanged()
     }
@@ -481,7 +477,7 @@ class PeopleViewHolder (view: View, context: Context,val openBottomSheetCallback
     val avatar = view.findViewById(R.id.avatar) as ImageView
     val profile = view.profile
     lateinit var color: String
-    lateinit var people: Merchant
+    lateinit var people: Contacts
 
     init {
         view.setOnClickListener{
@@ -493,7 +489,7 @@ class PeopleViewHolder (view: View, context: Context,val openBottomSheetCallback
 
             }else{
                 openBottomSheetCallback?.closeBottomSheet()
-                TransactionContext.selectedUser= Contacts(people.name,people.phoneNumber,people.id)
+                TransactionContext.selectedUser= Contacts(people.name,people.number,people.id,people.email)
                 TransactionContext.avatarColor = color
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
