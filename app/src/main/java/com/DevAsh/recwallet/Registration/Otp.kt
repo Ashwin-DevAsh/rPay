@@ -199,7 +199,7 @@ class Otp : AppCompatActivity() {
                         var merchantTemp = ArrayList<Merchant>()
                         for(i in 0 until response.length()){
                             val user = Merchant(
-                                response.getJSONObject(i)["storeName"].toString()
+                                response.getJSONObject(i)["storename"].toString()
                                 ,"+"+response.getJSONObject(i)["number"].toString()
                                 ,response.getJSONObject(i)["id"].toString()
                                 ,response.getJSONObject(i)["email"].toString()
