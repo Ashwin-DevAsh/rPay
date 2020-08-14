@@ -28,6 +28,7 @@ import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.Home.Withdraw.AccountDetails
 import com.DevAsh.recwallet.Home.Withdraw.AddAccounts
+import com.DevAsh.recwallet.Home.Withdraw.WithdrawAmountPrompt
 import com.DevAsh.recwallet.Models.BankAccount
 import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Merchant
@@ -72,14 +73,14 @@ class HomePage : AppCompatActivity() {
 
 
         scroller.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            if (scrollY >200) {
+            if (scrollY >100) {
                 if(hiddenPanel.visibility==View.VISIBLE){
                     hiddenPanel.startAnimation(bottomDown)
                     hiddenPanel.visibility=View.GONE
                 }
 
             }
-            if(scrollY < 200){
+            if(scrollY < 100){
                 if(hiddenPanel.visibility==View.GONE){
                     hiddenPanel.visibility=View.VISIBLE
                     hiddenPanel.startAnimation(bottomUp)
@@ -117,6 +118,9 @@ class HomePage : AppCompatActivity() {
             }
             if(newList.size==8){
                 newList.add(Contacts("More","","","",R.drawable.more))
+            }
+            if(recentContacts.size>3){
+                extraMargin.visibility=View.GONE
             }
             peopleViewAdapter.updateList(ArrayList(newList))
             if(recentContacts.size!=0){
@@ -220,9 +224,8 @@ class HomePage : AppCompatActivity() {
             startActivity(intent)
         }
 
-        merchant.setOnClickListener{
-            val intent = Intent(this,WebView::class.java)
-            intent.putExtra("page","merchant")
+        withdraw.setOnClickListener{
+            val intent = Intent(this,WithdrawAmountPrompt::class.java)
             startActivity(intent)
         }
 
@@ -532,9 +535,7 @@ class AccountsViewAdapter(private var items : ArrayList<BankAccount>, val contex
     override fun onBindViewHolder(holder: AccountsViewHolder, position: Int) {
         holder.account= items[position]
         holder.accountName.text = items[position].bankName
-        holder.accountNumber.text = "XXXX XXXX XXXX "+items[position].accountNumber.substring(
-            items[position].accountNumber.length-4,
-            items[position].accountNumber.length)
+        holder.accountNumber.text =  items[position].accountNumber
     }
 }
 

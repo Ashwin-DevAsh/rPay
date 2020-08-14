@@ -13,7 +13,7 @@ object DetailsContext {
       this.name = name
       this.password = password
       this.email = email
-      this.phoneNumber = phoneNumber
+      this.phoneNumber = "+$phoneNumber"
       this.token = token
       this.id= "rpay@$phoneNumber"
    }

@@ -73,8 +73,9 @@ class SplashScreen : AppCompatActivity() {
 
             Handler().postDelayed({
                 val bankAccounts= Realm.getDefaultInstance().where(BankAccount::class.java).findAll()
+                val bankAccountsTemp = ArrayList<com.DevAsh.recwallet.Models.BankAccount>()
                 for(i in bankAccounts){
-                    StateContext.addBankAccounts(
+                bankAccountsTemp.add(
                         com.DevAsh.recwallet.Models.BankAccount(
                             holderName = i.holderName,
                             bankName = i.bankName,
@@ -83,6 +84,7 @@ class SplashScreen : AppCompatActivity() {
                         )
                     )
                 }
+                StateContext.initBankAccounts(bankAccountsTemp)
             },0)
 
 

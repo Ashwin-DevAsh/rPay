@@ -35,7 +35,8 @@ object TransactionsHelper {
                     "Send"
                 else "Received",
                 transactionId =  transactionObjectArray.getJSONObject(i)["TransactionID"].toString(),
-                isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated")
+                isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("IsGenerated"),
+                isWithdraw = transactionObjectArray.getJSONObject(i).getBoolean("IsWithdraw")
             )
             transactions.add(0, transaction)
             addRecent(transaction,contacts)
@@ -45,7 +46,7 @@ object TransactionsHelper {
     }
 
     private fun addRecent(transaction: Transaction, contacts: Contacts){
-        if(!transaction.isGenerated && !transaction.contacts.id.contains("rbusiness")){
+        if(!transaction.isGenerated && !transaction.isWithdraw && !transaction.contacts.id.contains("rbusiness")){
             StateContext.addRecentContact(contacts)
         }
     }

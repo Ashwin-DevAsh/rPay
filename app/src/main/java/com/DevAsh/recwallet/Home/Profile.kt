@@ -56,7 +56,7 @@ class Profile : AppCompatActivity() {
         qrName.text = DetailsContext.name
         name.text =DetailsContext.name
         email.text =DetailsContext.email
-        phone.text =  "+"+DetailsContext.phoneNumber
+        phone.text =  DetailsContext.phoneNumber
 
 
         val jwt = Jwts.builder().claim("name", DetailsContext.name)

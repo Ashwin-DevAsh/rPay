@@ -127,7 +127,7 @@ class SendMoney : AppCompatActivity() {
                               ,response.getJSONObject(i)["id"].toString()
                               ,response.getJSONObject(i)["email"].toString()
                           )
-                          if(user.number!="+"+DetailsContext.phoneNumber) HelperVariables.allUsers.add(user)
+                          if(user.id!=DetailsContext.id) HelperVariables.allUsers.add(user)
                       }
                         usersContainer.layoutManager = LinearLayoutManager(context)
                         userAdapter = UserAdapter(HelperVariables.allUsers,context)

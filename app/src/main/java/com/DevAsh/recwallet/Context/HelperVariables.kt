@@ -22,4 +22,6 @@ object HelperVariables {
     var openTransactionPage = false
 
     var selectedAccount:BankAccount?=null
+
+    var withdrawAmount = ""
 }

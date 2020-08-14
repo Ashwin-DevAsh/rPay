@@ -61,6 +61,7 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:id="@+id/logo"
+                            android:tint="@android:color/white"
                             android:visibility="gone"
                             android:background="@color/highlightButton"
                             android:src="@drawable/rpay_notification"
