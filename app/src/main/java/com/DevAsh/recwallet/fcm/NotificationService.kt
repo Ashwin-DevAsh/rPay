@@ -7,18 +7,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.widget.ImageView
 import androidx.core.app.NotificationCompat
-import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Helper.MerchantHelper
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.DevAsh.recwallet.Sync.SocketService
-import com.google.android.gms.common.api.Api
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.squareup.picasso.MemoryPolicy
@@ -68,7 +64,7 @@ class NotificationService : FirebaseMessagingService() {
               MerchantHelper.updateMerchant()
         }
         else{
-            TransactionContext.openTransactionPage = true
+            HelperVariables.openTransactionPage = true
             val type =  p0.data["type"]!!.split(",")[0]
             val amount = p0.data["type"]!!.split(",")[3]
             val fromName = p0.data["type"]!!.split(",")[1]
@@ -80,9 +76,9 @@ class NotificationService : FirebaseMessagingService() {
             }
 
             if(type=="addedMoney"){
-                showNotification("Added Money","Your $amount ${TransactionContext.currency}s has been successfully added.")
+                showNotification("Added Money","Your $amount ${HelperVariables.currency}s has been successfully added.")
             }else{
-                showNotification(fromName,"You have received $amount ${TransactionContext.currency}s from $fromName.")
+                showNotification(fromName,"You have received $amount ${HelperVariables.currency}s from $fromName.")
             }
 
 

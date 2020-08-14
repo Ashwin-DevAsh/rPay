@@ -1,9 +1,8 @@
 package com.DevAsh.recwallet.Context
 
-import androidx.recyclerview.widget.RecyclerView
-import com.DevAsh.recwallet.Home.Transactions.AllActivityAdapter
-import com.DevAsh.recwallet.Home.Transactions.AllActivityViewHolder
+
+import com.DevAsh.recwallet.Home.Transactions.TransactionsAdapter
 
 object Cache {
-    val singleObjecttransactionCache = HashMap<String,AllActivityAdapter>()
+    val singleObjectTransactionCache = HashMap<String,TransactionsAdapter>()
 }

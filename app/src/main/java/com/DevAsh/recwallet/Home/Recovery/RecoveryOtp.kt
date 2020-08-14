@@ -26,7 +26,6 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_otp.*
 import kotlinx.android.synthetic.main.activity_recovery_otp.*
 import kotlinx.android.synthetic.main.activity_recovery_otp.errorMessage
 import kotlinx.android.synthetic.main.activity_recovery_otp.mainContent
@@ -82,6 +81,10 @@ class RecoveryOtp : AppCompatActivity() {
                     }
                 })
             }
+        }
+
+        cancel.setOnClickListener {
+            onBackPressed()
         }
 
     }

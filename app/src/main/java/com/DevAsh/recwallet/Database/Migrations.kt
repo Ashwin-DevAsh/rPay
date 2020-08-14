@@ -51,6 +51,13 @@ open class Migrations : RealmMigration {
                 val extraValues= schema.create("ExtraValues")
                 extraValues.addField("isEnteredPasswordOnce",Boolean::class.javaObjectType)
             }
+            10L -> {
+                val bankAccounts= schema.create("BankAccount")
+                bankAccounts.addField("holderName",String::class.javaObjectType)
+                bankAccounts.addField("bankName",String::class.javaObjectType)
+                bankAccounts.addField("IFSC",String::class.javaObjectType)
+                bankAccounts.addField("accountNumber",String::class.javaObjectType)
+            }
         }
 
     }

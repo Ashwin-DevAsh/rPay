@@ -2,24 +2,21 @@ package com.DevAsh.recwallet
 
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.HelperVariables
+import com.DevAsh.recwallet.Database.BankAccount
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.HomePage
-import com.DevAsh.recwallet.Home.Transactions.UserAdapter
 import com.DevAsh.recwallet.Models.Merchant
-import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.Registration.Login
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -27,9 +24,7 @@ import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.jacksonandroidnetworking.JacksonParserFactory
-import com.squareup.picasso.Picasso
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_send_money.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -46,11 +41,10 @@ class SplashScreen : AppCompatActivity() {
         val extras = intent.extras
         if (extras != null) {
             if (extras.containsKey("openTransactionPage")) {
-                TransactionContext.openTransactionPage=true
+                HelperVariables.openTransactionPage=true
             }
         }
         super.onNewIntent(intent)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +70,22 @@ class SplashScreen : AppCompatActivity() {
 
         if(credentials!=null && credentials.isLogin==true){
             StateContext.initRecentContact(arrayListOf())
+
+            Handler().postDelayed({
+                val bankAccounts= Realm.getDefaultInstance().where(BankAccount::class.java).findAll()
+                for(i in bankAccounts){
+                    StateContext.addBankAccounts(
+                        com.DevAsh.recwallet.Models.BankAccount(
+                            holderName = i.holderName,
+                            bankName = i.bankName,
+                            IFSC = i.IFSC,
+                            accountNumber = i.accountNumber
+                        )
+                    )
+                }
+            },0)
+
+
             Handler().postDelayed({
                   try {
                       DetailsContext.setData(
@@ -148,7 +158,6 @@ class SplashScreen : AppCompatActivity() {
                         startActivity(Intent(context, HomePage::class.java))
                         finish()
                     }
-
                 }
                 override fun onError(anError: ANError?) {
                     AlertHelper.showServerError(this@SplashScreen)

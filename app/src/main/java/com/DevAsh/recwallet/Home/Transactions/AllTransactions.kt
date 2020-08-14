@@ -1,4 +1,4 @@
-package com.DevAsh.recwallet.Home
+package com.DevAsh.recwallet.Home.Transactions
 
 
 import android.content.Context
@@ -12,29 +12,24 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.LoadProfileCallBack
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Context.UiContext.colors
-import com.DevAsh.recwallet.Home.Transactions.TransactionDetails
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_all_transactions.*
 import kotlinx.android.synthetic.main.activity_all_transactions.activity
-import kotlinx.android.synthetic.main.activity_password_prompt.*
-import kotlinx.android.synthetic.main.activity_single_object_transaction.*
-import kotlinx.android.synthetic.main.widget_listtile_transaction.view.*
 import kotlin.collections.ArrayList
 
 
 class AllTransactions : AppCompatActivity() {
     lateinit var context: Context
-    lateinit var activityAdapter:AllActivityAdapter
+    lateinit var activityAdapter: AllTransactionsAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +45,11 @@ class AllTransactions : AppCompatActivity() {
         }
 
         StateContext.model.allTransactions.observe(this,transactionObserver)
-        activityAdapter =AllActivityAdapter(StateContext.model.allTransactions.value!!,context)
+        activityAdapter =
+            AllTransactionsAdapter(
+                StateContext.model.allTransactions.value!!,
+                context
+            )
         Handler().postDelayed({
             activity.layoutManager = LinearLayoutManager(context)
             activity.adapter = activityAdapter
@@ -60,7 +59,7 @@ class AllTransactions : AppCompatActivity() {
 
 }
 
-class AllActivityAdapter(private var items : ArrayList<Transaction>, val context: Context) : RecyclerView.Adapter<AllActivityViewHolder>() {
+class AllTransactionsAdapter(private var items : ArrayList<Transaction>, val context: Context) : RecyclerView.Adapter<AllTransactionsViewHolder>() {
 
 
 
@@ -72,11 +71,15 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
         return items.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllActivityViewHolder {
-        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_listtile_transaction, parent, false),context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllTransactionsViewHolder {
+        return AllTransactionsViewHolder(
+            LayoutInflater.from(context)
+                .inflate(R.layout.widget_listtile_transaction, parent, false),
+            context
+        )
     }
 
-    override fun onBindViewHolder(holder: AllActivityViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AllTransactionsViewHolder, position: Int) {
         holder.title.text = items[position].contacts.name
         holder.subtitle.text = items[position].time
         holder.badge.text = items[position].contacts.name[0].toString()
@@ -129,18 +132,18 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
             holder.badge.textSize = 14F
             holder.additionalInfo.setTextColor(Color.parseColor("#ff9100"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#25ff9100"))
-            holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"
+            holder.additionalInfo.text= "+${items[position].amount} ${HelperVariables.currency}"
             holder.badge.setBackgroundColor(context.getColor(R.color.highlightButton))
             holder.color = "#035aa6"
 
         }else if(items[position].type=="Received"){
             holder.additionalInfo.setTextColor(Color.parseColor("#1b5e20"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#151b5e20"))
-            holder.additionalInfo.text= "+${items[position].amount} ${TransactionContext.currency}"
+            holder.additionalInfo.text= "+${items[position].amount} ${HelperVariables.currency}"
         }else if(items[position].type=="Send"){
             holder.additionalInfo.setTextColor(Color.parseColor("#d50000"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#15d50000"))
-            holder.additionalInfo.text= "-${items[position].amount} ${TransactionContext.currency}"
+            holder.additionalInfo.text= "-${items[position].amount} ${HelperVariables.currency}"
         }
     }
 
@@ -150,7 +153,7 @@ class AllActivityAdapter(private var items : ArrayList<Transaction>, val context
     }
 }
 
-class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=null,var color:String?=null) : RecyclerView.ViewHolder(view) {
+class AllTransactionsViewHolder (view: View, context: Context, var item:Transaction?=null, var color:String?=null) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val subtitle = view.findViewById(R.id.subtitle) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
@@ -160,8 +163,8 @@ class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=n
 
     init {
         view.setOnClickListener{
-             TransactionContext.selectedTransaction = item
-             TransactionContext.avatarColor = color!!
+             HelperVariables.selectedTransaction = item
+             HelperVariables.avatarColor = color!!
              context.startActivity(Intent(context,TransactionDetails::class.java))
         }
     }

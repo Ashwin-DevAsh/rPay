@@ -8,10 +8,14 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-feature android:name="android.hardware.fingerprint" android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -25,6 +29,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:name=".Home.Withdraw.AccountDetails"/>
+        <activity
+            android:name=".Home.Withdraw.AddAccounts"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".Home.Recovery.NewPassword"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
@@ -33,36 +45,36 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Home.Recovery.RecoveryOptions"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Home.WebView"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Home.ChangePassword"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
-        <activity
             android:screenOrientation="portrait"
-            android:name=".Home.Transactions.Successful" />
+            android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.Profile" />
+            android:name=".Home.Transactions.Successful"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.QrScanner" />
+            android:name=".Home.Profile"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.Transactions.AddingOptions" />
+            android:name=".Home.QrScanner"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
+            android:name=".Home.Transactions.AddingOptions"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".Home.Transactions.AddMoney"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
         <receiver android:name=".Sync.RebootReceiver">
@@ -74,15 +86,15 @@
         </receiver>
 
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.Transactions.TransactionDetails" />
+            android:name=".Home.Transactions.TransactionDetails"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Home.Transactions.PasswordPrompt"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Home.Transactions.AmountPrompt"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
         <service
@@ -91,33 +103,33 @@
             android:exported="true" />
 
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.Transactions.SingleObjectTransaction" />
+            android:name=".Home.Transactions.SingleObjectTransaction"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Home.Transactions.SendMoney"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.AllTransactions" />
+            android:name=".Home.Transactions.AllTransactions"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Registration.Register"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".Home.HomePage" />
+            android:name=".Home.HomePage"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Registration.Otp"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Registration.Login"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".SplashScreen"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

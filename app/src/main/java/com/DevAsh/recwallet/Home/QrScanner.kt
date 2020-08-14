@@ -7,7 +7,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.Models.Contacts
@@ -48,7 +48,7 @@ class QrScanner : AppCompatActivity() {
 
 
                     val people = Jwts.parser().setSigningKey(ApiContext.qrKey).parseClaimsJws(it.text).body
-                    TransactionContext.selectedUser= Contacts(people["name"].toString(), "+"+people["number"].toString(),people["id"].toString(),people["email"].toString())
+                    HelperVariables.selectedUser= Contacts(people["name"].toString(), "+"+people["number"].toString(),people["id"].toString(),people["email"].toString())
                     startActivity(
                         Intent(context, SingleObjectTransaction::class.java)
                     )

@@ -22,6 +22,7 @@ import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.LoadProfileCallBack
 import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Home.Transactions.AllTransactions
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -29,9 +30,7 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import com.bumptech.glide.Glide
 import com.google.zxing.WriterException
-import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import io.jsonwebtoken.Jwts
@@ -99,7 +98,8 @@ class Profile : AppCompatActivity() {
         }
 
         transactions.setOnClickListener{
-            startActivity(Intent(this,AllTransactions::class.java))
+            startActivity(Intent(this,
+                AllTransactions::class.java))
         }
 
         profilePicture.setOnClickListener{

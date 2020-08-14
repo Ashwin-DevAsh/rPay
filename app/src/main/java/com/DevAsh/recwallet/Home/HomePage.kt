@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,39 +18,33 @@ import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.UiContext.colors
-import com.DevAsh.recwallet.Helper.AlertHelper
-import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
+import com.DevAsh.recwallet.Home.Transactions.AllTransactions
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
+import com.DevAsh.recwallet.Home.Withdraw.AccountDetails
+import com.DevAsh.recwallet.Home.Withdraw.AddAccounts
+import com.DevAsh.recwallet.Models.BankAccount
 import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketHelper
-import com.DevAsh.recwallet.Sync.SocketService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.iid.FirebaseInstanceId
-import com.squareup.picasso.Picasso
-import com.synnapps.carouselview.CarouselView
-import com.synnapps.carouselview.ImageListener
 import kotlinx.android.synthetic.main.activity_home_page.*
+import kotlinx.android.synthetic.main.bank_accounts.view.*
 import kotlinx.android.synthetic.main.people_avatar.view.*
-import java.net.Socket
+import kotlinx.android.synthetic.main.widget_accounts.view.*
 
 
 class HomePage : AppCompatActivity() {
 
     var context: Context = this
-
-    lateinit var carouselView: CarouselView
-    var sampleImages = intArrayOf(
-        R.drawable.banner_1,
-        R.drawable.banner_2
-    )
 
     lateinit var peopleViewAdapter: PeopleViewAdapter
     lateinit var merchantViewAdapter: MerchantViewAdapter
@@ -100,8 +93,6 @@ class HomePage : AppCompatActivity() {
         merchantHolder.adapter = merchantViewAdapter
 
 
-
-//        startService(Intent(this, SocketService::class.java))
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
@@ -155,6 +146,8 @@ class HomePage : AppCompatActivity() {
             }
         }
 
+
+
         fun getText():String{
             var name = DetailsContext.name.toString()
             if(name.length>10){
@@ -190,7 +183,8 @@ class HomePage : AppCompatActivity() {
         }
 
         balance.setOnClickListener{
-            startActivity(Intent(this,AllTransactions::class.java))
+            startActivity(Intent(this,
+                AllTransactions::class.java))
         }
 
         buyMoney.setOnClickListener{v->
@@ -218,7 +212,6 @@ class HomePage : AppCompatActivity() {
             }else{
                 ActivityCompat.requestPermissions(this, permissions,1)
             }
-
         }
 
         cashBack.setOnClickListener{
@@ -239,10 +232,15 @@ class HomePage : AppCompatActivity() {
             startActivity(intent)
         }
 
-        safety.setOnClickListener{
-            val intent = Intent(this,WebView::class.java)
-            intent.putExtra("page","safety")
-            startActivity(intent)
+        bankAccounts.setOnClickListener{
+
+            val totalAccounts = StateContext.model.bankAccounts.value?.size
+            if(totalAccounts!=null && totalAccounts!=0){
+                BottomSheetAccounts(this).openBottomSheet()
+            }else{
+                startActivity(Intent(context,AddAccounts::class.java))
+            }
+
         }
 
     }
@@ -284,7 +282,6 @@ class HomePage : AppCompatActivity() {
 
     override fun onResume() {
         if(UiContext.isProfilePictureChanged){
-            println("Uploaded")
             UiContext.UpdateImage(profile)
             UiContext.isProfilePictureChanged=false
         }
@@ -299,8 +296,8 @@ class HomePage : AppCompatActivity() {
     }
 
     class BottomSheetMerchant(val context:Context):BottomSheet{
-        val mBottomSheetDialog = BottomSheetDialog(context)
-        val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
+        private val mBottomSheetDialog = BottomSheetDialog(context)
+        private val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
         init {
             val merchantContainer = sheetView.findViewById<RecyclerView>(R.id.merchantContainer)
             merchantContainer.layoutManager = GridLayoutManager(context, 3)
@@ -320,8 +317,8 @@ class HomePage : AppCompatActivity() {
 
 
     class BottomSheetPeople(val context:Context):BottomSheet{
-        val mBottomSheetDialog = BottomSheetDialog(context)
-        val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
+        private val mBottomSheetDialog = BottomSheetDialog(context)
+        private val sheetView: View = LayoutInflater.from(context).inflate(R.layout.all_merchants, null)
         init {
             val peopleContainer = sheetView.findViewById<RecyclerView>(R.id.merchantContainer)
             val title = sheetView.findViewById<TextView>(R.id.title)
@@ -339,13 +336,35 @@ class HomePage : AppCompatActivity() {
         }
     }
 
+    class BottomSheetAccounts(val context:Context):BottomSheet{
+        private val mBottomSheetDialog = BottomSheetDialog(context)
+        private val sheetView: View = LayoutInflater.from(context).inflate(R.layout.bank_accounts, null)
+        private val bankAccounts = if(StateContext.model.bankAccounts.value!=null)
+                                                     StateContext.model.bankAccounts.value
+                                                 else arrayListOf()
+        init {
+            val accountsContainer = sheetView.findViewById<RecyclerView>(R.id.accountsContainer)
+            sheetView.addAccounts.setOnClickListener{
+                 closeBottomSheet()
+                 context.startActivity(Intent(context,AddAccounts::class.java))
+            }
+            accountsContainer.layoutManager = LinearLayoutManager(context)
+            accountsContainer.adapter = AccountsViewAdapter(
+                 bankAccounts!!,
+                context,this)
+            mBottomSheetDialog.setContentView(sheetView)
+        }
+        override fun openBottomSheet(){
+            mBottomSheetDialog.show()
+        }
 
-
-
-
+        override fun closeBottomSheet() {
+            mBottomSheetDialog.cancel()
+        }
+    }
 }
 
-class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<MerchantViewHolder>() {
+class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: Context, private val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<MerchantViewHolder>() {
 
     override fun getItemCount(): Int {
         return items.size
@@ -402,8 +421,8 @@ class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: Botto
                   bottomSheetCallback?.openBottomSheet()
             }else{
                 bottomSheetCallback?.closeBottomSheet()
-                TransactionContext.selectedUser= Contacts(merchant.name,merchant.phoneNumber,merchant.id,merchant.email)
-                TransactionContext.avatarColor = "#035aa6"
+                HelperVariables.selectedUser= Contacts(merchant.name,merchant.phoneNumber,merchant.id,merchant.email)
+                HelperVariables.avatarColor = "#035aa6"
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
                 )
@@ -415,7 +434,7 @@ class MerchantViewHolder(view: View, context: Context,bottomSheetCallback: Botto
 
 
 
-class PeopleViewAdapter(private var items : ArrayList<Contacts>, val context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<PeopleViewHolder>() {
+class PeopleViewAdapter(private var items : ArrayList<Contacts>, val context: Context, private val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<PeopleViewHolder>() {
 
 
     override fun getItemCount(): Int {
@@ -471,7 +490,7 @@ class PeopleViewAdapter(private var items : ArrayList<Contacts>, val context: Co
     }
 }
 
-class PeopleViewHolder (view: View, context: Context,val openBottomSheetCallback: BottomSheet?) : RecyclerView.ViewHolder(view) {
+class PeopleViewHolder (view: View, context: Context, private val openBottomSheetCallback: BottomSheet?) : RecyclerView.ViewHolder(view) {
     val title = view.findViewById(R.id.title) as TextView
     val badge = view.findViewById(R.id.badge) as TextView
     val avatar = view.findViewById(R.id.avatar) as ImageView
@@ -486,16 +505,55 @@ class PeopleViewHolder (view: View, context: Context,val openBottomSheetCallback
                 imageView.setImageDrawable(context.getDrawable(R.drawable.more))
                 openBottomSheetCallback?.openBottomSheet()
 
-
             }else{
                 openBottomSheetCallback?.closeBottomSheet()
-                TransactionContext.selectedUser= Contacts(people.name,people.number,people.id,people.email)
-                TransactionContext.avatarColor = color
+                HelperVariables.selectedUser= Contacts(people.name,people.number,people.id,people.email)
+                HelperVariables.avatarColor = color
                 context.startActivity(
                     Intent(context, SingleObjectTransaction::class.java)
                 )
             }
 
+        }
+    }
+}
+
+
+class AccountsViewAdapter(private var items : ArrayList<BankAccount>, val context: Context, private val openBottomSheetCallback: BottomSheet?) : RecyclerView.Adapter<AccountsViewHolder>() {
+
+    override fun getItemCount(): Int {
+        return items.size
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountsViewHolder {
+        return AccountsViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_accounts, parent, false),context,openBottomSheetCallback)
+    }
+
+    override fun onBindViewHolder(holder: AccountsViewHolder, position: Int) {
+        holder.account= items[position]
+        holder.accountName.text = items[position].bankName
+        holder.accountNumber.text = "XXXX XXXX XXXX "+items[position].accountNumber.substring(
+            items[position].accountNumber.length-4,
+            items[position].accountNumber.length)
+    }
+}
+
+class AccountsViewHolder (view: View, context: Context, private val openBottomSheetCallback: BottomSheet?) : RecyclerView.ViewHolder(view){
+
+    var account:BankAccount?=null
+    val accountName = view.accountName
+    val accountNumber = view.accountNumber
+
+    init {
+
+        view.setOnClickListener{
+            openBottomSheetCallback?.closeBottomSheet()
+            HelperVariables.selectedAccount = account
+            context.startActivity(Intent(context,AccountDetails::class.java))
+        }
+
+        view.edit.setOnClickListener{
+            openBottomSheetCallback?.closeBottomSheet()
         }
     }
 }

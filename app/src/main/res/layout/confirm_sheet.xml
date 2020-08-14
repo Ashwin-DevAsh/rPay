@@ -30,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
             android:gravity="center"
+            android:id="@+id/subTitle"
             android:paddingHorizontal="30dp"
             android:layout_below="@+id/title"
             android:text="if you logout then you cant be a node in our network"

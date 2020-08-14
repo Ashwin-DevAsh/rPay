@@ -19,26 +19,20 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.DevAsh.recwallet.Context.*
-import com.DevAsh.recwallet.Context.TransactionContext.needToPay
+import com.DevAsh.recwallet.Context.HelperVariables.needToPay
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.Recovery.RecoveryOptions
-import com.DevAsh.recwallet.Models.Merchant
-import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
@@ -47,18 +41,15 @@ import kotlinx.android.synthetic.main.activity_password_prompt.avatarContainer
 import kotlinx.android.synthetic.main.activity_password_prompt.badge
 import kotlinx.android.synthetic.main.activity_password_prompt.loadingScreen
 import kotlinx.android.synthetic.main.activity_password_prompt.profile
-import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import org.json.JSONObject
 import java.io.IOException
 import java.security.*
 import java.security.cert.CertificateException
 import java.text.DecimalFormat
-import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.SecretKey
-import kotlin.collections.ArrayList
 
 
 class PasswordPrompt : AppCompatActivity() {
@@ -131,11 +122,11 @@ class PasswordPrompt : AppCompatActivity() {
 
 
 
-        badge.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
-        badge.text = TransactionContext.selectedUser?.name?.substring(0,1)
-        type.text = "Paying to ${TransactionContext.selectedUser?.name}"
-        selectedUserName.text = TransactionContext.selectedUser?.number
-        amount.text = TransactionContext.amount
+        badge.setBackgroundColor(Color.parseColor(HelperVariables.avatarColor))
+        badge.text = HelperVariables.selectedUser?.name?.substring(0,1)
+        type.text = "Paying to ${HelperVariables.selectedUser?.name}"
+        selectedUserName.text = HelperVariables.selectedUser?.number
+        amount.text = HelperVariables.amount
 
         loadAvatar()
 
@@ -175,10 +166,10 @@ class PasswordPrompt : AppCompatActivity() {
     }
 
     private fun loadAvatar(){
-        UiContext.loadProfileImage(context,TransactionContext.selectedUser?.id!!,object:
+        UiContext.loadProfileImage(context,HelperVariables.selectedUser?.id!!,object:
             LoadProfileCallBack {
             override fun onSuccess() {
-                if(!TransactionContext.selectedUser?.id!!.contains("rpay")){
+                if(!HelperVariables.selectedUser?.id!!.contains("rpay")){
                     profile.setBackgroundColor( context.resources.getColor(R.color.textDark))
                     profile.setColorFilter(Color.WHITE,  android.graphics.PorterDuff.Mode.SRC_IN)
                     profile.setPadding(35,35,35,35)
@@ -213,12 +204,12 @@ class PasswordPrompt : AppCompatActivity() {
                         var email = DetailsContext.email
                     }
                     var to = object {
-                        var id =  TransactionContext.selectedUser?.id
-                        var name =  TransactionContext.selectedUser?.name
-                        var number =  TransactionContext.selectedUser?.number
-                        var email =  TransactionContext.selectedUser?.email
+                        var id =  HelperVariables.selectedUser?.id
+                        var name =  HelperVariables.selectedUser?.name
+                        var number =  HelperVariables.selectedUser?.number
+                        var email =  HelperVariables.selectedUser?.email
                     }
-                    var amount = TransactionContext.amount
+                    var amount = HelperVariables.amount
                 })
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -234,7 +225,7 @@ class PasswordPrompt : AppCompatActivity() {
                                     override fun onResponse(response: JSONObject?) {
                                         val jsonData = JSONObject()
                                         jsonData.put("to",
-                                            TransactionContext.selectedUser?.id.toString().replace("+",""))
+                                            HelperVariables.selectedUser?.id.toString().replace("+",""))
                                         SocketHelper.socket?.emit("notifyPayment",jsonData)
                                         val balance = response?.getInt("Balance")
                                         StateContext.currentBalance = balance!!
@@ -252,7 +243,7 @@ class PasswordPrompt : AppCompatActivity() {
                         }else{
                             AlertHelper.showAlertDialog(this@PasswordPrompt,
                                 "Failed !",
-                                "your transaction of ${TransactionContext.amount} ${TransactionContext.currency} is failed. if any amount debited it will refund soon",
+                                "your transaction of ${HelperVariables.amount} ${HelperVariables.currency} is failed. if any amount debited it will refund soon",
                                 object: AlertHelper.AlertDialogCallback {
                                     override fun onDismiss() {
                                         loadingScreen.visibility=View.INVISIBLE
@@ -272,7 +263,7 @@ class PasswordPrompt : AppCompatActivity() {
                         loadingScreen.visibility= View.VISIBLE
                         AlertHelper.showAlertDialog(this@PasswordPrompt,
                             "Failed !",
-                            "your transaction of ${TransactionContext.amount} ${TransactionContext.currency} is failed. if any amount debited it will refund soon",
+                            "your transaction of ${HelperVariables.amount} ${HelperVariables.currency} is failed. if any amount debited it will refund soon",
                             object: AlertHelper.AlertDialogCallback {
                                 override fun onDismiss() {
                                     loadingScreen.visibility=View.INVISIBLE
@@ -295,7 +286,7 @@ class PasswordPrompt : AppCompatActivity() {
     fun transactionSuccessful(){
         val intent = Intent(this,Successful::class.java)
         intent.putExtra("type","transaction")
-        intent.putExtra("amount",TransactionContext.amount)
+        intent.putExtra("amount",HelperVariables.amount)
         startActivity(intent)
         finish()
     }

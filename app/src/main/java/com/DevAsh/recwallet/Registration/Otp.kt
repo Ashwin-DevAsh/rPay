@@ -13,6 +13,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Database.BankAccount
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
@@ -52,8 +53,6 @@ class Otp : AppCompatActivity() {
 
         topNumber.text = "Verify +${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
         info.text = "Waiting to automatically detect an SMS sent to +${RegistrationContext.countryCode} ${RegistrationContext.phoneNumber}"
-
-
 
         val client = SmsRetriever.getClient(this)
         val retriever = client.startSmsRetriever()
@@ -139,6 +138,15 @@ class Otp : AppCompatActivity() {
                                         credentials.password,
                                         credentials.token
                                     )
+
+                                    Handler().postDelayed({
+                                        try {
+                                            addBankAccounts( user.getJSONArray("accountinfo"))
+                                        }catch (e:Throwable){
+
+                                        }
+                                    },0)
+
                                     Handler().postDelayed({
                                         AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
                                             .addHeaders("jwtToken",DetailsContext.token)
@@ -185,6 +193,32 @@ class Otp : AppCompatActivity() {
         } else {
             AlertHelper.showError("Invalid Otp",this@Otp)
             mainContent.visibility = VISIBLE
+        }
+    }
+
+    fun addBankAccounts(bankAccounts:JSONArray){
+        val bankAccountsDatabase = ArrayList<BankAccount>()
+        for(i in 0 until bankAccounts.length()){
+            val account = bankAccounts.getJSONObject(i)
+            val bankAccount =  com.DevAsh.recwallet.Models.BankAccount(
+                holderName = account.getString("holderName"),
+                bankName = account.getString("bankName"),
+                accountNumber = account.getString("accountNumber"),
+                IFSC = account.getString("ifsc")
+            )
+            val bankAccountDatabase =  BankAccount(
+                  account.getString("holderName"),
+                  account.getString("bankName"),
+                  account.getString("ifsc"),
+                  account.getString("accountNumber")
+            )
+            bankAccountsDatabase.add(bankAccountDatabase)
+            StateContext.addBankAccounts(
+             bankAccount
+            )
+        }
+        Realm.getDefaultInstance().executeTransactionAsync{
+            it.insert(bankAccountsDatabase)
         }
     }
 

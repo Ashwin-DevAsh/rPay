@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +26,6 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
-import kotlinx.android.synthetic.main.activity_password_prompt.*
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import kotlinx.android.synthetic.main.activity_single_object_transaction.avatarContainer
 import kotlinx.android.synthetic.main.activity_single_object_transaction.back
@@ -38,7 +36,7 @@ import org.json.JSONArray
 
 class SingleObjectTransaction : AppCompatActivity() {
 
-    var allActivityAdapter: AllActivityAdapter?=null
+    var allActivityAdapter: TransactionsAdapter?=null
     private lateinit var badge: TextView
     lateinit var context: Context
 
@@ -54,7 +52,7 @@ class SingleObjectTransaction : AppCompatActivity() {
         badge = findViewById(R.id.badge)
 
 
-        avatarContainer.setBackgroundColor(Color.parseColor(TransactionContext.avatarColor))
+        avatarContainer.setBackgroundColor(Color.parseColor(HelperVariables.avatarColor))
 
         val transactionObserver = Observer<ArrayList<Transaction>> {
             try{
@@ -67,10 +65,10 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         StateContext.model.allTransactions.observe(this,transactionObserver)
 
-        badge.text = TransactionContext.selectedUser!!.name[0].toString()
+        badge.text = HelperVariables.selectedUser!!.name[0].toString()
 
         try {
-            allActivityAdapter = Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.id.replace("+","")]!!
+            allActivityAdapter = Cache.singleObjectTransactionCache[HelperVariables.selectedUser!!.id.replace("+","")]!!
             transactionContainer.layoutManager = LinearLayoutManager(context)
             transactionContainer.adapter = allActivityAdapter
 
@@ -85,13 +83,13 @@ class SingleObjectTransaction : AppCompatActivity() {
 
         }
 
-        if (TransactionContext.selectedUser!!.name.startsWith("+")) {
-           badge.text = TransactionContext.selectedUser!!.name.subSequence(1, 3)
+        if (HelperVariables.selectedUser!!.name.startsWith("+")) {
+           badge.text = HelperVariables.selectedUser!!.name.subSequence(1, 3)
            badge.textSize = 18F
         }
 
-        name.text = TransactionContext.selectedUser!!.name
-        number.text = TransactionContext.selectedUser!!.number
+        name.text = HelperVariables.selectedUser!!.name
+        number.text = HelperVariables.selectedUser!!.number
 
         back.setOnClickListener{
             super.onBackPressed()
@@ -110,9 +108,9 @@ class SingleObjectTransaction : AppCompatActivity() {
     }
 
     private fun loadAvatar(){
-        UiContext.loadProfileImage(context,TransactionContext.selectedUser?.id!!,object:LoadProfileCallBack{
+        UiContext.loadProfileImage(context,HelperVariables.selectedUser?.id!!,object:LoadProfileCallBack{
             override fun onSuccess() {
-                if(!TransactionContext.selectedUser?.id!!.contains("rpay")){
+                if(!HelperVariables.selectedUser?.id!!.contains("rpay")){
                     profile.setBackgroundColor( context.resources.getColor(R.color.textDark))
                     profile.setColorFilter(Color.WHITE,  android.graphics.PorterDuff.Mode.SRC_IN)
                     profile.setPadding(35,35,35,35)
@@ -137,7 +135,7 @@ class SingleObjectTransaction : AppCompatActivity() {
             AndroidNetworking.get(
                 ApiContext.apiUrl
                     + ApiContext.paymentPort
-                    + "/getTransactionsBetweenObjects?id1=${DetailsContext.id}&id2=${TransactionContext.selectedUser!!.id.replace("+","")}")
+                    + "/getTransactionsBetweenObjects?id1=${DetailsContext.id}&id2=${HelperVariables.selectedUser!!.id.replace("+","")}")
                 .addHeaders("jwtToken", DetailsContext.token)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -181,9 +179,9 @@ class SingleObjectTransaction : AppCompatActivity() {
                         if(transactions.size!=allActivityAdapter?.itemCount) {
                             transaction = transactions
                             transactionContainer.layoutManager = LinearLayoutManager(context)
-                            allActivityAdapter = AllActivityAdapter(transaction, context)
+                            allActivityAdapter = TransactionsAdapter(transaction, context)
                             transactionContainer.adapter = allActivityAdapter
-                            Cache.singleObjecttransactionCache[TransactionContext.selectedUser!!.id.replace("+","")] = allActivityAdapter!!
+                            Cache.singleObjectTransactionCache[HelperVariables.selectedUser!!.id.replace("+","")] = allActivityAdapter!!
                             scrollContainer.post {
                                 scrollContainer.fullScroll(View.FOCUS_DOWN)
                                 Handler().postDelayed({
@@ -203,17 +201,17 @@ class SingleObjectTransaction : AppCompatActivity() {
     }
 }
 
-class AllActivityAdapter(private val items : ArrayList<Transaction>, val context: Context) : RecyclerView.Adapter<AllActivityViewHolder>() {
+class TransactionsAdapter(private val items : ArrayList<Transaction>, val context: Context) : RecyclerView.Adapter<TransactionsViewHolder>() {
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllActivityViewHolder {
-        return AllActivityViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_transactions, parent, false),context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionsViewHolder {
+        return TransactionsViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_transactions, parent, false),context)
     }
 
-    override fun onBindViewHolder(holder: AllActivityViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TransactionsViewHolder, position: Int) {
         holder.amount.text = "${items[position].amount}"
         holder.time.text = items[position].time
 
@@ -226,7 +224,7 @@ class AllActivityAdapter(private val items : ArrayList<Transaction>, val context
     }
 }
 
-class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=null,var color:String?=null) : RecyclerView.ViewHolder(view) {
+class TransactionsViewHolder (view: View,context: Context,var item:Transaction?=null,var color:String?=null) : RecyclerView.ViewHolder(view) {
     val amount = view.findViewById(R.id.amount) as TextView
     val time = view.findViewById(R.id.time) as TextView
     val container = view.findViewById(R.id.container) as RelativeLayout
@@ -234,7 +232,7 @@ class AllActivityViewHolder (view: View,context: Context,var item:Transaction?=n
 
     init {
         view.setOnClickListener{
-            TransactionContext.selectedTransaction = item
+            HelperVariables.selectedTransaction = item
             context.startActivity(Intent(context,TransactionDetails::class.java))
         }
     }

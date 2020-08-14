@@ -2,11 +2,10 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.TransactionContext
+import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_amount_prompt.*
@@ -14,8 +13,6 @@ import kotlinx.android.synthetic.main.activity_amount_prompt.amount
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.cancel
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
-import kotlinx.android.synthetic.main.activity_password_prompt.*
-import kotlinx.android.synthetic.main.activity_password_prompt.badge
 
 class AmountPrompt : AppCompatActivity() {
 
@@ -26,8 +23,8 @@ class AmountPrompt : AppCompatActivity() {
 
         context=this
 
-        paymentText.text = "Paying ${TransactionContext.selectedUser?.name}"
-        paymentBrief.text = "Your transaction to ${TransactionContext.selectedUser?.number} will be verify by our server"
+        paymentText.text = "Paying ${HelperVariables.selectedUser?.name}"
+        paymentBrief.text = "Your transaction to ${HelperVariables.selectedUser?.number} will be verify by our server"
 
 
 
@@ -41,18 +38,18 @@ class AmountPrompt : AppCompatActivity() {
 
         done.setOnClickListener{v->
 
-            TransactionContext.amount = amount.text.toString()
-            if(TransactionContext.amount==""){
+            HelperVariables.amount = amount.text.toString()
+            if(HelperVariables.amount==""){
                 return@setOnClickListener
             }
-            if(TransactionContext.amount!!.toInt()>StateContext.currentBalance){
+            if(HelperVariables.amount!!.toInt()>StateContext.currentBalance){
                 AlertHelper.showError("Insufficient Balance !", this)
                 return@setOnClickListener
             }
 
             try {
-               if(TransactionContext.amount!!.toInt()>0){
-                   TransactionContext.needToPay = true
+               if(HelperVariables.amount!!.toInt()>0){
+                   HelperVariables.needToPay = true
 
                    startActivity(Intent(context,PasswordPrompt::class.java))
                     finish()
