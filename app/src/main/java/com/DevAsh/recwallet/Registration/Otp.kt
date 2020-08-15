@@ -118,7 +118,6 @@ class Otp : AppCompatActivity() {
                         if (otpObject != null && otpObject["message"] == "verified") {
                             try {
 
-                                println(otpObject["user"])
                                 val user: JSONObject = otpObject["user"] as JSONObject
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)

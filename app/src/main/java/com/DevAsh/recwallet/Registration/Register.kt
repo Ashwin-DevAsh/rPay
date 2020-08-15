@@ -14,6 +14,7 @@ import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Database.BankAccount
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
@@ -132,7 +133,7 @@ class Register : AppCompatActivity() {
                                         credentials.password,
                                         credentials.token
                                     )
-
+                                    StateContext.initBankAccounts(arrayListOf())
                                     Handler().postDelayed({
                                         AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getState")
                                             .addHeaders("jwtToken",DetailsContext.token)
@@ -177,7 +178,7 @@ class Register : AppCompatActivity() {
                         var merchantTemp = ArrayList<Merchant>()
                         for(i in 0 until response.length()){
                             val user = Merchant(
-                                response.getJSONObject(i)["storeName"].toString()
+                                response.getJSONObject(i)["storename"].toString()
                                 ,"+"+response.getJSONObject(i)["number"].toString()
                                 ,response.getJSONObject(i)["id"].toString()
                                 ,response.getJSONObject(i)["email"].toString()

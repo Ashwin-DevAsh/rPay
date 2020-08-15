@@ -21,13 +21,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.HelperVariables.needToPay
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.Recovery.RecoveryOptions
+import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.R
+import com.DevAsh.recwallet.Registration.Login
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -37,10 +40,6 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_amount_prompt.back
 import kotlinx.android.synthetic.main.activity_amount_prompt.done
 import kotlinx.android.synthetic.main.activity_password_prompt.*
-import kotlinx.android.synthetic.main.activity_password_prompt.avatarContainer
-import kotlinx.android.synthetic.main.activity_password_prompt.badge
-import kotlinx.android.synthetic.main.activity_password_prompt.loadingScreen
-import kotlinx.android.synthetic.main.activity_password_prompt.profile
 import org.json.JSONObject
 import java.io.IOException
 import java.security.*
@@ -70,6 +69,17 @@ class PasswordPrompt : AppCompatActivity() {
         RealmHelper.init(context)
 
         val extraValues = Realm.getDefaultInstance().where(ExtraValues::class.java).findFirst()
+
+        if(intent.getBooleanExtra("isExternalApp",false)){
+            needToPay=true
+            loadingScreen.visibility=View.VISIBLE
+            loadFromData()
+            loadToData()
+            Handler().postDelayed({
+                loadingScreen.visibility=View.GONE
+            },1000)
+
+        }
 
 
         if (checkLockScreen()) {
@@ -163,6 +173,37 @@ class PasswordPrompt : AppCompatActivity() {
 
     }
 
+    private fun loadToData(){
+        HelperVariables.amount = intent.getStringExtra("amount")
+        HelperVariables.selectedUser= Contacts(
+            intent.getStringExtra("name"),
+            intent.getStringExtra("number"),
+            intent.getStringExtra("id"),
+            intent.getStringExtra("email"),
+            null
+        )
+    }
+
+    private fun loadFromData(){
+        val credentials: Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
+        try {
+            DetailsContext.setData(
+                credentials!!.name,
+                credentials.phoneNumber,
+                credentials.email,
+                credentials.password,
+                credentials.token
+            )
+        }catch (e:Throwable){
+            if(intent.getBooleanExtra("isExternalApp",false)){
+                sendResult(false)
+                return
+            }
+        }
+    }
+
+
+
     private fun loadAvatar(){
         UiContext.loadProfileImage(context,HelperVariables.selectedUser?.id!!,object:
             LoadProfileCallBack {
@@ -214,6 +255,10 @@ class PasswordPrompt : AppCompatActivity() {
                 .getAsJSONObject(object : JSONObjectRequestListener {
                     override fun onResponse(response: JSONObject?) {
                         if(response?.get("message")=="done"){
+                            if(intent.getBooleanExtra("isExternalApp",false)){
+                                sendResult(true)
+                                return
+                            }
                             transactionSuccessful()
                             AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
                                 .addHeaders("jwtToken",DetailsContext.token)
@@ -239,6 +284,10 @@ class PasswordPrompt : AppCompatActivity() {
                                 })
 
                         }else{
+                            if(intent.getBooleanExtra("isExternalApp",false)){
+                                sendResult(false)
+                                return
+                            }
                             AlertHelper.showAlertDialog(this@PasswordPrompt,
                                 "Failed !",
                                 "your transaction of ${HelperVariables.amount} ${HelperVariables.currency} is failed. if any amount debited it will refund soon",
@@ -258,6 +307,10 @@ class PasswordPrompt : AppCompatActivity() {
                     }
 
                     override fun onError(anError: ANError?) {
+                        if(intent.getBooleanExtra("isExternalApp",false)){
+                            sendResult(false)
+                            return
+                        }
                         loadingScreen.visibility= View.VISIBLE
                         AlertHelper.showAlertDialog(this@PasswordPrompt,
                             "Failed !",
@@ -287,6 +340,20 @@ class PasswordPrompt : AppCompatActivity() {
         intent.putExtra("amount",HelperVariables.amount)
         startActivity(intent)
         finish()
+    }
+
+    fun sendResult(result: Boolean){
+        val resultIntent = Intent()
+        resultIntent.putExtra("isTransactionSuccess",result )
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
+    }
+
+
+    override fun onBackPressed() {
+        if(loadingScreen.visibility==View.GONE){
+            super.onBackPressed()
+        }
     }
 
 

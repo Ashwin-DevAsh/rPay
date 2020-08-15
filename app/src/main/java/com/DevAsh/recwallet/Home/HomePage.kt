@@ -230,6 +230,10 @@ class HomePage : AppCompatActivity() {
         }
 
         support.setOnClickListener{
+//            val myIntent = Intent()
+//
+//            myIntent.setClassName("com.DevAsh.recbusiness", "com.DevAsh.recbusiness.Home.Transactions.PasswordPrompt")
+//            startActivityForResult(myIntent, 600)
             val intent = Intent(this,WebView::class.java)
             intent.putExtra("page","support")
             startActivity(intent)
