@@ -292,7 +292,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/bankAccounts"
-                android:layout_marginTop="10dp"
+
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_width="50dp"
@@ -403,6 +403,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/support"
+                android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_width="50dp"
@@ -427,7 +428,6 @@
                         android:layout_marginLeft="20dp"
                         android:gravity="center_vertical"
                         android:text="Support"
-
                         android:textStyle="bold"
                         android:textColor="@android:color/black"
                         android:textSize="13dp"
