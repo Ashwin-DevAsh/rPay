@@ -238,9 +238,9 @@
                 <ImageView
                     android:layout_width="50dp"
                     android:id="@+id/avatar"
-                    android:src="@drawable/offer"
+                    android:src="@drawable/gift"
                     android:tint="#90000000"
-                    android:padding="10dp"
+                    android:padding="13dp"
                     android:foregroundGravity="center"
                     android:layout_centerInParent="true"
                     android:layout_alignParentLeft="true"
@@ -297,7 +297,7 @@
                 <ImageView
                     android:layout_width="50dp"
                     android:id="@+id/avatar"
-                    android:src="@drawable/bankaccount"
+                    android:src="@drawable/paypal2"
                     android:tint="#000000"
                     android:padding="13dp"
                     android:foregroundGravity="center"
