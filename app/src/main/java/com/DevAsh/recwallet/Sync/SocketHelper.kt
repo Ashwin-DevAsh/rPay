@@ -1,5 +1,6 @@
 package com.DevAsh.recwallet.Sync
 
+import android.widget.Toast
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
@@ -41,12 +42,12 @@ object SocketHelper {
 
         }
 
-
         socket?.on("disconnect"){
             println("disconnecting...")
         }
 
         socket?.on("receivedPayment"){
+            println("received payment")
             getMyState()
         }
 

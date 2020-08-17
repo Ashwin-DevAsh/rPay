@@ -21,15 +21,15 @@ class Successful : AppCompatActivity() {
         val amount = intent.getStringExtra("amount")
         when (type) {
             "addMoney" -> {
-                message.text = "The amount $amount ${HelperVariables.currency}s has been successfully added in your wallet"
+                messageEditText.text = "The amount $amount ${HelperVariables.currency}s has been successfully added in your wallet"
             }
             "withdraw" -> {
                 image.setImageDrawable(getDrawable(R.drawable.withdraw_successfull))
-                message.text = "The amount $amount ${HelperVariables.currency}s has been successfully transfered to your bank"
+                messageEditText.text = "The amount $amount ${HelperVariables.currency}s has been successfully transfered to your bank"
             }
             else -> {
                 image.setImageDrawable(getDrawable(R.drawable.transaction_successful))
-                message.text = "Your transaction of $amount ${HelperVariables.currency}s has been successfully completed"
+                messageEditText.text = "Your transaction of $amount ${HelperVariables.currency}s has been successfully completed"
             }
         }
 

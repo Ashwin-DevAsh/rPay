@@ -203,11 +203,14 @@ class Register : AppCompatActivity() {
         startActivity(startMain)
     }
 
-    private fun hideKeyboardFrom(context: Context, view: View) {
-        val imm: InputMethodManager =
-            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    companion object{
+        fun hideKeyboardFrom(context: Context, view: View) {
+            val imm: InputMethodManager =
+                context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
+
 
     private fun checkUserName(name:String):Boolean{
         val p = Pattern.compile("[^A-Za-z_\\s]+")

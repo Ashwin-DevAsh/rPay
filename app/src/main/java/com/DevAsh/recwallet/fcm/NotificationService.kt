@@ -62,6 +62,10 @@ class NotificationService : FirebaseMessagingService() {
         }else if(p0.data["type"]?.startsWith("merchantStatus")!!){
               println("Added New Merchant....")
               MerchantHelper.updateMerchant()
+        }else if(p0.data["type"]?.startsWith("message")!!){
+            val amount = p0.data["type"]!!.split(",")[3]
+            val fromName = p0.data["type"]!!.split(",")[1]
+            showNotification(fromName,"$amount")
         }
         else{
             HelperVariables.openTransactionPage = true
@@ -93,7 +97,7 @@ class NotificationService : FirebaseMessagingService() {
     }
 
     private fun showNotification(title:String, subTitle:String){
-        var notificationID = Random.nextInt(1000000000)
+        val notificationID = Random.nextInt(1000000000)
         val intent = Intent(applicationContext,SplashScreen::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
