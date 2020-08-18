@@ -68,7 +68,7 @@
                     android:layout_height="48dp">
                     <ImageButton
                         android:layout_width="match_parent"
-                        android:scaleType="fitXY"
+                        android:scaleType="centerCrop"
                         android:id="@+id/profile"
                         android:background="@android:color/transparent"
                         android:src="@drawable/profile"

@@ -1,9 +1,7 @@
 package com.DevAsh.recwallet.Helper
 
-import android.content.Intent
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Merchant
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -15,7 +13,7 @@ object MerchantHelper {
     fun updateMerchant(){
         try {
             println("updating merchants....")
-            AndroidNetworking.get(ApiContext.apiUrl+ ApiContext.registrationPort+"/getMerchants")
+            AndroidNetworking.get(ApiContext.apiUrl+ ApiContext.profilePort+"/getMerchants")
                 .setPriority(Priority.IMMEDIATE)
                 .build()
                 .getAsJSONArray(object : JSONArrayRequestListener {

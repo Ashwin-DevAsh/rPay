@@ -91,8 +91,8 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                     loadingScreen.visibility = View.VISIBLE
                     println(response)
                     if(response?.get("message")=="done"){
-                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
-                            .addHeaders("jwtToken", DetailsContext.token)
+                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
+                            .addHeaders("token", DetailsContext.token)
                             .setPriority(Priority.IMMEDIATE)
                             .build()
                             .getAsJSONObject(object: JSONObjectRequestListener {
@@ -101,11 +101,11 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                     jsonData.put("to",
                                         HelperVariables.selectedUser?.number.toString().replace("+",""))
                                     SocketHelper.socket?.emit("notifyPayment",jsonData)
-                                    val balance = response?.getInt("Balance")
+                                    val balance = response?.getInt("balance")
+                                    StateContext.currentBalance = balance!!
                                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                     StateContext.setBalanceToModel(formatter.format(balance))
-                                    StateContext.currentBalance= balance!!
-                                    val transactionObjectArray = response.getJSONArray("Transactions")
+                                    val transactionObjectArray = response.getJSONArray("transactions")
                                     StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
                                     val intent = Intent(context,Successful::class.java)
                                     intent.putExtra("type","addMoney")

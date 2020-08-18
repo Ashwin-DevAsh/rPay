@@ -104,20 +104,22 @@ class SplashScreen : AppCompatActivity() {
                       },2000)
                       return@postDelayed
                   }
-                  AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
-                        .addHeaders("jwtToken",DetailsContext.token)
+                  AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
+                        .addHeaders("token",DetailsContext.token)
                         .setPriority(Priority.IMMEDIATE)
                         .build()
                         .getAsJSONObject(object: JSONObjectRequestListener {
                             override fun onResponse(response: JSONObject?) {
-                                val balance = response?.getInt("Balance")
+                                val balance = response?.getInt("balance")
+                                val merchants = response?.getJSONArray("merchants")!!
                                 StateContext.currentBalance = balance!!
                                 val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                 StateContext.setBalanceToModel(formatter.format(balance))
-                                getMerchants()
-
                                 Handler().postDelayed({
-                                    val transactionObjectArray = response.getJSONArray("Transactions")
+                                    getMerchants(merchants)
+                                },0)
+                                Handler().postDelayed({
+                                    val transactionObjectArray = response.getJSONArray("transactions")
                                     println(transactionObjectArray)
                                     StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
                                 },0)
@@ -138,33 +140,20 @@ class SplashScreen : AppCompatActivity() {
 
     }
 
-    fun getMerchants(){
-        AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getMerchants")
-            .setPriority(Priority.IMMEDIATE)
-            .build()
-            .getAsJSONArray(object : JSONArrayRequestListener {
-                override fun onResponse(response: JSONArray?) {
-                    println(response)
-                    if(response!=null){
-                        val merchantTemp = ArrayList<Merchant>()
-                        for(i in 0 until response.length()){
-                            val user = Merchant(
-                                response.getJSONObject(i)["storename"].toString()
-                                ,"+"+response.getJSONObject(i)["number"].toString()
-                                ,response.getJSONObject(i)["id"].toString()
-                                ,response.getJSONObject(i)["email"].toString()
-                            )
-                            merchantTemp.add(user)
-                        }
-                        StateContext.initMerchant(merchantTemp)
-                        startActivity(Intent(context, HomePage::class.java))
-                        finish()
-                    }
-                }
-                override fun onError(anError: ANError?) {
-                    AlertHelper.showServerError(this@SplashScreen)
-                }
-            })
+    fun getMerchants(response:JSONArray){
+        val merchantTemp = ArrayList<Merchant>()
+        for(i in 0 until response.length()){
+            val user = Merchant(
+                response.getJSONObject(i)["storename"].toString()
+                ,"+"+response.getJSONObject(i)["number"].toString()
+                ,response.getJSONObject(i)["id"].toString()
+                ,response.getJSONObject(i)["email"].toString()
+            )
+            merchantTemp.add(user)
+        }
+        StateContext.initMerchant(merchantTemp)
+        startActivity(Intent(context, HomePage::class.java))
+        finish()
     }
 
     companion object{

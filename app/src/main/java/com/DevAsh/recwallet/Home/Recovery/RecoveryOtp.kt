@@ -10,30 +10,18 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.RegistrationContext
-import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
-import com.DevAsh.recwallet.Home.HomePage
-import com.DevAsh.recwallet.Models.Merchant
-import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.Registration.Register
-import com.DevAsh.recwallet.SplashScreen
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
-import com.androidnetworking.interfaces.JSONObjectRequestListener
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_recovery_otp.*
 import kotlinx.android.synthetic.main.activity_recovery_otp.errorMessage
 import kotlinx.android.synthetic.main.activity_recovery_otp.mainContent
 import kotlinx.android.synthetic.main.activity_recovery_otp.otp
 import kotlinx.android.synthetic.main.activity_recovery_otp.verify
 import org.json.JSONArray
-import org.json.JSONObject
-import java.text.DecimalFormat
 
 class RecoveryOtp : AppCompatActivity() {
     var otpText=""
@@ -50,7 +38,7 @@ class RecoveryOtp : AppCompatActivity() {
                 Handler().postDelayed({
                     mainContent.visibility = View.INVISIBLE
                 },300)
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/setRecoveryOtp")
+            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.profilePort + "/setRecoveryOtp")
                 .addHeaders("token",DetailsContext.token)
                 .addBodyParameter("otpNumber", otpText)
                 .addBodyParameter(

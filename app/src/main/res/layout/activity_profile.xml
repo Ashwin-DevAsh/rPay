@@ -65,7 +65,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:id="@+id/profilePicture"
-                        android:scaleType="fitXY"
+                        android:scaleType="centerCrop"
                         android:background="@color/colorPrimary"
                         android:src="@drawable/profile"
                         android:layout_height="match_parent"/>

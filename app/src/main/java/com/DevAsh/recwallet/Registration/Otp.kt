@@ -19,9 +19,7 @@ import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Merchant
-import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.SplashScreen
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -104,7 +102,7 @@ class Otp : AppCompatActivity() {
                 mainContent.visibility = INVISIBLE
 
             },300)
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.registrationPort + "/setOtp")
+            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.profilePort + "/setOtp")
                 .addBodyParameter("otpNumber", otp.text.toString())
                 .addBodyParameter(
                     "number",
@@ -147,22 +145,26 @@ class Otp : AppCompatActivity() {
                                     },0)
 
                                     Handler().postDelayed({
-                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
-                                            .addHeaders("jwtToken",DetailsContext.token)
+                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
+                                            .addHeaders("token",DetailsContext.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()
                                             .getAsJSONObject(object: JSONObjectRequestListener {
                                                 override fun onResponse(response: JSONObject?) {
-                                                    val balance = response?.getInt("Balance")
+                                                    val balance = response?.getInt("balance")
+                                                    val merchants = response?.getJSONArray("merchants")!!
                                                     StateContext.currentBalance = balance!!
                                                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                                     StateContext.setBalanceToModel(formatter.format(balance))
-                                                    val transactionObjectArray = response.getJSONArray("Transactions")
                                                     Handler().postDelayed({
-                                                        StateContext.initAllTransaction(
-                                                            TransactionsHelper.addTransaction(transactionObjectArray))
+                                                        getMerchants(merchants)
                                                     },0)
-                                                   getMerchants()
+                                                    Handler().postDelayed({
+                                                        val transactionObjectArray = response.getJSONArray("transactions")
+                                                        println(transactionObjectArray)
+                                                        StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
+                                                    },0)
+
                                                 }
 
                                                 override fun onError(anError: ANError?) {
@@ -221,34 +223,20 @@ class Otp : AppCompatActivity() {
         }
     }
 
-    fun getMerchants(){
-        AndroidNetworking.get(ApiContext.apiUrl+ApiContext.registrationPort+"/getMerchants")
-            .setPriority(Priority.IMMEDIATE)
-            .build()
-            .getAsJSONArray(object : JSONArrayRequestListener {
-                override fun onResponse(response: JSONArray?) {
-                    println(response)
-                    if(response!=null){
-                        var merchantTemp = ArrayList<Merchant>()
-                        for(i in 0 until response.length()){
-                            val user = Merchant(
-                                response.getJSONObject(i)["storename"].toString()
-                                ,"+"+response.getJSONObject(i)["number"].toString()
-                                ,response.getJSONObject(i)["id"].toString()
-                                ,response.getJSONObject(i)["email"].toString()
-                            )
-                            merchantTemp.add(user)
-                        }
-                        StateContext.initMerchant(merchantTemp)
-                        startActivity(Intent(context, HomePage::class.java))
-                        finish()
-                    }
-
-                }
-                override fun onError(anError: ANError?) {
-                    AlertHelper.showServerError(this@Otp)
-                }
-            })
+    fun getMerchants(response:JSONArray){
+        val merchantTemp = ArrayList<Merchant>()
+        for(i in 0 until response.length()){
+            val user = Merchant(
+                response.getJSONObject(i)["storename"].toString()
+                ,"+"+response.getJSONObject(i)["number"].toString()
+                ,response.getJSONObject(i)["id"].toString()
+                ,response.getJSONObject(i)["email"].toString()
+            )
+            merchantTemp.add(user)
+        }
+        StateContext.initMerchant(merchantTemp)
+        startActivity(Intent(context, HomePage::class.java))
+        finish()
     }
 
     override fun onBackPressed() {
