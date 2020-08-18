@@ -31,8 +31,6 @@ class SocketService : Service() {
     }
 
     override fun onCreate() {
-
-
         if (DetailsContext.name == null) {
             RealmHelper.init(this)
             AndroidNetworking.initialize(applicationContext)
@@ -56,6 +54,7 @@ class SocketService : Service() {
                 } else {
                     println("success . . . .")
                     DetailsContext.fcmToken = task.result?.token!!
+                    SocketHelper.context = this.applicationContext
                     SocketHelper.connect()
                 }
             })
@@ -64,10 +63,6 @@ class SocketService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        handler.postDelayed({
-//            println("Try to destroy")
-//            onDestroy()
-//        },1*60*1000)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

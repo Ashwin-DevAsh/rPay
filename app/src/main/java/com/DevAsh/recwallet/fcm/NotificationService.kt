@@ -14,6 +14,7 @@ import com.DevAsh.recwallet.Helper.MerchantHelper
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
+import com.DevAsh.recwallet.Sync.SocketHelper.socketIntent
 import com.DevAsh.recwallet.Sync.SocketService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -31,25 +32,21 @@ class NotificationService : FirebaseMessagingService() {
     }
 
     override fun onCreate() {
-        intent = Intent(this,SocketService::class.java)
+        socketIntent = Intent(this,SocketService::class.java)
         super.onCreate()
     }
 
-    lateinit var intent :Intent
+
 
     override fun onMessageReceived(p0: RemoteMessage) {
-
-        println(p0.data["type"])
         if (p0.data["type"]=="awake"){
-            stopService(intent)
+            stopService(socketIntent)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                 startForegroundService(intent)
+                 startForegroundService(socketIntent)
             } else {
-                 startService(intent)
+                 startService(socketIntent)
             }
         }else if(p0.data["type"]?.startsWith("updateProfilePicture")!!){
-              println("Updated")
-              println(p0.data)
               try{
                   val id = p0.data["type"]?.split(",")!![1]
                   Picasso.get().invalidate(UiContext.buildURL(id))
@@ -60,7 +57,6 @@ class NotificationService : FirebaseMessagingService() {
                   println(e)
               }
         }else if(p0.data["type"]?.startsWith("merchantStatus")!!){
-              println("Added New Merchant....")
               MerchantHelper.updateMerchant()
         }else if(p0.data["type"]?.startsWith("message")!!){
             val amount = p0.data["type"]!!.split(",")[3]
@@ -90,8 +86,6 @@ class NotificationService : FirebaseMessagingService() {
                     showNotification(fromName,"You have received $amount ${HelperVariables.currency}s from $fromName.")
                 }
             }
-
-
         }
         super.onMessageReceived(p0)
     }

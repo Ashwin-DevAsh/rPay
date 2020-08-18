@@ -48,12 +48,12 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:id="@+id/message"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:layout_marginVertical="5dp"
                     android:textColor="#B3000000"
                     android:background="@android:color/transparent"
                     android:text="Hello"
-                    android:textSize="16dp"
+                    android:textSize="14dp"
                     android:layout_height="match_parent"/>
             </LinearLayout>
 

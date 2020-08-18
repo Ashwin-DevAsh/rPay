@@ -1,12 +1,11 @@
 package com.DevAsh.recwallet.Sync
 
-import android.widget.Toast
+import android.content.Context
+import android.content.Intent
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Helper.TransactionsHelper
-import com.DevAsh.recwallet.Models.Transaction
-import com.DevAsh.recwallet.SplashScreen
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -16,12 +15,14 @@ import com.github.nkzawa.socketio.client.Socket
 import org.json.JSONObject
 import java.text.DecimalFormat
 
+
 object SocketHelper {
 
     private val url = ApiContext.apiUrl+ ApiContext.syncPort
     var socket:Socket? = null
     var newUser:Boolean = false
-
+    var context:Context?=null
+    var socketIntent : Intent?=null
     fun connect(){
         socket = IO.socket(url)
         socket?.connect()
@@ -43,7 +44,8 @@ object SocketHelper {
         }
 
         socket?.on("disconnect"){
-            println("disconnecting...")
+             context?.stopService(socketIntent)
+             println("disconnecting...")
         }
 
         socket?.on("receivedPayment"){

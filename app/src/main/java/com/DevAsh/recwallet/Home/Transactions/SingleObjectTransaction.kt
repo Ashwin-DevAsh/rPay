@@ -51,6 +51,7 @@ class SingleObjectTransaction : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SocketHelper.connect()
         setContentView(R.layout.activity_single_object_transaction)
         context=this
         badge = findViewById(R.id.badge)
@@ -87,8 +88,8 @@ class SingleObjectTransaction : AppCompatActivity() {
         }
 
         if (HelperVariables.selectedUser!!.name.startsWith("+")) {
-           badge.text = HelperVariables.selectedUser!!.name.subSequence(1, 3)
-           badge.textSize = 18F
+            badge.text = HelperVariables.selectedUser!!.name.subSequence(1, 3)
+            badge.textSize = 18F
         }
         name.text = HelperVariables.selectedUser!!.name
         number.text = HelperVariables.selectedUser!!.number
@@ -101,7 +102,7 @@ class SingleObjectTransaction : AppCompatActivity() {
             try{
                 sendMessage()
             }catch (e:Throwable){
-              e.printStackTrace()
+                e.printStackTrace()
             }
         }
 
@@ -163,7 +164,7 @@ class SingleObjectTransaction : AppCompatActivity() {
 
     private fun handelSocket(){
         try{
-        SocketHelper.socket?.on("receivedMessage") { it->
+            SocketHelper.socket?.on("receivedMessage") { it->
                 val messageData = it[0] as JSONObject
                 if(Cache.socketListnerCache[this]==messageData.getJSONObject("from")["id"]){
                     val objectTransactions =  ObjectTransactions(
@@ -186,50 +187,50 @@ class SingleObjectTransaction : AppCompatActivity() {
                 }
 
 
-        }
-
-        SocketHelper.socket?.on("receivedSingleObjectTransaction") { it->
-
-            val transactionData = it[0] as JSONObject
-            val from = transactionData.getJSONObject("from")
-            val to = transactionData.getJSONObject("to")
-            val isSend = TransactionsHelper.isSend(DetailsContext.id, from.getString("id"))
-            val name = if (isSend) to.getString("name") else from.getString("name")
-            val number = if (isSend) to.getString("number") else from.getString("number")
-            val email = if (isSend) to.getString("email") else from.getString("email")
-            val id = if (isSend) to.getString("id") else from.getString("id")
-            val contacts = Contacts(name, number,id,email)
-            if(
-                from["id"]==DetailsContext.id && to["id"]==Cache.socketListnerCache[this] ||
-                to["id"]==DetailsContext.id && from["id"]==Cache.socketListnerCache[this]
-            ){
-                val transactionObject = Transaction(
-                    contacts = contacts,
-                    amount = transactionData["amount"].toString(),
-                    time =(if (transactionData["from"] == DetailsContext.id)
-                        "Paid  "
-                    else "Received  ")+ SplashScreen.dateToString(
-                        transactionData["transactionTime"].toString()
-                    ),
-                    type = if (isSend)
-                        "Send"
-                    else "Received",
-                    transactionId =  transactionData["transactionID"].toString(),
-                    isGenerated = false,
-                    isWithdraw = false
-                )
-                val objectTransactions=ObjectTransactions( transaction = transactionObject   )
-                if(!transaction.contains(objectTransactions)){
-                    transaction.add(
-                        objectTransactions
-                    )
-                    allActivityAdapter?.updateList(transaction,transactionContainer)
-                }
-                smoothScroller.targetPosition = transaction.size
-                (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
-
             }
-        }
+
+            SocketHelper.socket?.on("receivedSingleObjectTransaction") { it->
+
+                val transactionData = it[0] as JSONObject
+                val from = transactionData.getJSONObject("from")
+                val to = transactionData.getJSONObject("to")
+                val isSend = TransactionsHelper.isSend(DetailsContext.id, from.getString("id"))
+                val name = if (isSend) to.getString("name") else from.getString("name")
+                val number = if (isSend) to.getString("number") else from.getString("number")
+                val email = if (isSend) to.getString("email") else from.getString("email")
+                val id = if (isSend) to.getString("id") else from.getString("id")
+                val contacts = Contacts(name, number,id,email)
+                if(
+                    from["id"]==DetailsContext.id && to["id"]==Cache.socketListnerCache[this] ||
+                    to["id"]==DetailsContext.id && from["id"]==Cache.socketListnerCache[this]
+                ){
+                    val transactionObject = Transaction(
+                        contacts = contacts,
+                        amount = transactionData["amount"].toString(),
+                        time =(if (transactionData["from"] == DetailsContext.id)
+                            "Paid  "
+                        else "Received  ")+ SplashScreen.dateToString(
+                            transactionData["transactionTime"].toString()
+                        ),
+                        type = if (isSend)
+                            "Send"
+                        else "Received",
+                        transactionId =  transactionData["transactionID"].toString(),
+                        isGenerated = false,
+                        isWithdraw = false
+                    )
+                    val objectTransactions=ObjectTransactions( transaction = transactionObject   )
+                    if(!transaction.contains(objectTransactions)){
+                        transaction.add(
+                            objectTransactions
+                        )
+                        allActivityAdapter?.updateList(transaction,transactionContainer)
+                    }
+                    smoothScroller.targetPosition = transaction.size
+                    (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
+
+                }
+            }
         }catch (e:Throwable){
             smoothScroller.targetPosition = transaction.size
             (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
@@ -282,7 +283,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                     }
 
                     override fun onError(anError: ANError?) {
-                       println(anError?.errorCode)
+                        println(anError?.errorCode)
                     }
 
                 })
@@ -296,8 +297,8 @@ class SingleObjectTransaction : AppCompatActivity() {
         Handler().postDelayed({
             AndroidNetworking.get(
                 ApiContext.apiUrl
-                    + ApiContext.paymentPort
-                    + "/getTransactionsBetweenObjects?id1=${DetailsContext.id}&id2=${HelperVariables.selectedUser!!.id.replace("+","")}")
+                        + ApiContext.paymentPort
+                        + "/getTransactionsBetweenObjects?id1=${DetailsContext.id}&id2=${HelperVariables.selectedUser!!.id.replace("+","")}")
                 .addHeaders("jwtToken", DetailsContext.token)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -308,7 +309,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                         for (i in 0 until transactionObjectArray.length()) {
                             val message = response.getJSONObject(i).getJSONObject("MessageData")
                             val transaction = response.getJSONObject(i).getJSONObject("TransactionData")
-                           try{
+                            try{
                                 val from = transaction.getJSONObject("From")
                                 val to = transaction.getJSONObject("To")
                                 val isSend = TransactionsHelper.isSend(DetailsContext.id, from.getString("Id"))
@@ -370,10 +371,10 @@ class SingleObjectTransaction : AppCompatActivity() {
                             transactionContainer.adapter = allActivityAdapter
 
                             Cache.singleObjectTransactionCache[HelperVariables.selectedUser!!.id.replace("+","")] = allActivityAdapter!!
-                                Handler().postDelayed({
-                                    loadingScreen.visibility = View.INVISIBLE
-                                },300)
-                            }
+                            Handler().postDelayed({
+                                loadingScreen.visibility = View.INVISIBLE
+                            },300)
+                        }
                     }
 
                     override fun onError(anError: ANError?) {

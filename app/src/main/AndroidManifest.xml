@@ -119,6 +119,7 @@
 
         <activity
             android:windowSoftInputMode="adjustResize"
+            android:exported="true"
             android:name=".Home.Transactions.SingleObjectTransaction"
             android:screenOrientation="portrait" />
         <activity
