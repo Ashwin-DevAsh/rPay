@@ -11,6 +11,8 @@ import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Helper.MerchantHelper
+import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
+import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -61,13 +63,23 @@ class NotificationService : FirebaseMessagingService() {
         }else if(p0.data["type"]?.startsWith("message")!!){
             val amount = p0.data["type"]!!.split(",")[3]
             val fromName = p0.data["type"]!!.split(",")[1]
-            showNotification(fromName,"$amount")
+            val fromID =  p0.data["type"]!!.split(",")[2]
+            val fromEmail = p0.data["type"]!!.split(",")[4]
+
+            HelperVariables.selectedUser = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
+            val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
+            intent.putExtra("openSingleObjectTransactions",true)
+            showNotification(fromName, amount,intent)
         }
         else{
             HelperVariables.openTransactionPage = true
             val type =  p0.data["type"]!!.split(",")[0]
             val amount = p0.data["type"]!!.split(",")[3]
+            val fromID =  p0.data["type"]!!.split(",")[2]
+            val fromEmail = p0.data["type"]!!.split(",")[4]
             val fromName = p0.data["type"]!!.split(",")[1]
+
+            HelperVariables.selectedUser = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
 
             try {
                 SocketHelper.getMyState()
@@ -77,22 +89,30 @@ class NotificationService : FirebaseMessagingService() {
 
             when (type) {
                 "addedMoney" -> {
-                    showNotification("Added Money","Your $amount ${HelperVariables.currency}s has been successfully added.")
+                    val intent = Intent(applicationContext,SplashScreen::class.java)
+                    intent.putExtra("openSingleObjectTransactions",true)
+                    showNotification(
+                        "Added Money",
+                        "Your $amount ${HelperVariables.currency}s has been successfully added.",intent)
                 }
                 "withdraw" -> {
-                    showNotification("withdraw","Your $amount ${HelperVariables.currency}s has been successfully withdraw.")
+                    val intent = Intent(applicationContext,SplashScreen::class.java)
+                    intent.putExtra("openSingleObjectTransactions",true)
+                    showNotification("withdraw","Your $amount ${HelperVariables.currency}s has been successfully withdraw.",intent)
                 }
                 else -> {
-                    showNotification(fromName,"You have received $amount ${HelperVariables.currency}s from $fromName.")
+                    val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
+                    intent.putExtra("openSingleObjectTransactions",true)
+                    showNotification(fromName,"You have received $amount ${HelperVariables.currency}s from $fromName.",intent)
                 }
             }
         }
         super.onMessageReceived(p0)
     }
 
-    private fun showNotification(title:String, subTitle:String){
+    private fun showNotification(title:String, subTitle:String,intent:Intent){
         val notificationID = Random.nextInt(1000000000)
-        val intent = Intent(applicationContext,SplashScreen::class.java)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "Payment"

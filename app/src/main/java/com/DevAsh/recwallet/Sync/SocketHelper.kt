@@ -62,18 +62,18 @@ object SocketHelper {
     }
 
    fun getMyState(){
-        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.paymentPort + "/getMyState?id=${DetailsContext.id}")
-            .addHeaders("jwtToken",DetailsContext.token)
+        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
+            .addHeaders("token",DetailsContext.token)
             .setPriority(Priority.IMMEDIATE)
             .build()
             .getAsJSONObject(object: JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject?) {
-                    val balance = response?.getInt("Balance")
+                    val balance = response?.getInt("balance")
                     StateContext.currentBalance = balance!!
                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                     StateContext.setBalanceToModel(formatter.format(balance))
-                    StateContext.currentBalance= balance!!
-                    val transactionObjectArray = response?.getJSONArray("Transactions")
+                    StateContext.currentBalance= balance
+                    val transactionObjectArray = response.getJSONArray("transactions")
                     StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
                 }
                 override fun onError(anError: ANError?) {

@@ -37,15 +37,6 @@ class SplashScreen : AppCompatActivity() {
     lateinit var context: Context
     lateinit var parentLayout: View
 
-    override fun onNewIntent(intent: Intent) {
-        val extras = intent.extras
-        if (extras != null) {
-            if (extras.containsKey("openTransactionPage")) {
-                HelperVariables.openTransactionPage=true
-            }
-        }
-        super.onNewIntent(intent)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -53,11 +44,10 @@ class SplashScreen : AppCompatActivity() {
         AndroidNetworking.setParserFactory(JacksonParserFactory())
         super.onCreate(savedInstanceState)
 
+        val openSingleObjectTransactions = intent.getBooleanExtra("openSingleObjectTransactions",false)
+        println("openSingleObjectTransactions = $openSingleObjectTransactions")
+
         RealmHelper.init(this)
-
-//        val appSignatureHelper = GetHash(this)
-//        println(appSignatureHelper.appSignatures[0]+"App Sign")
-
 
 
         setContentView(R.layout.activity_splash_screen)
