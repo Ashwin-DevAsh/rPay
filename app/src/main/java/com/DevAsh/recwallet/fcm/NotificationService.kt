@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Helper.MerchantHelper
+import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
 import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.R
@@ -65,7 +66,7 @@ class NotificationService : FirebaseMessagingService() {
             val fromName = p0.data["type"]!!.split(",")[1]
             val fromID =  p0.data["type"]!!.split(",")[2]
             val fromEmail = p0.data["type"]!!.split(",")[4]
-
+            TransactionsHelper.notificationObserver[fromID]?.check()
             HelperVariables.selectedUser = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
             val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
             intent.putExtra("openSingleObjectTransactions",true)
@@ -78,9 +79,7 @@ class NotificationService : FirebaseMessagingService() {
             val fromID =  p0.data["type"]!!.split(",")[2]
             val fromEmail = p0.data["type"]!!.split(",")[4]
             val fromName = p0.data["type"]!!.split(",")[1]
-
             HelperVariables.selectedUser = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
-
             try {
                 SocketHelper.getMyState()
             } catch (e:Throwable){
@@ -101,6 +100,7 @@ class NotificationService : FirebaseMessagingService() {
                     showNotification("withdraw","Your $amount ${HelperVariables.currency}s has been successfully withdraw.",intent)
                 }
                 else -> {
+                    TransactionsHelper.notificationObserver[fromID]?.check()
                     val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
                     intent.putExtra("openSingleObjectTransactions",true)
                     showNotification(fromName,"You have received $amount ${HelperVariables.currency}s from $fromName.",intent)
@@ -122,6 +122,8 @@ class NotificationService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(notificationChannel)
 
             val builder: Notification.Builder = Notification.Builder(this, "Payment")
+                .setShowWhen(true)
+                .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(subTitle)
                 .setSmallIcon(R.drawable.rpay_notification)
@@ -134,6 +136,7 @@ class NotificationService : FirebaseMessagingService() {
             notificationManager.notify(notificationID,notification)
         } else {
             val builder = NotificationCompat.Builder(this)
+                .setWhen(System.currentTimeMillis())
                 .setContentTitle(title)
                 .setContentText(subTitle)
                 .setSmallIcon(R.drawable.rpay_notification)

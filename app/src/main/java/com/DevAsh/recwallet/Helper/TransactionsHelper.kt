@@ -11,6 +11,7 @@ import org.json.JSONArray
 object TransactionsHelper {
 
     var paymentObserver:PaymentObserver?=null
+    var notificationObserver = HashMap<String,NotificationObserver>()
 
     fun addTransaction(transactionObjectArray:JSONArray):ArrayList<Transaction>{
         val transactions = ArrayList<Transaction>()
@@ -57,6 +58,11 @@ object TransactionsHelper {
     fun isSend(myId:String,fromId:String):Boolean = myId == fromId
 }
 
+interface NotificationObserver{
+    fun check()
+}
+
 interface PaymentObserver{
     fun update(transaction: Transaction)
 }
+

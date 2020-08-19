@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.NotificationObserver
 import com.DevAsh.recwallet.Helper.PaymentObserver
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Models.Contacts
@@ -40,6 +41,7 @@ import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Exception
+import java.security.cert.Extension
 import java.sql.Timestamp
 
 class SingleObjectTransaction : AppCompatActivity() {
@@ -92,7 +94,9 @@ class SingleObjectTransaction : AppCompatActivity() {
             }
         }catch (e:Throwable){
             e.printStackTrace()
-            getData()
+            Handler().postDelayed({
+                getData()
+            },0)
         }
 
         if (HelperVariables.selectedUser!!.name.startsWith("+")) {
@@ -111,6 +115,18 @@ class SingleObjectTransaction : AppCompatActivity() {
                 sendMessage()
             }catch (e:Throwable){
                 e.printStackTrace()
+            }
+        }
+
+        TransactionsHelper.notificationObserver[HelperVariables.selectedUser!!.id] = object:NotificationObserver{
+            override fun check() {
+                try {
+                Handler().postDelayed({
+                    getData()
+                },0)
+                }catch (e:Throwable){
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -322,7 +338,7 @@ class SingleObjectTransaction : AppCompatActivity() {
 
 
     private fun getData(){
-        Handler().postDelayed({
+
             AndroidNetworking.get(
                 ApiContext.apiUrl
                         + ApiContext.paymentPort
@@ -410,7 +426,6 @@ class SingleObjectTransaction : AppCompatActivity() {
                     }
 
                 })
-        },0)
     }
 }
 
