@@ -29,8 +29,10 @@ import com.DevAsh.recwallet.Helper.PasswordHashing
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.Recovery.RecoveryOptions
 import com.DevAsh.recwallet.Models.Contacts
+import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
+import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
@@ -259,6 +261,20 @@ class PasswordPrompt : AppCompatActivity() {
                                 sendResult(true)
                                 return
                             }
+
+                            TransactionsHelper.paymentObserver?.update(
+                                Transaction(
+                                    contacts = HelperVariables.selectedUser!!,
+                                    amount = HelperVariables.amount!!,
+                                    time = "Paid  "+ SplashScreen.dateToString(
+                                        response.getString("transactionTime")) ,
+                                    transactionId =  response.getString("transactionID"),
+                                    isWithdraw =  false,isGenerated = false,
+                                    type = "Send"
+                                )
+                            )
+
+                            SocketHelper.socket?.connect()
                             SocketHelper.socket?.emit("notifySingleObjectTransaction",JSONObject(
                                 mapOf(
                                     "from"  to JSONObject(

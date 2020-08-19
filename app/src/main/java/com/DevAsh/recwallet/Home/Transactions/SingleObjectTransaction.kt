@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.PaymentObserver
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Message
@@ -37,6 +39,7 @@ import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Exception
 import java.sql.Timestamp
 
 class SingleObjectTransaction : AppCompatActivity() {
@@ -47,6 +50,7 @@ class SingleObjectTransaction : AppCompatActivity() {
     lateinit var smoothScroller:SmoothScroller
 
 
+    var needToScroll = false
     var transaction = ArrayList<ObjectTransactions>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,14 +78,18 @@ class SingleObjectTransaction : AppCompatActivity() {
         badge.text = HelperVariables.selectedUser!!.name[0].toString()
 
         try {
-            allActivityAdapter = Cache.singleObjectTransactionCache[HelperVariables.selectedUser!!.id]!!
-            val layoutManager=LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
-            layoutManager.stackFromEnd=true
-            transactionContainer.layoutManager = layoutManager
-            transactionContainer.adapter = allActivityAdapter
-            transaction = allActivityAdapter!!.items
-            Handler().postDelayed({getData()},0)
-            loadingScreen.visibility=View.INVISIBLE
+            if(!intent.getBooleanExtra("openSingleObjectTransactions",false)){
+                allActivityAdapter = Cache.singleObjectTransactionCache[HelperVariables.selectedUser!!.id]!!
+                val layoutManager=LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
+                layoutManager.stackFromEnd=true
+                transactionContainer.layoutManager = layoutManager
+                transactionContainer.adapter = allActivityAdapter
+                transaction = allActivityAdapter!!.items
+                Handler().postDelayed({getData()},0)
+                loadingScreen.visibility=View.INVISIBLE
+            }else{
+                throw Exception()
+            }
         }catch (e:Throwable){
             e.printStackTrace()
             getData()
@@ -107,8 +115,28 @@ class SingleObjectTransaction : AppCompatActivity() {
         }
 
         pay.setOnClickListener{
+            TransactionsHelper.paymentObserver=object : PaymentObserver{
+                override fun update(transaction: Transaction) {
+                    val objectTransactions=ObjectTransactions(transaction=transaction)
+                    needToScroll=true
+                    if(!this@SingleObjectTransaction.transaction.contains(objectTransactions)){
+                        this@SingleObjectTransaction.transaction.add(objectTransactions)
+                        allActivityAdapter?.updateList(this@SingleObjectTransaction.transaction,transactionContainer)
+                    }
+                }
+
+            }
             startActivity(Intent(context,AmountPrompt::class.java))
         }
+    }
+
+    override fun onResume() {
+        if(needToScroll){
+            needToScroll=false
+            smoothScroller.targetPosition = transaction.size
+            (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
+        }
+        super.onResume()
     }
 
 
@@ -207,7 +235,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                     val transactionObject = Transaction(
                         contacts = contacts,
                         amount = transactionData["amount"].toString(),
-                        time =(if (transactionData["from"] == DetailsContext.id)
+                        time =(if (isSend)
                             "Paid  "
                         else "Received  ")+ SplashScreen.dateToString(
                             transactionData["transactionTime"].toString()
@@ -322,7 +350,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                                     ObjectTransactions( transaction =   Transaction(
                                         contacts = contacts,
                                         amount = transaction["Amount"].toString(),
-                                        time =(if (transaction["From"] == DetailsContext.id)
+                                        time =(if (isSend)
                                             "Paid  "
                                         else "Received  ")+ SplashScreen.dateToString(
                                             transaction["TransactionTime"].toString()
@@ -349,7 +377,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                                     ObjectTransactions( message =   Message(
                                         contacts = contacts,
                                         message = message["Message"].toString(),
-                                        time =(if (message["From"] == DetailsContext.id)
+                                        time =(if (isSend)
                                             "Paid  "
                                         else "Received  ")+ SplashScreen.dateToString(
                                             message["MessageTime"].toString()
@@ -411,6 +439,8 @@ class TransactionsAdapter(var items : ArrayList<ObjectTransactions>, val context
             holder.topMargin?.visibility=View.GONE
         }
         if(items[position].transaction!=null){
+            println(items[position].transaction?.type+"  =>  "+items[position].transaction?.time)
+
             holder.amount?.text = "${items[position].transaction?.amount}"
             holder.time?.text = items[position].transaction?.time
             holder.item = items[position].transaction
