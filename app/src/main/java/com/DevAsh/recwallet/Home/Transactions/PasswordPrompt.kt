@@ -63,6 +63,7 @@ class PasswordPrompt : AppCompatActivity() {
     lateinit var  fingerprintManager:FingerprintManager
     lateinit var keyguardManager:KeyguardManager
     var isTooManyAttempts = false
+    var helper:FingerprintHelper?=null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +92,7 @@ class PasswordPrompt : AppCompatActivity() {
                 cipher.let {
                     cryptoObject = FingerprintManager.CryptoObject(it)
                 }
-                val helper = FingerprintHelper(this,object :CallBack{
+                 helper = FingerprintHelper(this,object :CallBack{
                     override fun onSuccess(){
                         if(extraValues==null || !extraValues.isEnteredPasswordOnce!!){
                             animateBell("Enter password to enable fingerprint")
@@ -126,7 +127,7 @@ class PasswordPrompt : AppCompatActivity() {
                 })
 
                 if (fingerprintManager != null && cryptoObject != null) {
-                    helper.startAuth(fingerprintManager, cryptoObject)
+                    helper?.startAuth(fingerprintManager, cryptoObject)
                 }
             }
         }
@@ -146,6 +147,7 @@ class PasswordPrompt : AppCompatActivity() {
         }
 
         forget.setOnClickListener{
+
             startActivity(Intent(this, RecoveryOptions::class.java))
         }
 
@@ -185,6 +187,17 @@ class PasswordPrompt : AppCompatActivity() {
             null
         )
     }
+
+    override fun onDestroy() {
+        helper?.stopAuth()
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        helper?.stopAuth()
+        super.onPause()
+    }
+
 
     private fun loadFromData(){
         val credentials: Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
@@ -542,7 +555,13 @@ class PasswordPrompt : AppCompatActivity() {
 
 class FingerprintHelper(private val appContext: Activity, private val callBack: CallBack) : FingerprintManager.AuthenticationCallback() {
 
-    private lateinit var cancellationSignal: CancellationSignal
+    private  var cancellationSignal: CancellationSignal?=null
+
+    fun stopAuth(){
+        try {
+            cancellationSignal?.cancel()
+        }catch (E:Throwable){}
+    }
 
     fun startAuth(manager: FingerprintManager,
                   cryptoObject: FingerprintManager.CryptoObject) {
@@ -574,6 +593,7 @@ class FingerprintHelper(private val appContext: Activity, private val callBack: 
         result: FingerprintManager.AuthenticationResult) {
         callBack.onSuccess()
     }
+
 }
 
 interface CallBack{

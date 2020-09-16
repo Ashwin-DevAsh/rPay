@@ -43,12 +43,7 @@ class SplashScreen : AppCompatActivity() {
         AndroidNetworking.initialize(applicationContext)
         AndroidNetworking.setParserFactory(JacksonParserFactory())
         super.onCreate(savedInstanceState)
-
-        val openSingleObjectTransactions = intent.getBooleanExtra("openSingleObjectTransactions",false)
-        println("openSingleObjectTransactions = $openSingleObjectTransactions")
-
         RealmHelper.init(this)
-
 
         setContentView(R.layout.activity_splash_screen)
         context = this

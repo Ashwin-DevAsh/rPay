@@ -482,7 +482,9 @@ class PeopleViewAdapter(private var items : ArrayList<Contacts>, val context: Co
             }
 
             override fun onFailure() {
-                holder.badge.visibility= View.VISIBLE
+                if(items[position].name!="More" ){
+                    holder.badge.visibility= View.VISIBLE
+                }
                 holder.profile.visibility = View.GONE
 
             }
