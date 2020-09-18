@@ -401,7 +401,9 @@ class MerchantViewAdapter(private var items : ArrayList<Merchant>, val context: 
                 holder.profile.visibility = View.VISIBLE
             }
             override fun onFailure(){
-                holder.avatarContainer.visibility= View.VISIBLE
+                if(items[position].name!="More" ){
+                    holder.badge.visibility= View.VISIBLE
+                }
                 holder.profile.visibility = View.GONE
             }
         },holder.profile)

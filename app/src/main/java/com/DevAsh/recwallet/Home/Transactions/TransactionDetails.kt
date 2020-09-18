@@ -70,9 +70,14 @@ class TransactionDetails : AppCompatActivity() {
         if (HelperVariables.selectedTransaction?.type=="Send"){
             toDetails.text = "To: ${HelperVariables.selectedTransaction?.contacts?.name}"
             toID.text = "${HelperVariables.selectedTransaction?.contacts?.id}"
-
             fromDetails.text = "From: ${DetailsContext.name}"
             fromID.text = "${DetailsContext.id}"
+
+            if(HelperVariables.selectedTransaction?.contacts!!.id.startsWith("rmart")){
+                logoContainer.visibility=View.VISIBLE
+                logoContainer.setBackgroundColor(Color.parseColor( "#fe724c"))
+            }
+
         }else{
             toDetails.text = "To: ${DetailsContext.name}"
             toID.text = "${DetailsContext.id}"

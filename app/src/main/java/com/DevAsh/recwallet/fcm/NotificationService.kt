@@ -99,6 +99,14 @@ class NotificationService : FirebaseMessagingService() {
                     intent.putExtra("openSingleObjectTransactions",true)
                     showNotification("withdraw","Your $amount ${HelperVariables.currency}s has been successfully withdraw.",intent)
                 }
+                "rmartPayment"->{
+                    val intent = Intent(applicationContext,SplashScreen::class.java)
+                    intent.putExtra("openSingleObjectTransactions",true)
+                    try {
+                        SocketHelper.getMyState()
+                    }catch (e:Throwable){}
+                    showNotification("rMart","Your $amount ${HelperVariables.currency}s has been successfully paid.",intent)
+                }
                 else -> {
                     TransactionsHelper.notificationObserver[fromID]?.check()
                     val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
