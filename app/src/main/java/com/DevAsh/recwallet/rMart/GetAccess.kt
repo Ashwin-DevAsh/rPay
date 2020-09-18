@@ -100,7 +100,7 @@ class GetAccess : AppCompatActivity() {
         resultIntent.putExtra("name", DetailsContext.name)
         resultIntent.putExtra("email", DetailsContext.email)
         resultIntent.putExtra("phoneNumber", DetailsContext.phoneNumber)
-        resultIntent.putExtra("token",DetailsContext.fcmToken)
+        resultIntent.putExtra("token",DetailsContext.token)
         resultIntent.putExtra("password",DetailsContext.password)
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
