@@ -23,6 +23,7 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.jacksonandroidnetworking.JacksonParserFactory
 import io.realm.Realm
 import org.json.JSONArray
@@ -42,6 +43,8 @@ class SplashScreen : AppCompatActivity() {
 
         AndroidNetworking.initialize(applicationContext)
         AndroidNetworking.setParserFactory(JacksonParserFactory())
+        FirebaseMessaging.getInstance().subscribeToTopic("all")
+
         super.onCreate(savedInstanceState)
         RealmHelper.init(this)
 
