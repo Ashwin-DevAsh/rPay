@@ -50,7 +50,9 @@ object TransactionsHelper {
     }
 
     private fun addRecent(transaction: Transaction, contacts: Contacts){
-        if(!transaction.isGenerated && !transaction.isWithdraw && !transaction.contacts.id.contains("rbusiness")){
+        if(!transaction.isGenerated && !transaction.isWithdraw
+            && !transaction.contacts.id.contains("rmart")
+            && !transaction.contacts.id.contains("rbusiness")){
             StateContext.addRecentContact(contacts)
         }
     }
