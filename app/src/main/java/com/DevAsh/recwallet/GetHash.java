@@ -59,9 +59,7 @@ class GetHash  extends ContextWrapper {
         String appInfo = packageName + " " + signature;
         try {
             MessageDigest messageDigest = MessageDigest.getInstance(HASH_TYPE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                messageDigest.update(appInfo.getBytes(StandardCharsets.UTF_8));
-            }
+            messageDigest.update(appInfo.getBytes(StandardCharsets.UTF_8));
             byte[] hashSignature = messageDigest.digest();
 
             // truncated into NUM_HASHED_BYTES

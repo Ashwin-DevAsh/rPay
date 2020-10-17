@@ -62,24 +62,33 @@ class NotificationService : FirebaseMessagingService() {
         }else if(p0.data["type"]?.startsWith("merchantStatus")!!){
               MerchantHelper.updateMerchant()
         }else if(p0.data["type"]?.startsWith("message")!!){
+
+            try {
+                SocketHelper.getMyState()
+            } catch (e:Throwable){
+
+            }
+
             val amount = p0.data["type"]!!.split(",")[3]
             val fromName = p0.data["type"]!!.split(",")[1]
             val fromID =  p0.data["type"]!!.split(",")[2]
             val fromEmail = p0.data["type"]!!.split(",")[4]
             TransactionsHelper.notificationObserver[fromID]?.check()
-            HelperVariables.selectedUser = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
+            val contact = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
             val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
-            intent.putExtra("openSingleObjectTransactions",true)
+            contact.putIntent(intent)
+            intent.putExtra("fromNotification",true)
             showNotification(fromName, amount,intent)
         }
         else{
-            HelperVariables.openTransactionPage = true
+
             val type =  p0.data["type"]!!.split(",")[0]
             val amount = p0.data["type"]!!.split(",")[3]
             val fromID =  p0.data["type"]!!.split(",")[2]
             val fromEmail = p0.data["type"]!!.split(",")[4]
             val fromName = p0.data["type"]!!.split(",")[1]
-            HelperVariables.selectedUser = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
+
+
             try {
                 SocketHelper.getMyState()
             } catch (e:Throwable){
@@ -89,28 +98,24 @@ class NotificationService : FirebaseMessagingService() {
             when (type) {
                 "addedMoney" -> {
                     val intent = Intent(applicationContext,SplashScreen::class.java)
-                    intent.putExtra("openSingleObjectTransactions",true)
                     showNotification(
                         "Added Money",
                         "Your $amount ${HelperVariables.currency}s has been successfully added.",intent)
                 }
                 "withdraw" -> {
                     val intent = Intent(applicationContext,SplashScreen::class.java)
-                    intent.putExtra("openSingleObjectTransactions",true)
                     showNotification("withdraw","Your $amount ${HelperVariables.currency}s has been successfully withdraw.",intent)
                 }
                 "rmartPayment"->{
                     val intent = Intent(applicationContext,SplashScreen::class.java)
-                    intent.putExtra("openSingleObjectTransactions",true)
-                    try {
-                        SocketHelper.getMyState()
-                    }catch (e:Throwable){}
                     showNotification("rMart","Your $amount ${HelperVariables.currency}s has been successfully paid.",intent)
                 }
                 else -> {
+                    val contact = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
                     TransactionsHelper.notificationObserver[fromID]?.check()
                     val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
-                    intent.putExtra("openSingleObjectTransactions",true)
+                    contact.putIntent(intent)
+                    intent.putExtra("fromNotification",true)
                     showNotification(fromName,"You have received $amount ${HelperVariables.currency}s from $fromName.",intent)
                 }
             }

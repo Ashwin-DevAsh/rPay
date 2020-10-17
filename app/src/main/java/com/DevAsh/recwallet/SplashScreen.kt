@@ -52,6 +52,8 @@ class SplashScreen : AppCompatActivity() {
         context = this
         parentLayout = findViewById(android.R.id.content)
 
+//        println(GetHash(this).appSignatures)
+
 
         val credentials:Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
 
