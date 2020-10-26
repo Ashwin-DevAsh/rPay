@@ -45,7 +45,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         upi.setOnClickListener{
             addingOption = "Upi transaction"
             loadingScreen.visibility = View.VISIBLE
-            payUsingUpi(amount,"9840176511@ybl","Barath","R-pay")
+            payUsingUpi(amount,"2017ashwin@oksbi","Ashwin","rPay")
         }
 
         razorpay.setOnClickListener{
