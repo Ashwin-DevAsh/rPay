@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.activity_send_money.*
 import org.json.JSONArray
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class SendMoney : AppCompatActivity() {
@@ -154,6 +155,8 @@ class SendMoney : AppCompatActivity() {
 
 class UserAdapter(private var items : ArrayList<Contacts>, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
 
+    var isImageLoadedMap = hashMapOf<Contacts,Boolean>()
+
     override fun getItemCount(): Int {
         return items.size
     }
@@ -167,22 +170,26 @@ class UserAdapter(private var items : ArrayList<Contacts>, val context: Context)
         holder.subtitle.text = items[position].number
         holder.badge.text = items[position].name[0].toString()
         holder.avatarContainer.setBackgroundColor(Color.parseColor(colors[position%colors.size]))
-
         holder.color = colors[position%colors.size]
-
         holder.contact = items[position]
 
-        UiContext.loadProfileImage(context,items[position].id,object:LoadProfileCallBack{
-            override fun onSuccess() {
-               holder.avatarContainer.visibility=View.GONE
-                holder.profileImage.visibility = VISIBLE
+        val isImageLoaded = isImageLoadedMap[holder.contact!!]
 
+        if(isImageLoaded==null || !isImageLoaded){
+            holder.avatarContainer.visibility=VISIBLE
+            holder.profileImage.visibility = View.GONE
+        }
+        UiContext.loadProfileImageWithoutPlaceHolder(context,items[position].id,object:LoadProfileCallBack{
+            override fun onSuccess() {
+                holder.avatarContainer.visibility=View.GONE
+                holder.profileImage.visibility = VISIBLE
+                isImageLoadedMap[holder.contact!!]=true
             }
 
             override fun onFailure() {
                 holder.avatarContainer.visibility=VISIBLE
                 holder.profileImage.visibility = View.GONE
-
+                isImageLoadedMap[holder.contact!!]=false
             }
 
         },holder.profileImage)

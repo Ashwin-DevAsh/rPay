@@ -183,13 +183,13 @@ class HomePage : AppCompatActivity() {
         StateContext.model.merchants.observe(this, merchantObserver)
 
         sendMoney.setOnClickListener {
-//            val permissions = arrayOf(android.Manifest.permission.READ_CONTACTS)
-//            if(packageManager.checkPermission(android.Manifest.permission.READ_CONTACTS,context.packageName)==PackageManager.PERMISSION_GRANTED ){
-//                startActivity(Intent(context, SendMoney::class.java))
-//            }else{
-//                ActivityCompat.requestPermissions(this, permissions,0)
-//            }
-            startActivity(Intent(context, SendMoney::class.java))
+            val permissions = arrayOf(android.Manifest.permission.READ_CONTACTS)
+            if(packageManager.checkPermission(android.Manifest.permission.READ_CONTACTS,context.packageName)==PackageManager.PERMISSION_GRANTED ){
+                startActivity(Intent(context, SendMoney::class.java))
+            }else{
+                ActivityCompat.requestPermissions(this, permissions,0)
+            }
+//            startActivity(Intent(context, SendMoney::class.java))
         }
 
         balance.setOnClickListener{
@@ -464,7 +464,7 @@ class MerchantViewAdapter(
 
         holder.badge.text = items[position].name[0].toString()
 
-        UiContext.loadProfileImage(context, items[position].id, object : LoadProfileCallBack {
+        UiContext.loadProfileImageWithoutPlaceHolder(context, items[position].id, object : LoadProfileCallBack {
             override fun onSuccess() {
                 holder.avatarContainer.visibility = View.GONE
                 holder.profile.visibility = View.VISIBLE
@@ -563,7 +563,7 @@ class PeopleViewAdapter(
                 holder.badge.textSize = 18F
             }
 
-        UiContext.loadProfileImage(context, items[position].id, object : LoadProfileCallBack {
+        UiContext.loadProfileImageWithoutPlaceHolder(context, items[position].id, object : LoadProfileCallBack {
             override fun onSuccess() {
                 holder.badge.visibility = View.GONE
                 holder.profile.visibility = View.VISIBLE

@@ -5,15 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.DetailsContext
-import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Context.HelperVariables
+import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.R
@@ -25,8 +25,6 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import kotlinx.android.synthetic.main.activity_adding_options.*
-import kotlinx.android.synthetic.main.activity_adding_options.loadingScreen
-import kotlinx.android.synthetic.main.activity_password_prompt.*
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.util.*
@@ -45,7 +43,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         upi.setOnClickListener{
             addingOption = "Upi transaction"
             loadingScreen.visibility = View.VISIBLE
-            payUsingUpi(amount,"2017ashwin@oksbi","Ashwin","rPay")
+            payUsingUpi(amount, "bhartiairtel.rzp@sbi", "Version", "rPay")
         }
 
         razorpay.setOnClickListener{
@@ -53,7 +51,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             loadingScreen.visibility = View.VISIBLE
             Handler().postDelayed({
                 startPayment()
-            },1000)
+            }, 1000)
         }
     }
 
@@ -65,11 +63,11 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         val amount = this.amount
         Handler().postDelayed({
             loadingScreen.visibility = View.VISIBLE
-        },500)
+        }, 500)
         AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/addMoney")
             .setContentType("application/json; charset=utf-8")
             .addHeaders("jwtToken", DetailsContext.token)
-            .addApplicationJsonBody(object{
+            .addApplicationJsonBody(object {
                 var amount = amount
                 var to = object {
                     var id = DetailsContext.id
@@ -90,65 +88,77 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                 override fun onResponse(response: JSONObject?) {
                     loadingScreen.visibility = View.VISIBLE
                     println(response)
-                    if(response?.get("message")=="done"){
+                    if (response?.get("message") == "done") {
                         AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
                             .addHeaders("token", DetailsContext.token)
                             .setPriority(Priority.IMMEDIATE)
                             .build()
-                            .getAsJSONObject(object: JSONObjectRequestListener {
+                            .getAsJSONObject(object : JSONObjectRequestListener {
                                 override fun onResponse(response: JSONObject?) {
                                     val jsonData = JSONObject()
-                                    jsonData.put("to",
-                                        HelperVariables.selectedUser?.number.toString().replace("+",""))
-                                    SocketHelper.socket?.emit("notifyPayment",jsonData)
+                                    jsonData.put(
+                                        "to",
+                                        HelperVariables.selectedUser?.number.toString().replace(
+                                            "+",
+                                            ""
+                                        )
+                                    )
+                                    SocketHelper.socket?.emit("notifyPayment", jsonData)
                                     val balance = response?.getInt("balance")
                                     StateContext.currentBalance = balance!!
                                     val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
                                     StateContext.setBalanceToModel(formatter.format(balance))
-                                    val transactionObjectArray = response.getJSONArray("transactions")
-                                    StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
-                                    val intent = Intent(context,Successful::class.java)
-                                    intent.putExtra("type","addMoney")
-                                    intent.putExtra("amount",amount)
+                                    val transactionObjectArray =
+                                        response.getJSONArray("transactions")
+                                    StateContext.initAllTransaction(
+                                        TransactionsHelper.addTransaction(
+                                            transactionObjectArray
+                                        )
+                                    )
+                                    val intent = Intent(context, Successful::class.java)
+                                    intent.putExtra("type", "addMoney")
+                                    intent.putExtra("amount", amount)
                                     startActivity(intent)
                                     context.finish()
                                 }
+
                                 override fun onError(anError: ANError?) {
                                     AlertHelper.showAlertDialog(this@AddingOptions,
                                         "Failed !",
                                         "your transaction of $amount ${HelperVariables.currency} is failed. if any amount debited it will refund soon",
-                                        object: AlertHelper.AlertDialogCallback {
+                                        object : AlertHelper.AlertDialogCallback {
                                             override fun onDismiss() {
-                                                loadingScreen.visibility=View.INVISIBLE
+                                                loadingScreen.visibility = View.INVISIBLE
                                                 onBackPressed()
                                             }
 
                                             override fun onDone() {
-                                                loadingScreen.visibility=View.INVISIBLE
+                                                loadingScreen.visibility = View.INVISIBLE
                                                 onBackPressed()
                                             }
                                         }
                                     )
                                 }
                             })
-                    }else{
+                    } else {
                         AlertHelper.showAlertDialog(this@AddingOptions,
                             "Failed !",
                             "your transaction of $amount ${HelperVariables.currency} is failed. if any amount debited it will refund soon",
-                            object: AlertHelper.AlertDialogCallback {
+                            object : AlertHelper.AlertDialogCallback {
                                 override fun onDismiss() {
-                                    loadingScreen.visibility=View.INVISIBLE
+                                    loadingScreen.visibility = View.INVISIBLE
                                     onBackPressed()
                                 }
 
                                 override fun onDone() {
-                                    loadingScreen.visibility=View.INVISIBLE
+                                    loadingScreen.visibility = View.INVISIBLE
                                     onBackPressed()
                                 }
                             }
                         )
                     }
                 }
+
                 override fun onError(anError: ANError?) {
 
                 }
@@ -167,21 +177,51 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         name: String?,
         note: String?
     ) {
-        val uri: Uri = Uri.parse("upi://pay").buildUpon()
-            .appendQueryParameter("pa", upiId)
-            .appendQueryParameter("pn", name)
-            .appendQueryParameter("tn", note)
-            .appendQueryParameter("am", amount)
-            .appendQueryParameter("cu", "INR")
-            .build()
-        val upiPayIntent = Intent(Intent.ACTION_VIEW)
-        upiPayIntent.data = uri
-        val chooser = Intent.createChooser(upiPayIntent, "Pay with")
+//        val uri: Uri = Uri.parse("upi://pay").buildUpon()
+//            .appendQueryParameter("pa", upiId)
+//            .appendQueryParameter("pn", name)
+//            .appendQueryParameter("tn", note)
+//            .appendQueryParameter("am", amount)
+//            .appendQueryParameter("cu", "INR")
+//            .build()
+//        val upiPayIntent = Intent(Intent.ACTION_VIEW)
+//        upiPayIntent.data = uri
+//        val chooser = Intent.createChooser(upiPayIntent, "Pay with")
+
+        val intent = Intent()
+        intent.action = Intent.ACTION_VIEW
+        intent.data = Uri.parse(getUPIString(
+            upiId!!,name!!,
+            "",System.currentTimeMillis().toString(),
+            System.currentTimeMillis().toString(),"",amount!!,"INR","rpay.netlify.com"))
+        val chooser = Intent.createChooser(intent, "Pay with...")
+
         if (null != chooser.resolveActivity(packageManager)) {
             startActivityForResult(chooser, 1)
         } else {
-          AlertHelper.showError("No UPI app found, please install one to continue",this@AddingOptions)
+          AlertHelper.showError(
+              "No UPI app found, please install one to continue",
+              this@AddingOptions
+          )
         }
+    }
+
+    private fun getUPIString(
+        payeeAddress: String,
+        payeeName: String,
+        payeeMCC: String,
+        trxnID: String,
+        trxnRefId: String,
+        trxnNote: String,
+        payeeAmount: String,
+        currencyCode: String,
+        refUrl: String
+    ): String? {
+        val UPI = ("upi://pay?pa=" + payeeAddress + "&pn=" + payeeName
+                + "&mc=" + payeeMCC + "&tid=" + trxnID + "&tr=" + trxnRefId
+                + "&tn=" + trxnNote + "&am=" + payeeAmount + "&cu=" + currencyCode
+                + "&refUrl=" + refUrl)
+        return UPI.replace(" ", "+")
     }
 
     private fun startPayment() {
@@ -190,16 +230,19 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         co.setKeyID("rzp_test_txenFuJupWfNO6")
         try {
             val options = JSONObject()
-            options.put("name","Adding Money")
-            options.put("description","This process require a 2% commission")
-            options.put("currency","INR")
-            options.put("amount",((Integer.parseInt(amount)*100)+((Integer.parseInt(amount)*100)*0.02
-                    )).toString())
+            options.put("name", "Adding Money")
+            options.put("description", "This process require a 2% commission")
+            options.put("currency", "INR")
+            options.put(
+                "amount",
+                ((Integer.parseInt(amount) * 100) + ((Integer.parseInt(amount) * 100) * 0.02
+                        )).toString()
+            )
             val prefill = JSONObject()
-            prefill.put("email",DetailsContext.email)
-            prefill.put("contact",DetailsContext.phoneNumber)
-            options.put("prefill",prefill)
-            co.open(activity,options)
+            prefill.put("email", DetailsContext.email)
+            prefill.put("contact", DetailsContext.phoneNumber)
+            options.put("prefill", prefill)
+            co.open(activity, options)
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -255,19 +298,19 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             }
             when {
                 status == "success" -> {
-                    AlertHelper.showError( "Transaction successful.  $approvalRefNo",this)
+                    AlertHelper.showError("Transaction successful.  $approvalRefNo", this)
                     onPaymentSuccess(approvalRefNo)
                 }
                 "Payment cancelled by user." == paymentCancel -> {
                     loadingScreen.visibility = View.GONE
-                    AlertHelper.showError( "Payment cancelled by user.", this)
+                    AlertHelper.showError("Payment cancelled by user.", this)
                 }
                 else -> {
                     loadingScreen.visibility = View.GONE
                     AlertHelper.showError(
                         "Transaction failed.Please try again",
                         this
-                        )
+                    )
                 }
             }
         } else {
