@@ -154,7 +154,7 @@ class PasswordPrompt : AppCompatActivity() {
 
 
         done.setOnClickListener{v->
-            if(PasswordHashing.decryptMsg(DetailsContext.password!!)==password.text.toString()){
+            if(PasswordHashing.decryptMsg(Credentials.credentials.password!!)==password.text.toString()){
                 hideKeyboardFrom(context,v)
                 Handler().postDelayed({
                     transaction()
@@ -167,7 +167,7 @@ class PasswordPrompt : AppCompatActivity() {
                     }
                 }
             }else{
-                println(PasswordHashing.decryptMsg(DetailsContext.password!!)+" actual password")
+                println(PasswordHashing.decryptMsg(Credentials.credentials.password!!)+" actual password")
                 println(password.text.toString()+" actual password")
                 AlertHelper.showError("Invalid Password",this@PasswordPrompt)
             }
@@ -180,10 +180,10 @@ class PasswordPrompt : AppCompatActivity() {
     private fun loadToData(){
         HelperVariables.amount = intent.getStringExtra("amount")
         HelperVariables.selectedUser= Contacts(
-            intent.getStringExtra("name"),
-            intent.getStringExtra("number"),
-            intent.getStringExtra("id"),
-            intent.getStringExtra("email"),
+            intent.getStringExtra("name")!!,
+            intent.getStringExtra("number")!!,
+            intent.getStringExtra("id")!!,
+            intent.getStringExtra("email")!!,
             null
         )
     }
@@ -202,13 +202,10 @@ class PasswordPrompt : AppCompatActivity() {
     private fun loadFromData(){
         val credentials: Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
         try {
-            DetailsContext.setData(
-                credentials!!.name,
-                credentials.phoneNumber,
-                credentials.email,
-                credentials.password,
-                credentials.token
-            )
+            if(credentials==null){
+                throw Exception()
+            }
+            Credentials.credentials = credentials
         }catch (e:Throwable){
             if(intent.getBooleanExtra("isExternalApp",false)){
                 sendResult(false)
@@ -249,13 +246,13 @@ class PasswordPrompt : AppCompatActivity() {
 
             AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/pay")
                 .setContentType("application/json; charset=utf-8")
-                .addHeaders("jwtToken", DetailsContext.token)
+                .addHeaders("jwtToken", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
                     var from = object {
-                        var id = DetailsContext.id
-                        var name = DetailsContext.name
-                        var number = DetailsContext.phoneNumber
-                        var email = DetailsContext.email
+                        var id = Credentials.credentials.id
+                        var name = Credentials.credentials.accountName
+                        var number = Credentials.credentials.phoneNumber
+                        var email = Credentials.credentials.email
                     }
                     var to = object {
                         var id =  HelperVariables.selectedUser?.id
@@ -269,6 +266,7 @@ class PasswordPrompt : AppCompatActivity() {
                 .build()
                 .getAsJSONObject(object : JSONObjectRequestListener {
                     override fun onResponse(response: JSONObject?) {
+                        println(response)
                         if(response?.get("message")=="done"){
                             if(intent.getBooleanExtra("isExternalApp",false)){
                                 sendResult(true)
@@ -283,7 +281,9 @@ class PasswordPrompt : AppCompatActivity() {
                                         response.getString("transactionTime")) ,
                                     transactionId =  response.getString("transactionID"),
                                     isWithdraw =  false,isGenerated = false,
-                                    type = "Send"
+                                    type = "Send",
+                                    timeStamp = response.getString("transactionTime")
+
                                 )
                             )
 
@@ -292,10 +292,10 @@ class PasswordPrompt : AppCompatActivity() {
                                 mapOf(
                                     "from"  to JSONObject(
                                         mapOf(
-                                            "id" to DetailsContext.id ,
-                                            "name" to DetailsContext.name,
-                                            "number" to DetailsContext.phoneNumber,
-                                            "email" to DetailsContext.email
+                                            "id" to Credentials.credentials.id ,
+                                            "name" to Credentials.credentials.accountName,
+                                            "number" to Credentials.credentials.phoneNumber,
+                                            "email" to Credentials.credentials.email
                                         )
                                     ),
                                     "to" to JSONObject(
@@ -312,8 +312,8 @@ class PasswordPrompt : AppCompatActivity() {
                                 )
                             ))
                             transactionSuccessful()
-                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
-                                .addHeaders("token", DetailsContext.token)
+                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                                .addHeaders("token", Credentials.credentials.token)
                                 .setPriority(Priority.IMMEDIATE)
                                 .build()
                                 .getAsJSONObject(object: JSONObjectRequestListener {

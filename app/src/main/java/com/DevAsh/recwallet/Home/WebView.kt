@@ -21,7 +21,7 @@ class WebView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        page = intent.getStringExtra("page")
+        page = intent.getStringExtra("page")!!
 
         setContentView(R.layout.activity_web_view)
         webView.settings.javaScriptEnabled = true

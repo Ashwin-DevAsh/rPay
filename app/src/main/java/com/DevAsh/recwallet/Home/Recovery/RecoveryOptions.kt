@@ -4,8 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.DevAsh.recwallet.BuildConfig
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
@@ -23,8 +24,8 @@ class RecoveryOptions : AppCompatActivity() {
 
         mail.setOnClickListener{
             mainContent.visibility= View.INVISIBLE
-            AndroidNetworking.get(ApiContext.apiUrl+ ApiContext.profilePort+"/getRecoveryOtp/?emailID=${DetailsContext.email}")
-                .addHeaders("token",DetailsContext.token)
+            AndroidNetworking.get(ApiContext.apiUrl+ ApiContext.profilePort+"${BuildConfig.RECOVERYOTP}/?emailID=${Credentials.credentials.email}")
+                .addHeaders("token",Credentials.credentials.token)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
                 .getAsJSONArray(object : JSONArrayRequestListener {

@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.view.View
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.*
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_transaction_status.*
 import kotlinx.android.synthetic.main.activity_transaction_status.avatarContainer
@@ -70,8 +71,8 @@ class TransactionDetails : AppCompatActivity() {
         if (HelperVariables.selectedTransaction?.type=="Send"){
             toDetails.text = "To: ${HelperVariables.selectedTransaction?.contacts?.name}"
             toID.text = "${HelperVariables.selectedTransaction?.contacts?.id}"
-            fromDetails.text = "From: ${DetailsContext.name}"
-            fromID.text = "${DetailsContext.id}"
+            fromDetails.text = "From: ${Credentials.credentials.accountName}"
+            fromID.text = "${Credentials.credentials.id}"
 
             if(HelperVariables.selectedTransaction?.contacts!!.id.startsWith("rmart")){
                 logoContainer.visibility=View.VISIBLE
@@ -79,8 +80,8 @@ class TransactionDetails : AppCompatActivity() {
             }
 
         }else{
-            toDetails.text = "To: ${DetailsContext.name}"
-            toID.text = "${DetailsContext.id}"
+            toDetails.text = "To: ${Credentials.credentials.accountName}"
+            toID.text = "${Credentials.credentials.id}"
             if(HelperVariables.selectedTransaction?.isGenerated!!){
                 fromDetails.text = "${HelperVariables.selectedTransaction?.contacts?.name} ID"
                 fromID.text = "${HelperVariables.selectedTransaction?.contacts?.id}"

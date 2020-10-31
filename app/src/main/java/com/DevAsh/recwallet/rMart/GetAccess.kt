@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.R
@@ -64,8 +63,7 @@ class GetAccess : AppCompatActivity() {
 
     private fun loadData(){
         try {
-            val user = Realm.getDefaultInstance().where(Credentials::class.java).findFirst()!!
-            DetailsContext.setData(user.name,user.phoneNumber,user.email,user.password,user.token)
+            Credentials.credentials = Realm.getDefaultInstance().where(Credentials::class.java).findFirst()!!
         }catch (e:Throwable){
               finish()
         }
@@ -87,9 +85,9 @@ class GetAccess : AppCompatActivity() {
     fun sendAccessResult(){
         val resultIntent = Intent()
         resultIntent.putExtra("result", true)
-        resultIntent.putExtra("name", DetailsContext.name)
-        resultIntent.putExtra("email", DetailsContext.email)
-        resultIntent.putExtra("phoneNumber", DetailsContext.phoneNumber)
+        resultIntent.putExtra("name", Credentials.credentials.accountName)
+        resultIntent.putExtra("email", Credentials.credentials.email)
+        resultIntent.putExtra("phoneNumber", Credentials.credentials.phoneNumber)
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
     }
@@ -97,11 +95,11 @@ class GetAccess : AppCompatActivity() {
     fun sendPasswordResult(){
         val resultIntent = Intent()
         resultIntent.putExtra("result", true)
-        resultIntent.putExtra("name", DetailsContext.name)
-        resultIntent.putExtra("email", DetailsContext.email)
-        resultIntent.putExtra("phoneNumber", DetailsContext.phoneNumber)
-        resultIntent.putExtra("token",DetailsContext.token)
-        resultIntent.putExtra("password",DetailsContext.password)
+        resultIntent.putExtra("name", Credentials.credentials.accountName)
+        resultIntent.putExtra("email", Credentials.credentials.email)
+        resultIntent.putExtra("phoneNumber", Credentials.credentials.phoneNumber)
+        resultIntent.putExtra("token",Credentials.credentials.token)
+        resultIntent.putExtra("password",Credentials.credentials.password)
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
     }

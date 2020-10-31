@@ -8,9 +8,9 @@ import android.os.Handler
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.BankAccount
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
@@ -64,9 +64,9 @@ class AddAccounts : AppCompatActivity() {
         val bankName = bankName.text.toString()
 
         AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/addBankAccount")
-            .addHeaders("token", DetailsContext.token)
+            .addHeaders("token", Credentials.credentials.token)
             .addBodyParameter(object{
-                var id = DetailsContext.id
+                var id = Credentials.credentials.id
                 var holderName = holderName
                 var accountNumber = accountNumber
                 var ifsc = ifsc

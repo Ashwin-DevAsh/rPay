@@ -23,5 +23,7 @@ object HelperVariables {
 
     var withdrawAmount = ""
 
+    var fcmToken = ""
+
 
 }

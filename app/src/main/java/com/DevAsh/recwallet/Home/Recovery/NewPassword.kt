@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import com.DevAsh.recwallet.BuildConfig
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
@@ -50,11 +50,11 @@ class NewPassword : AppCompatActivity() {
             mainContent.visibility= View.INVISIBLE
         },500)
         newHashedPassword = PasswordHashing.encryptMsg(newPasswordText)
-        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/newPassword")
-            .addHeaders("token",DetailsContext.token)
+        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+BuildConfig.NEWPASSWORDENDPOINT)
+            .addHeaders("token",Credentials.credentials.token)
             .addBodyParameter(object{
-                val id = DetailsContext.id
-                val emailID =  DetailsContext.email
+                val id = Credentials.credentials.id
+                val emailID =  Credentials.credentials.email
                 val newPassword = newHashedPassword
             })
             .setPriority(Priority.IMMEDIATE)
@@ -108,7 +108,7 @@ class NewPassword : AppCompatActivity() {
         Realm.getDefaultInstance().executeTransaction{ r->
             val data = r.where(Credentials::class.java).findFirst()
             data?.setPassword(newPassword)
-            DetailsContext.password = newPassword
+            Credentials.credentials.password = newPassword
             val extraValues=  r.where(ExtraValues::class.java).findFirst()
             extraValues?.isEnteredPasswordOnce=false
             AlertHelper.showAlertDialog(

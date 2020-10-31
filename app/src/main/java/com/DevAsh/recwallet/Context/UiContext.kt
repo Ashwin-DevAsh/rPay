@@ -44,11 +44,11 @@ object UiContext {
 
     }
 
-    fun loadProfileImageWithoutPlaceHolder(context: Context,
-                         id:String,
-                         loadProfileCallBack: LoadProfileCallBack,
-                         imageView:ImageView,
-                         errorPlaceHolder:Int= R.drawable.place_holder
+    fun loadProfileImageWithoutPlaceHolder(
+        id: String,
+        loadProfileCallBack: LoadProfileCallBack,
+        imageView: ImageView,
+        errorPlaceHolder: Int = R.drawable.place_holder
     ){
         Picasso.get()
             .load(buildURL(id))
@@ -67,11 +67,11 @@ object UiContext {
 
 
 
-    fun loadProfileNoCache(context: Context,
-                         id:String,
-                         loadProfileCallBack: LoadProfileCallBack,
-                         imageView:ImageView,
-                         errorPlaceHolder:Int= R.drawable.place_holder
+    fun loadProfileNoCache(
+        id: String,
+        loadProfileCallBack: LoadProfileCallBack,
+        imageView: ImageView,
+        errorPlaceHolder: Int = R.drawable.place_holder
     ){
         Picasso.get()
             .load(buildURL(id))

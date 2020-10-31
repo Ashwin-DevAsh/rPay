@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.UiContext.colors
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Helper.PhoneBookHelper
 import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
@@ -33,7 +35,6 @@ import kotlinx.android.synthetic.main.activity_send_money.*
 import org.json.JSONArray
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 class SendMoney : AppCompatActivity() {
@@ -113,8 +114,12 @@ class SendMoney : AppCompatActivity() {
 
 
     private fun getAllUsers(){
+        val allContacts = PhoneBookHelper.getContacts(context)
         HelperVariables.allUsers.clear()
-        AndroidNetworking.get(ApiContext.apiUrl+ApiContext.profilePort+"/getUsers")
+        AndroidNetworking.post(ApiContext.apiUrl+ApiContext.profilePort+"/getUsersWithContacts")
+            .addBodyParameter(object {
+                var contacts = allContacts.toString()
+            })
             .setPriority(Priority.IMMEDIATE)
             .build()
             .getAsJSONArray(object :JSONArrayRequestListener{
@@ -128,7 +133,7 @@ class SendMoney : AppCompatActivity() {
                               ,response.getJSONObject(i)["id"].toString()
                               ,response.getJSONObject(i)["email"].toString()
                           )
-                          if(user.id!=DetailsContext.id) HelperVariables.allUsers.add(user)
+                          if(user.id!= Credentials.credentials.id) HelperVariables.allUsers.add(user)
                       }
                         usersContainer.layoutManager = LinearLayoutManager(context)
                         userAdapter = UserAdapter(HelperVariables.allUsers,context)
@@ -179,7 +184,7 @@ class UserAdapter(private var items : ArrayList<Contacts>, val context: Context)
             holder.avatarContainer.visibility=VISIBLE
             holder.profileImage.visibility = View.GONE
         }
-        UiContext.loadProfileImageWithoutPlaceHolder(context,items[position].id,object:LoadProfileCallBack{
+        UiContext.loadProfileImageWithoutPlaceHolder(items[position].id, object:LoadProfileCallBack{
             override fun onSuccess() {
                 holder.avatarContainer.visibility=View.GONE
                 holder.profileImage.visibility = VISIBLE
@@ -192,7 +197,7 @@ class UserAdapter(private var items : ArrayList<Contacts>, val context: Context)
                 isImageLoadedMap[holder.contact!!]=false
             }
 
-        },holder.profileImage)
+        }, holder.profileImage)
 
 
 

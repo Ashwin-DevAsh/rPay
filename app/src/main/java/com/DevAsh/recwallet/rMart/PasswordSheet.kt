@@ -20,7 +20,7 @@ import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.DialogFragment
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
@@ -31,7 +31,6 @@ import com.DevAsh.recwallet.Registration.Register.Companion.hideKeyboardFrom
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import kotlinx.android.synthetic.main.sheet_rmart_password.*
 
@@ -101,7 +100,7 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
     }
 
     fun password(view: View){
-        if(PasswordHashing.decryptMsg(DetailsContext.password!!)==password.text.toString()){
+        if(PasswordHashing.decryptMsg(Credentials.credentials.password!!)==password.text.toString()){
             hideKeyboardFrom(activity!!, view)
             Handler().postDelayed({
                 done()
@@ -114,7 +113,7 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
                 }
             }
         }else{
-            println(PasswordHashing.decryptMsg(DetailsContext.password!!) + " actual password")
+            println(PasswordHashing.decryptMsg(Credentials.credentials.password!!) + " actual password")
             println(password.text.toString() + " actual password")
             invalidPassword.visibility = View.VISIBLE
             Handler().postDelayed({

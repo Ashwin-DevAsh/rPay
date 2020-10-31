@@ -21,9 +21,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.PasswordHashing
@@ -39,8 +39,6 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_password_prompt.*
-import kotlinx.android.synthetic.main.activity_withdraw_password_prompt.*
 import kotlinx.android.synthetic.main.activity_withdraw_password_prompt.amount
 import kotlinx.android.synthetic.main.activity_withdraw_password_prompt.back
 import kotlinx.android.synthetic.main.activity_withdraw_password_prompt.done
@@ -140,7 +138,7 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
         }
 
         done.setOnClickListener { view ->
-            if(PasswordHashing.decryptMsg(DetailsContext.password!!)==password.text.toString()){
+            if(PasswordHashing.decryptMsg(Credentials.credentials.password!!)==password.text.toString()){
                 hideKeyboardFrom(this,view)
                 Handler().postDelayed({
                     transaction()
@@ -153,7 +151,7 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
                     }
                 }
             }else{
-                println(PasswordHashing.decryptMsg(DetailsContext.password!!)+" actual password")
+                println(PasswordHashing.decryptMsg(Credentials.credentials.password!!)+" actual password")
                 println(password.text.toString()+" actual password")
                 AlertHelper.showError("Invalid Password",this@WithdrawPasswordPrompt)
             }
@@ -168,13 +166,13 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
 
             AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/withdraw")
                 .setContentType("application/json; charset=utf-8")
-                .addHeaders("jwtToken", DetailsContext.token)
+                .addHeaders("jwtToken", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
                     var from = object {
-                        var id = DetailsContext.id
-                        var name = DetailsContext.name
-                        var number = DetailsContext.phoneNumber
-                        var email = DetailsContext.email
+                        var id = Credentials.credentials.id
+                        var name = Credentials.credentials.accountName
+                        var number = Credentials.credentials.phoneNumber
+                        var email = Credentials.credentials.email
                     }
                     var to = object {
                         var id =  HelperVariables.selectedAccount?.accountNumber
@@ -190,8 +188,8 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
                     override fun onResponse(response: JSONObject?) {
                         if(response?.get("message")=="done"){
                             transactionSuccessful()
-                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
-                                .addHeaders("token",DetailsContext.token)
+                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                                .addHeaders("token",Credentials.credentials.token)
                                 .setPriority(Priority.IMMEDIATE)
                                 .build()
                                 .getAsJSONObject(object: JSONObjectRequestListener {

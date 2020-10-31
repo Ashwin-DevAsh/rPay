@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import com.DevAsh.recwallet.BuildConfig
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.ExtraValues
 import com.DevAsh.recwallet.Database.RealmHelper
@@ -39,7 +39,7 @@ class ChangePassword : AppCompatActivity() {
         done.setOnClickListener{v ->
             oldPasswordText = oldPassword.text.toString()
             newPasswordText = password.text.toString()
-            if(oldPassword.text.toString() != PasswordHashing.decryptMsg(DetailsContext.password!!)){
+            if(oldPassword.text.toString() != PasswordHashing.decryptMsg(Credentials.credentials.password!!)){
                 AlertHelper.showError("Invalid old password", this@ChangePassword)
             }else if(oldPassword.text.toString() == password.text.toString()){
                 AlertHelper.showError("old password must not be new password", this@ChangePassword)
@@ -64,10 +64,10 @@ class ChangePassword : AppCompatActivity() {
             mainContent.visibility=View.INVISIBLE
         },500)
         newHashedPassword = PasswordHashing.encryptMsg(newPasswordText)
-        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/changePassword")
-            .addHeaders("token",DetailsContext.token)
+        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+BuildConfig.CHANGEPASSWORDENDPOINT)
+            .addHeaders("token",Credentials.credentials.token)
             .addBodyParameter(object{
-                val id = DetailsContext.id
+                val id = Credentials.credentials.id
                 val oldPassword = PasswordHashing.encryptMsg(oldPasswordText)
                 val newPassword = newHashedPassword
             })
@@ -120,7 +120,7 @@ class ChangePassword : AppCompatActivity() {
         Realm.getDefaultInstance().executeTransaction{r->
             val data = r.where(Credentials::class.java).findFirst()
             data?.setPassword(newPassword)
-            DetailsContext.password = newPassword
+            Credentials.credentials.password = newPassword
             val extraValues=  r.where(ExtraValues::class.java).findFirst()
             extraValues?.isEnteredPasswordOnce=false
             showAlertDialog(

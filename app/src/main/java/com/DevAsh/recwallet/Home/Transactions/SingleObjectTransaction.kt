@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.DevAsh.recwallet.Context.*
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.NotificationObserver
 import com.DevAsh.recwallet.Helper.PaymentObserver
@@ -185,10 +186,10 @@ class SingleObjectTransaction : AppCompatActivity() {
                 mapOf(
                     "from"  to JSONObject(
                         mapOf(
-                            "id" to DetailsContext.id ,
-                            "name" to DetailsContext.name,
-                            "number" to DetailsContext.phoneNumber,
-                            "email" to DetailsContext.email
+                            "id" to Credentials.credentials.id ,
+                            "name" to Credentials.credentials.accountName,
+                            "number" to Credentials.credentials.phoneNumber,
+                            "email" to Credentials.credentials.email
                         )
                     ),
                     "to" to JSONObject(
@@ -240,15 +241,15 @@ class SingleObjectTransaction : AppCompatActivity() {
                 val transactionData = it[0] as JSONObject
                 val from = transactionData.getJSONObject("from")
                 val to = transactionData.getJSONObject("to")
-                val isSend = TransactionsHelper.isSend(DetailsContext.id, from.getString("id"))
+                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("id"))
                 val name = if (isSend) to.getString("name") else from.getString("name")
                 val number = if (isSend) to.getString("number") else from.getString("number")
                 val email = if (isSend) to.getString("email") else from.getString("email")
                 val id = if (isSend) to.getString("id") else from.getString("id")
                 val contacts = Contacts(name, number,id,email)
                 if(
-                    from["id"]==DetailsContext.id && to["id"]==Cache.socketListnerCache[this] ||
-                    to["id"]==DetailsContext.id && from["id"]==Cache.socketListnerCache[this]
+                    from["id"]==Credentials.credentials.id && to["id"]==Cache.socketListnerCache[this] ||
+                    to["id"]==Credentials.credentials.id && from["id"]==Cache.socketListnerCache[this]
                 ){
                     val transactionObject = Transaction(
                         contacts = contacts,
@@ -263,7 +264,8 @@ class SingleObjectTransaction : AppCompatActivity() {
                         else "Received",
                         transactionId =  transactionData["transactionID"].toString(),
                         isGenerated = false,
-                        isWithdraw = false
+                        isWithdraw = false,
+                        timeStamp = transactionData["transactionTime"].toString()
                     )
                     val objectTransactions=ObjectTransactions( transaction = transactionObject   )
                     if(!transaction.contains(objectTransactions)){
@@ -305,13 +307,13 @@ class SingleObjectTransaction : AppCompatActivity() {
 
             AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/sendMessage")
                 .setContentType("application/json; charset=utf-8")
-                .addHeaders("jwtToken", DetailsContext.token)
+                .addHeaders("jwtToken", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
                     var from = object{
-                        var id = DetailsContext.id
-                        var name = DetailsContext.name
-                        var number = DetailsContext.phoneNumber
-                        var email = DetailsContext.email
+                        var id = Credentials.credentials.id
+                        var name = Credentials.credentials.accountName
+                        var number = Credentials.credentials.phoneNumber
+                        var email = Credentials.credentials.email
                     }
                     var to = object {
                         var id =  HelperVariables.selectedUser?.id
@@ -344,8 +346,8 @@ class SingleObjectTransaction : AppCompatActivity() {
             AndroidNetworking.get(
                 ApiContext.apiUrl
                         + ApiContext.paymentPort
-                        + "/getTransactionsBetweenObjects?id1=${DetailsContext.id}&id2=${HelperVariables.selectedUser!!.id.replace("+","")}")
-                .addHeaders("jwtToken", DetailsContext.token)
+                        + "/getTransactionsBetweenObjects?id1=${Credentials.credentials.id}&id2=${HelperVariables.selectedUser!!.id.replace("+","")}")
+                .addHeaders("jwtToken", Credentials.credentials.token)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
                 .getAsJSONArray(object: JSONArrayRequestListener {
@@ -358,7 +360,7 @@ class SingleObjectTransaction : AppCompatActivity() {
                             try{
                                 val from = transaction.getJSONObject("From")
                                 val to = transaction.getJSONObject("To")
-                                val isSend = TransactionsHelper.isSend(DetailsContext.id, from.getString("Id"))
+                                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("Id"))
                                 val name = if (isSend) to.getString("Name") else from.getString("Name")
                                 val number = if (isSend) to.getString("Number") else from.getString("Number")
                                 val email = if (isSend) to.getString("Email") else from.getString("Email")
@@ -378,13 +380,14 @@ class SingleObjectTransaction : AppCompatActivity() {
                                         else "Received",
                                         transactionId =  transaction["TransactionID"].toString(),
                                         isGenerated = transaction.getBoolean("IsGenerated"),
-                                        isWithdraw = transaction.getBoolean("IsWithdraw")
+                                        isWithdraw = transaction.getBoolean("IsWithdraw"),
+                                        timeStamp = transaction.getString("TimeStamp")
                                     )
                                     ))
                             }catch (e:Throwable){
                                 val from = message.getJSONObject("From")
                                 val to = message.getJSONObject("To")
-                                val isSend = TransactionsHelper.isSend(DetailsContext.id, from.getString("Id"))
+                                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("Id"))
                                 val name = if (isSend) to.getString("Name") else from.getString("Name")
                                 val number = if (isSend) to.getString("Number") else from.getString("Number")
                                 val email = if (isSend) to.getString("Email") else from.getString("Email")

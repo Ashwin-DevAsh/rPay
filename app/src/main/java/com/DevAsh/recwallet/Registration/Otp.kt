@@ -10,7 +10,6 @@ import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.BankAccount
@@ -120,21 +119,20 @@ class Otp : AppCompatActivity() {
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)
                                     val credentials = Credentials(
+                                        true,
+                                        user["name"].toString(),
                                         user["name"].toString(),
                                         user["number"].toString(),
                                         user["email"].toString(),
                                         user["password"].toString(),
                                         otpObject["token"].toString(),
-                                        true
+                                        "active"
                                     )
                                     realm.insert(credentials)
-                                    DetailsContext.setData(
-                                        credentials!!.name,
-                                        credentials.phoneNumber,
-                                        credentials.email,
-                                        credentials.password,
-                                        credentials.token
-                                    )
+                                    Credentials.credentials =
+                                        Realm.getDefaultInstance()
+                                            .copyFromRealm(Realm.getDefaultInstance().where(Credentials::class.java).findFirst())
+
 
                                     Handler().postDelayed({
                                         try {
@@ -145,8 +143,8 @@ class Otp : AppCompatActivity() {
                                     },0)
 
                                     Handler().postDelayed({
-                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
-                                            .addHeaders("token",DetailsContext.token)
+                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                                            .addHeaders("token",Credentials.credentials.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()
                                             .getAsJSONObject(object: JSONObjectRequestListener {

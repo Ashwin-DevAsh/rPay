@@ -2,8 +2,10 @@ package com.DevAsh.recwallet.Home.Transactions
 
 import android.content.Intent
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.DevAsh.recwallet.BuildConfig
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.R
@@ -43,7 +45,13 @@ class Successful : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(type=="addMoney" || type=="withdraw"){
-            startActivity(Intent(this,HomePage::class.java))
+            if(BuildConfig.ID=="rpay@"){
+                startActivity(Intent(this,HomePage::class.java))
+
+            }else{
+                startActivity(Intent(this,com.DevAsh.recwallet.rBusiness.Home.HomePage::class.java))
+
+            }
             finish()
         }else{
             super.onBackPressed()

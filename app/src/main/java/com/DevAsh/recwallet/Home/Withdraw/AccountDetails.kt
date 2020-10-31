@@ -7,10 +7,10 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.BankAccount
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
@@ -117,9 +117,9 @@ class AccountDetails : AppCompatActivity() {
     private fun deleteFromServer(){
 
         AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/deleteBankAccount")
-            .addHeaders("token", DetailsContext.token)
+            .addHeaders("token", Credentials.credentials.token)
             .addBodyParameter( object{
-                var id = DetailsContext.id
+                var id = Credentials.credentials.id
                 var accountNumber = HelperVariables.selectedAccount?.accountNumber
                 var ifsc = HelperVariables.selectedAccount?.IFSC
                 var holderName = HelperVariables.selectedAccount?.holderName

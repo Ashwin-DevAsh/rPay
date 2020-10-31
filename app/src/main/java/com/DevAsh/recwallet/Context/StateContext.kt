@@ -9,6 +9,8 @@ object StateContext {
 
     val model: StateViewModel = StateViewModel()
     var currentBalance = 0
+    var timeIndex=0
+
 
     init {
         model.allTransactions.value = ArrayList()

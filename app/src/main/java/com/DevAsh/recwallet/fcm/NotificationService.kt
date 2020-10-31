@@ -8,8 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.DevAsh.recwallet.BuildConfig
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.UiContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.MerchantHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.Transactions.SingleObjectTransaction
@@ -24,6 +26,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
+import io.realm.Realm
 import kotlin.random.Random
 
 
@@ -60,9 +63,25 @@ class NotificationService : FirebaseMessagingService() {
                   println(e)
               }
         }else if(p0.data["type"]?.startsWith("merchantStatus")!!){
-              MerchantHelper.updateMerchant()
+            if(BuildConfig.ID=="rbusiness@"){
+                val id = p0.data["type"]!!.split(",")[1]
+                val status = p0.data["type"]!!.split(",")[2]
+                println(status)
+                val details = Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
+                if("rbusiness@${details?.phoneNumber}"==id){
+                    val intent = Intent(applicationContext,SplashScreen::class.java)
+                    if(status=="active"){
+                        showNotification("R Admin","Your account is successfully activated!",intent)
+                        Credentials.credentials.isVerified=true
+                    }else{
+                        showNotification("R Admin","Your account is deactivated!",intent)
+                        Credentials.credentials.isVerified=false
+                    }
+                }
+            }else{
+                MerchantHelper.updateMerchant()
+            }
         }else if(p0.data["type"]?.startsWith("message")!!){
-
             try {
                 SocketHelper.getMyState()
             } catch (e:Throwable){

@@ -11,7 +11,6 @@ import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.RegistrationContext
 import com.DevAsh.recwallet.Context.StateContext
 import com.DevAsh.recwallet.Database.Credentials
@@ -21,7 +20,6 @@ import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Home.HomePage
 import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
@@ -124,19 +122,17 @@ class Register : AppCompatActivity() {
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)
                                     val token =  response!!.getJSONObject(0)["token"].toString()
-                                    val credentials = Credentials(name,phoneNumber,email,  PasswordHashing.encryptMsg(password),token,true)
+                                    val credentials = Credentials(true,name,name,phoneNumber,email,  PasswordHashing.encryptMsg(password),token,"active")
                                     realm.insert(credentials)
-                                    DetailsContext.setData(
-                                        credentials.name,
-                                        credentials.phoneNumber,
-                                        credentials.email,
-                                        credentials.password,
-                                        credentials.token
-                                    )
+                                    Credentials.credentials =
+                                        Realm.getDefaultInstance()
+                                            .copyFromRealm(Realm.getDefaultInstance().where(Credentials::class.java).findFirst())
+
+
                                     StateContext.initBankAccounts(arrayListOf())
                                     Handler().postDelayed({
-                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
-                                            .addHeaders("token",DetailsContext.token)
+                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                                            .addHeaders("token",Credentials.credentials.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()
                                             .getAsJSONObject(object: JSONObjectRequestListener {

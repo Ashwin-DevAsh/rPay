@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Context.UiContext.colors
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.AllTransactions
 import com.DevAsh.recwallet.Home.Transactions.SendMoney
@@ -107,7 +108,7 @@ class HomePage : AppCompatActivity() {
                     return@OnCompleteListener
                 } else {
                     println("success . . . .")
-                    DetailsContext.fcmToken = task.result?.token!!
+                    HelperVariables.fcmToken = task.result?.token!!
                     SocketHelper.connect()
                 }
             })
@@ -159,7 +160,7 @@ class HomePage : AppCompatActivity() {
 
 
         fun getText():String{
-            var name = DetailsContext.name.toString()
+            val name = Credentials.credentials.accountName.toString()
             if(name.length>10){
                 val splitedText = name.split(" ")
                 if(splitedText.size>1){
@@ -189,7 +190,6 @@ class HomePage : AppCompatActivity() {
             }else{
                 ActivityCompat.requestPermissions(this, permissions,0)
             }
-//            startActivity(Intent(context, SendMoney::class.java))
         }
 
         balance.setOnClickListener{
@@ -299,7 +299,7 @@ class HomePage : AppCompatActivity() {
      private fun loadProfilePicture(){
         UiContext.loadProfileImage(
             context,
-            DetailsContext.id,
+            Credentials.credentials.id,
             object : LoadProfileCallBack {
                 override fun onSuccess() {
 
@@ -464,7 +464,7 @@ class MerchantViewAdapter(
 
         holder.badge.text = items[position].name[0].toString()
 
-        UiContext.loadProfileImageWithoutPlaceHolder(context, items[position].id, object : LoadProfileCallBack {
+        UiContext.loadProfileImageWithoutPlaceHolder(items[position].id, object : LoadProfileCallBack {
             override fun onSuccess() {
                 holder.avatarContainer.visibility = View.GONE
                 holder.profile.visibility = View.VISIBLE
@@ -563,7 +563,7 @@ class PeopleViewAdapter(
                 holder.badge.textSize = 18F
             }
 
-        UiContext.loadProfileImageWithoutPlaceHolder(context, items[position].id, object : LoadProfileCallBack {
+        UiContext.loadProfileImageWithoutPlaceHolder(items[position].id, object : LoadProfileCallBack {
             override fun onSuccess() {
                 holder.badge.visibility = View.GONE
                 holder.profile.visibility = View.VISIBLE

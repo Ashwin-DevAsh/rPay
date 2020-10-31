@@ -11,9 +11,9 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.R
@@ -66,14 +66,14 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         }, 500)
         AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/addMoney")
             .setContentType("application/json; charset=utf-8")
-            .addHeaders("jwtToken", DetailsContext.token)
+            .addHeaders("jwtToken", Credentials.credentials.token)
             .addApplicationJsonBody(object {
                 var amount = amount
                 var to = object {
-                    var id = DetailsContext.id
-                    var name = DetailsContext.name
-                    var number = DetailsContext.phoneNumber
-                    var email = DetailsContext.email
+                    var id = Credentials.credentials.id
+                    var name = Credentials.credentials.accountName
+                    var number = Credentials.credentials.phoneNumber
+                    var email = Credentials.credentials.email
                 }
                 var from = object {
                     var id = p0
@@ -89,8 +89,8 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                     loadingScreen.visibility = View.VISIBLE
                     println(response)
                     if (response?.get("message") == "done") {
-                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
-                            .addHeaders("token", DetailsContext.token)
+                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                            .addHeaders("token", Credentials.credentials.token)
                             .setPriority(Priority.IMMEDIATE)
                             .build()
                             .getAsJSONObject(object : JSONObjectRequestListener {
@@ -110,8 +110,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                                     StateContext.setBalanceToModel(formatter.format(balance))
                                     val transactionObjectArray =
                                         response.getJSONArray("transactions")
-                                    StateContext.initAllTransaction(
-                                        TransactionsHelper.addTransaction(
+                                    StateContext.initAllTransaction(TransactionsHelper.addTransaction(
                                             transactionObjectArray
                                         )
                                     )
@@ -239,8 +238,8 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                         )).toString()
             )
             val prefill = JSONObject()
-            prefill.put("email", DetailsContext.email)
-            prefill.put("contact", DetailsContext.phoneNumber)
+            prefill.put("email", Credentials.credentials.email)
+            prefill.put("contact", Credentials.credentials.phoneNumber)
             options.put("prefill", prefill)
             co.open(activity, options)
         }catch (e: Exception){
@@ -260,7 +259,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                     val trxt = data.getStringExtra("response")
                     Log.d("UPI", "onActivityResult: $trxt")
                     val dataList: ArrayList<String> = ArrayList()
-                    dataList.add(trxt)
+                    dataList.add(trxt!!)
                     upiPaymentDataOperation(dataList)
                 } else {
                     Log.d("UPI", "onActivityResult: " + "Return data is null")

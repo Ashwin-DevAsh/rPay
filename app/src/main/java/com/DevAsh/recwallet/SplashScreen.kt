@@ -7,9 +7,7 @@ import android.os.Handler
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
-import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Database.BankAccount
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
@@ -21,7 +19,6 @@ import com.DevAsh.recwallet.Registration.Login
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.jacksonandroidnetworking.JacksonParserFactory
@@ -80,13 +77,10 @@ class SplashScreen : AppCompatActivity() {
 
             Handler().postDelayed({
                   try {
-                      DetailsContext.setData(
-                          credentials.name,
-                          credentials.phoneNumber,
-                          credentials.email,
-                          credentials.password,
-                          credentials.token
-                      )
+                      if(credentials==null){
+                          throw Exception()
+                      }
+                      Credentials.credentials = Realm.getDefaultInstance().copyFromRealm(credentials)
                   }catch (e:Throwable){
                       Handler().postDelayed({
                           startActivity(Intent(context,Login::class.java))
@@ -94,8 +88,8 @@ class SplashScreen : AppCompatActivity() {
                       },2000)
                       return@postDelayed
                   }
-                  AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${DetailsContext.id}")
-                        .addHeaders("token",DetailsContext.token)
+                  AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                        .addHeaders("token",Credentials.credentials.token)
                         .setPriority(Priority.IMMEDIATE)
                         .build()
                         .getAsJSONObject(object: JSONObjectRequestListener {

@@ -8,8 +8,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import com.DevAsh.recwallet.BuildConfig
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.R
 import com.androidnetworking.AndroidNetworking
@@ -38,12 +39,12 @@ class RecoveryOtp : AppCompatActivity() {
                 Handler().postDelayed({
                     mainContent.visibility = View.INVISIBLE
                 },300)
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.profilePort + "/setRecoveryOtp")
-                .addHeaders("token",DetailsContext.token)
+            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.profilePort + BuildConfig.SETRECOVERYOTP)
+                .addHeaders("token", Credentials.credentials.token)
                 .addBodyParameter("otpNumber", otpText)
                 .addBodyParameter(
                     "emailID",
-                     DetailsContext.email
+                    Credentials.credentials.email
                 )
                 .setPriority(Priority.IMMEDIATE)
                 .build()

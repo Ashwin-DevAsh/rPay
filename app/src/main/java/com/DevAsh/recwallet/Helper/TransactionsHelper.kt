@@ -1,9 +1,8 @@
 package com.DevAsh.recwallet.Helper
 
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.StateContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Models.Contacts
-import com.DevAsh.recwallet.Models.Merchant
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.SplashScreen
 import org.json.JSONArray
@@ -19,7 +18,7 @@ object TransactionsHelper {
 
             val from = transactionObjectArray.getJSONObject(i).getJSONObject("frommetadata")
             val to = transactionObjectArray.getJSONObject(i).getJSONObject("tometadata")
-            val isSend = isSend(DetailsContext.id,from.getString("Id"))
+            val isSend = isSend(Credentials.credentials.id,from.getString("Id"))
 
             val name = if (isSend) to.getString("Name") else from.getString("Name")
             val number = if (isSend) to.getString("Number") else from.getString("Number")
@@ -40,12 +39,13 @@ object TransactionsHelper {
                 else "Received",
                 transactionId =  transactionObjectArray.getJSONObject(i)["transactionid"].toString(),
                 isGenerated = transactionObjectArray.getJSONObject(i).getBoolean("isgenerated"),
-                isWithdraw = transactionObjectArray.getJSONObject(i).getBoolean("iswithdraw")
+                isWithdraw = transactionObjectArray.getJSONObject(i).getBoolean("iswithdraw"),
+                timeStamp = transactionObjectArray.getJSONObject(i).getString("timestamp")
+
             )
             transactions.add(0, transaction)
             addRecent(transaction,contacts)
         }
-
         return transactions
     }
 

@@ -7,8 +7,10 @@ class Transaction(
     var type: String,
     var transactionId:String,
     var isGenerated:Boolean,
-    var isWithdraw:Boolean
-) {
+    var isWithdraw:Boolean,
+    var timeStamp:Any
+
+    ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Transaction) return false

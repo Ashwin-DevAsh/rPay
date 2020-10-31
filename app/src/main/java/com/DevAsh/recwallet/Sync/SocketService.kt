@@ -11,7 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
-import com.DevAsh.recwallet.Context.DetailsContext
+import com.DevAsh.recwallet.Context.HelperVariables
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.RealmHelper
 import com.DevAsh.recwallet.R
@@ -31,20 +31,12 @@ class SocketService : Service() {
     }
 
     override fun onCreate() {
-        if (DetailsContext.name == null) {
+        if (Credentials.credentials.accountName == null) {
             RealmHelper.init(this)
             AndroidNetworking.initialize(applicationContext)
             AndroidNetworking.setParserFactory(JacksonParserFactory())
-            val credentials =
+            Credentials.credentials =
                 Realm.getDefaultInstance().where(Credentials::class.java).findFirst() ?: return
-            DetailsContext.setData(
-                credentials.name,
-                credentials.phoneNumber,
-                credentials.email,
-                credentials.password,
-                credentials.token
-            )
-
         }
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
@@ -53,7 +45,7 @@ class SocketService : Service() {
                     return@OnCompleteListener
                 } else {
                     println("success . . . .")
-                    DetailsContext.fcmToken = task.result?.token!!
+                    HelperVariables.fcmToken = task.result?.token!!
                     SocketHelper.context = this.applicationContext
                     SocketHelper.connect()
                 }

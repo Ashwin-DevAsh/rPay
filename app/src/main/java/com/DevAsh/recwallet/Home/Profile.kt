@@ -18,10 +18,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.DevAsh.recwallet.Context.ApiContext
-import com.DevAsh.recwallet.Context.DetailsContext
 import com.DevAsh.recwallet.Context.LoadProfileCallBack
 import com.DevAsh.recwallet.Context.UiContext
+import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
+import com.DevAsh.recwallet.Home.ChangePassword
 import com.DevAsh.recwallet.Home.Transactions.AllTransactions
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Registration.Login
@@ -53,16 +54,16 @@ class Profile : AppCompatActivity() {
         Realm.init(this)
         setContentView(R.layout.activity_profile)
 
-        qrName.text = DetailsContext.name
-        name.text =DetailsContext.name
-        email.text =DetailsContext.email
-        phone.text =  DetailsContext.phoneNumber
+        qrName.text = Credentials.credentials.accountName
+        name.text =Credentials.credentials.accountName
+        email.text =Credentials.credentials.email
+        phone.text =  Credentials.credentials.phoneNumber
 
 
-        val jwt = Jwts.builder().claim("name", DetailsContext.name)
-            .claim("number", DetailsContext.phoneNumber)
-            .claim("email",DetailsContext.email)
-            .claim("id",DetailsContext.id)
+        val jwt = Jwts.builder().claim("name", Credentials.credentials.accountName)
+            .claim("number", Credentials.credentials.phoneNumber)
+            .claim("email",Credentials.credentials.email)
+            .claim("id",Credentials.credentials.id)
             .signWith(SignatureAlgorithm.HS256, ApiContext.qrKey)
             .compact()
 
@@ -79,7 +80,7 @@ class Profile : AppCompatActivity() {
         loadProfilePicture()
 
         changePassword.setOnClickListener{
-            startActivity(Intent(this,ChangePassword::class.java))
+            startActivity(Intent(this, ChangePassword::class.java))
         }
 
         share.setOnClickListener{
@@ -104,7 +105,7 @@ class Profile : AppCompatActivity() {
 
         profilePicture.setOnClickListener{
             Handler().postDelayed({
-                UiContext.removeFromCache(DetailsContext.id)
+                UiContext.removeFromCache(Credentials.credentials.id)
             },0)
         CropImage.activity()
             .setGuidelines(CropImageView.Guidelines.ON)
@@ -169,8 +170,8 @@ class Profile : AppCompatActivity() {
     }
 
     private fun uploadImage(file:File,newImage:Bitmap){
-        AndroidNetworking.upload(ApiContext.apiUrl+ApiContext.profilePort+"/addProfilePicture/"+DetailsContext.id)
-            .addHeaders("token", DetailsContext.token)
+        AndroidNetworking.upload(ApiContext.apiUrl+ApiContext.profilePort+"/addProfilePicture/"+Credentials.credentials.id)
+            .addHeaders("token", Credentials.credentials.token)
             .addMultipartFile("profilePicture",file)
             .setPriority(Priority.HIGH)
             .build()
@@ -206,7 +207,7 @@ class Profile : AppCompatActivity() {
                 val resultUri = result.uri
                 val bitmap = Bitmap.createScaledBitmap(  MediaStore.Images.Media.getBitmap(this.contentResolver, resultUri), 500, 500, true);
                 Handler().postDelayed({
-                    UiContext.removeFromCache(DetailsContext.id)
+                    UiContext.removeFromCache(Credentials.credentials.id)
                 },0)
                 uploadImage(saveBitmapToFile(File(resultUri.path!!)),bitmap)
 
@@ -220,7 +221,7 @@ class Profile : AppCompatActivity() {
     private fun loadProfilePicture(){
         UiContext.loadProfileImage(
             this,
-            DetailsContext.id,
+            Credentials.credentials.id,
             object : LoadProfileCallBack {
                 override fun onSuccess() {
 
@@ -236,8 +237,7 @@ class Profile : AppCompatActivity() {
     }
     private fun loadProfileNoCache(){
         UiContext.loadProfileNoCache(
-            this,
-            DetailsContext.id,
+            Credentials.credentials.id,
             object : LoadProfileCallBack {
                 override fun onSuccess() {
 
