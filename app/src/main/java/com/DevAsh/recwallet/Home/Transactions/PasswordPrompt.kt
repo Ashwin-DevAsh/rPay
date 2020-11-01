@@ -246,7 +246,7 @@ class PasswordPrompt : AppCompatActivity() {
 
             AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/pay")
                 .setContentType("application/json; charset=utf-8")
-                .addHeaders("jwtToken", Credentials.credentials.token)
+                .addHeaders("token", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
                     var from = object {
                         var id = Credentials.credentials.id
@@ -278,11 +278,11 @@ class PasswordPrompt : AppCompatActivity() {
                                     contacts = HelperVariables.selectedUser!!,
                                     amount = HelperVariables.amount!!,
                                     time = "Paid  "+ SplashScreen.dateToString(
-                                        response.getString("transactionTime")) ,
-                                    transactionId =  response.getString("transactionID"),
+                                        response.getString("transactiontime")) ,
+                                    transactionId =  response.getString("transactionid"),
                                     isWithdraw =  false,isGenerated = false,
                                     type = "Send",
-                                    timeStamp = response.getString("transactionTime")
+                                    timeStamp = response.getString("transactiontime")
 
                                 )
                             )
@@ -307,8 +307,8 @@ class PasswordPrompt : AppCompatActivity() {
                                         )
                                     ),
                                     "amount" to HelperVariables.amount,
-                                    "transactionID" to response.get("transactionID"),
-                                    "transactionTime" to response.get("transactionTime")
+                                    "transactionID" to response.get("transactionid"),
+                                    "transactionTime" to response.get("transactiontime")
                                 )
                             ))
                             transactionSuccessful()

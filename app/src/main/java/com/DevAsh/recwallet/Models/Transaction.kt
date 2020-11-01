@@ -11,6 +11,9 @@ class Transaction(
     var timeStamp:Any
 
     ) {
+
+    var message:String?=null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Transaction) return false
@@ -36,4 +39,10 @@ class Transaction(
         result = 31 * result + isWithdraw.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "Transaction(contacts=$contacts, time='$time', amount='$amount', type='$type', transactionId='$transactionId', isGenerated=$isGenerated, isWithdraw=$isWithdraw, timeStamp=$timeStamp, message=$message)"
+    }
+
+
 }

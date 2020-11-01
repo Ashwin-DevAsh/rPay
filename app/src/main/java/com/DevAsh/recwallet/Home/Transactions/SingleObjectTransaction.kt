@@ -37,6 +37,7 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
+import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 
 import org.json.JSONArray
@@ -52,16 +53,17 @@ class SingleObjectTransaction : AppCompatActivity() {
 
 
     var needToScroll = false
-    var transaction = ArrayList<ObjectTransactions>()
+    var transaction = ArrayList<Transaction>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("from notification = "+intent?.getBooleanExtra("fromNotification",false))
+
         if(intent!!.getBooleanExtra("fromNotification",false)){
             HelperVariables.selectedUser = Contacts.fromIntent(intent)
             println( HelperVariables.selectedUser)
         }
+
         SocketHelper.connect()
         setContentView(R.layout.activity_single_object_transaction)
         handelSocket()
@@ -90,7 +92,9 @@ class SingleObjectTransaction : AppCompatActivity() {
                 transactionContainer.layoutManager = layoutManager
                 transactionContainer.adapter = allActivityAdapter
                 transaction = allActivityAdapter!!.items
-                Handler().postDelayed({getData()},0)
+                Handler().postDelayed({
+                    getData()
+                },0)
                 loadingScreen.visibility=View.INVISIBLE
             }else{
                 throw Exception()
@@ -136,7 +140,7 @@ class SingleObjectTransaction : AppCompatActivity() {
         pay.setOnClickListener{
             TransactionsHelper.paymentObserver=object : PaymentObserver{
                 override fun update(transaction: Transaction) {
-                    val objectTransactions=ObjectTransactions(transaction=transaction)
+                    val objectTransactions=transaction
                     needToScroll=true
                     if(!this@SingleObjectTransaction.transaction.contains(objectTransactions)){
                         this@SingleObjectTransaction.transaction.add(objectTransactions)
@@ -179,236 +183,214 @@ class SingleObjectTransaction : AppCompatActivity() {
         },profile)
     }
 
-    fun sendMessageToSocket(message:String){
-        SocketHelper.socket?.emit(
-            "notifyMessage",
-            JSONObject(
-                mapOf(
-                    "from"  to JSONObject(
-                        mapOf(
-                            "id" to Credentials.credentials.id ,
-                            "name" to Credentials.credentials.accountName,
-                            "number" to Credentials.credentials.phoneNumber,
-                            "email" to Credentials.credentials.email
-                        )
-                    ),
-                    "to" to JSONObject(
-                        mapOf(
-                            "id" to HelperVariables.selectedUser?.id ,
-                            "name" to HelperVariables.selectedUser?.name,
-                            "number" to  HelperVariables.selectedUser?.number,
-                            "email" to HelperVariables.selectedUser?.email
-                        )
-                    ),
-                    "message" to message,
-                    "messageTime" to  Timestamp(System.currentTimeMillis()).toString()
-                )
-            )
-        )
-    }
+//    fun sendMessageToSocket(message:String){
+//        SocketHelper.socket?.emit(
+//            "notifyMessage",
+//            JSONObject(
+//                mapOf(
+//                    "from"  to JSONObject(
+//                        mapOf(
+//                            "id" to Credentials.credentials.id ,
+//                            "name" to Credentials.credentials.accountName,
+//                            "number" to Credentials.credentials.phoneNumber,
+//                            "email" to Credentials.credentials.email
+//                        )
+//                    ),
+//                    "to" to JSONObject(
+//                        mapOf(
+//                            "id" to HelperVariables.selectedUser?.id ,
+//                            "name" to HelperVariables.selectedUser?.name,
+//                            "number" to  HelperVariables.selectedUser?.number,
+//                            "email" to HelperVariables.selectedUser?.email
+//                        )
+//                    ),
+//                    "message" to message,
+//                    "messageTime" to  Timestamp(System.currentTimeMillis()).toString()
+//                )
+//            )
+//        )
+//    }
 
 
 
     private fun handelSocket(){
-        try{
-            SocketHelper.socket?.on("receivedMessage") { it->
-                val messageData = it[0] as JSONObject
-                if(Cache.socketListnerCache[this]==messageData.getJSONObject("from")["id"]){
-                    val objectTransactions =  ObjectTransactions(
-                        message = Message(
-                            contacts = HelperVariables.selectedUser,
-                            message = messageData.getString("message"),
-                            type = "Received",
-                            time = messageData.getString("messageTime")
-                        ))
-                    if (!transaction.contains(objectTransactions)){
-                        transaction.add(
-                            objectTransactions
-                        )
-                        allActivityAdapter?.updateList(transaction,transactionContainer)
-
-                    }
-                    smoothScroller.targetPosition = transaction.size
-                    (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
-
-                }
-
-
-            }
-
-            SocketHelper.socket?.on("receivedSingleObjectTransaction") { it->
-
-                val transactionData = it[0] as JSONObject
-                val from = transactionData.getJSONObject("from")
-                val to = transactionData.getJSONObject("to")
-                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("id"))
-                val name = if (isSend) to.getString("name") else from.getString("name")
-                val number = if (isSend) to.getString("number") else from.getString("number")
-                val email = if (isSend) to.getString("email") else from.getString("email")
-                val id = if (isSend) to.getString("id") else from.getString("id")
-                val contacts = Contacts(name, number,id,email)
-                if(
-                    from["id"]==Credentials.credentials.id && to["id"]==Cache.socketListnerCache[this] ||
-                    to["id"]==Credentials.credentials.id && from["id"]==Cache.socketListnerCache[this]
-                ){
-                    val transactionObject = Transaction(
-                        contacts = contacts,
-                        amount = transactionData["amount"].toString(),
-                        time =(if (isSend)
-                            "Paid  "
-                        else "Received  ")+ SplashScreen.dateToString(
-                            transactionData["transactionTime"].toString()
-                        ),
-                        type = if (isSend)
-                            "Send"
-                        else "Received",
-                        transactionId =  transactionData["transactionID"].toString(),
-                        isGenerated = false,
-                        isWithdraw = false,
-                        timeStamp = transactionData["transactionTime"].toString()
-                    )
-                    val objectTransactions=ObjectTransactions( transaction = transactionObject   )
-                    if(!transaction.contains(objectTransactions)){
-                        transaction.add(
-                            objectTransactions
-                        )
-                        allActivityAdapter?.updateList(transaction,transactionContainer)
-                    }
-                    smoothScroller.targetPosition = transaction.size
-                    (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
-
-                }
-            }
-        }catch (e:Throwable){
-            smoothScroller.targetPosition = transaction.size
-            (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
-            e.printStackTrace()
-        }
+//        try{
+//            SocketHelper.socket?.on("receivedMessage") { it->
+//                val messageData = it[0] as JSONObject
+//                if(Cache.socketListnerCache[this]==messageData.getJSONObject("from")["id"]){
+//                    val objectTransactions =  ObjectTransactions(
+//                        message = Message(
+//                            contacts = HelperVariables.selectedUser,
+//                            message = messageData.getString("message"),
+//                            type = "Received",
+//                            time = messageData.getString("messageTime")
+//                        ))
+//                    if (!transaction.contains(objectTransactions)){
+//                        transaction.add(
+//                            objectTransactions
+//                        )
+//                        allActivityAdapter?.updateList(transaction,transactionContainer)
+//
+//                    }
+//                    smoothScroller.targetPosition = transaction.size
+//                    (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
+//
+//                }
+//
+//
+//            }
+//
+//            SocketHelper.socket?.on("receivedSingleObjectTransaction") { it->
+//
+//                val transactionData = it[0] as JSONObject
+//                val from = transactionData.getJSONObject("from")
+//                val to = transactionData.getJSONObject("to")
+//                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("id"))
+//                val name = if (isSend) to.getString("name") else from.getString("name")
+//                val number = if (isSend) to.getString("number") else from.getString("number")
+//                val email = if (isSend) to.getString("email") else from.getString("email")
+//                val id = if (isSend) to.getString("id") else from.getString("id")
+//                val contacts = Contacts(name, number,id,email)
+//                if(
+//                    from["id"]==Credentials.credentials.id && to["id"]==Cache.socketListnerCache[this] ||
+//                    to["id"]==Credentials.credentials.id && from["id"]==Cache.socketListnerCache[this]
+//                ){
+//                    val transactionObject = Transaction(
+//                        contacts = contacts,
+//                        amount = transactionData["amount"].toString(),
+//                        time =(if (isSend)
+//                            "Paid  "
+//                        else "Received  ")+ SplashScreen.dateToString(
+//                            transactionData["transactionTime"].toString()
+//                        ),
+//                        type = if (isSend)
+//                            "Send"
+//                        else "Received",
+//                        transactionId =  transactionData["transactionID"].toString(),
+//                        isGenerated = false,
+//                        isWithdraw = false,
+//                        timeStamp = transactionData["transactionTime"].toString()
+//                    )
+//                    val objectTransactions=ObjectTransactions( transaction = transactionObject   )
+//                    if(!transaction.contains(objectTransactions)){
+//                        transaction.add(
+//                            objectTransactions
+//                        )
+//                        allActivityAdapter?.updateList(transaction,transactionContainer)
+//                    }
+//                    smoothScroller.targetPosition = transaction.size
+//                    (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
+//
+//                }
+//            }
+//        }catch (e:Throwable){
+//            smoothScroller.targetPosition = transaction.size
+//            (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
+//            e.printStackTrace()
+//        }
     }
 
     private fun sendMessage(){
-        val messageText = messageEditText.text.toString()
-        if (messageText.isNotEmpty()){
-            transaction.add(
-                ObjectTransactions(
-                    message = Message(
-                        contacts = HelperVariables.selectedUser,
-                        message = messageText,
-                        type = "Send",
-                        time = Timestamp(System.currentTimeMillis()).toString()
-                    ))
-            )
-
-            messageEditText.setText("")
-            allActivityAdapter?.updateList(transaction,transactionContainer)
-            smoothScroller.targetPosition = transaction.size
-            (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
-
-
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/sendMessage")
-                .setContentType("application/json; charset=utf-8")
-                .addHeaders("jwtToken", Credentials.credentials.token)
-                .addApplicationJsonBody(object{
-                    var from = object{
-                        var id = Credentials.credentials.id
-                        var name = Credentials.credentials.accountName
-                        var number = Credentials.credentials.phoneNumber
-                        var email = Credentials.credentials.email
-                    }
-                    var to = object {
-                        var id =  HelperVariables.selectedUser?.id
-                        var name =  HelperVariables.selectedUser?.name
-                        var number =  HelperVariables.selectedUser?.number
-                        var email =  HelperVariables.selectedUser?.email
-                    }
-                    var message = messageText
-                })
-                .setPriority(Priority.IMMEDIATE)
-                .build()
-                .getAsJSONObject(object :JSONObjectRequestListener{
-                    override fun onResponse(response: JSONObject?) {
-                        sendMessageToSocket(messageText)
-                    }
-
-                    override fun onError(anError: ANError?) {
-                        println(anError?.errorCode)
-                    }
-
-                })
-        }
+//        val messageText = messageEditText.text.toString()
+//        if (messageText.isNotEmpty()){
+//            transaction.add(
+//                ObjectTransactions(
+//                    message = Message(
+//                        contacts = HelperVariables.selectedUser,
+//                        message = messageText,
+//                        type = "Send",
+//                        time = Timestamp(System.currentTimeMillis()).toString()
+//                    ))
+//            )
+//
+//            messageEditText.setText("")
+//            allActivityAdapter?.updateList(transaction,transactionContainer)
+//            smoothScroller.targetPosition = transaction.size
+//            (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
+//
+//
+//            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/sendMessage")
+//                .setContentType("application/json; charset=utf-8")
+//                .addHeaders("jwtToken", Credentials.credentials.token)
+//                .addApplicationJsonBody(object{
+//                    var from = object{
+//                        var id = Credentials.credentials.id
+//                        var name = Credentials.credentials.accountName
+//                        var number = Credentials.credentials.phoneNumber
+//                        var email = Credentials.credentials.email
+//                    }
+//                    var to = object {
+//                        var id =  HelperVariables.selectedUser?.id
+//                        var name =  HelperVariables.selectedUser?.name
+//                        var number =  HelperVariables.selectedUser?.number
+//                        var email =  HelperVariables.selectedUser?.email
+//                    }
+//                    var message = messageText
+//                })
+//                .setPriority(Priority.IMMEDIATE)
+//                .build()
+//                .getAsJSONObject(object :JSONObjectRequestListener{
+//                    override fun onResponse(response: JSONObject?) {
+//                        sendMessageToSocket(messageText)
+//                    }
+//
+//                    override fun onError(anError: ANError?) {
+//                        println(anError?.errorCode)
+//                    }
+//
+//                })
+//        }
 
 
     }
 
 
     private fun getData(){
-
+        Handler().postDelayed({
             AndroidNetworking.get(
-                ApiContext.apiUrl
-                        + ApiContext.paymentPort
-                        + "/getTransactionsBetweenObjects?id1=${Credentials.credentials.id}&id2=${HelperVariables.selectedUser!!.id.replace("+","")}")
-                .addHeaders("jwtToken", Credentials.credentials.token)
+                ApiContext.apiUrl + ApiContext.paymentPort + "/getTransactionsBetweenObjects")
+                .addHeaders("token", Credentials.credentials.token)
+                .addQueryParameter("id1",Credentials.credentials.id)
+                .addQueryParameter("id2",HelperVariables.selectedUser!!.id)
                 .setPriority(Priority.IMMEDIATE)
                 .build()
-                .getAsJSONArray(object: JSONArrayRequestListener {
-                    override fun onResponse(response: JSONArray?) {
-                        val transactions = ArrayList<ObjectTransactions>()
-                        val transactionObjectArray = response!!
-                        for (i in 0 until transactionObjectArray.length()) {
-                            val message = response.getJSONObject(i).getJSONObject("MessageData")
-                            val transaction = response.getJSONObject(i).getJSONObject("TransactionData")
-                            try{
-                                val from = transaction.getJSONObject("From")
-                                val to = transaction.getJSONObject("To")
-                                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("Id"))
-                                val name = if (isSend) to.getString("Name") else from.getString("Name")
-                                val number = if (isSend) to.getString("Number") else from.getString("Number")
-                                val email = if (isSend) to.getString("Email") else from.getString("Email")
-                                val id = if (isSend) to.getString("Id") else from.getString("Id")
-                                val contacts = Contacts(name, number,id,email)
-                                transactions.add(
-                                    ObjectTransactions( transaction =   Transaction(
-                                        contacts = contacts,
-                                        amount = transaction["Amount"].toString(),
-                                        time =(if (isSend)
-                                            "Paid  "
-                                        else "Received  ")+ SplashScreen.dateToString(
-                                            transaction["TransactionTime"].toString()
-                                        ),
-                                        type = if (isSend)
-                                            "Send"
-                                        else "Received",
-                                        transactionId =  transaction["TransactionID"].toString(),
-                                        isGenerated = transaction.getBoolean("IsGenerated"),
-                                        isWithdraw = transaction.getBoolean("IsWithdraw"),
-                                        timeStamp = transaction.getString("TimeStamp")
-                                    )
-                                    ))
-                            }catch (e:Throwable){
-                                val from = message.getJSONObject("From")
-                                val to = message.getJSONObject("To")
-                                val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("Id"))
-                                val name = if (isSend) to.getString("Name") else from.getString("Name")
-                                val number = if (isSend) to.getString("Number") else from.getString("Number")
-                                val email = if (isSend) to.getString("Email") else from.getString("Email")
-                                val id = if (isSend) to.getString("Id") else from.getString("Id")
-                                val contacts = Contacts(name, number,id,email)
+                .getAsJSONObject(object: JSONObjectRequestListener {
+                    override fun onResponse(response: JSONObject?) {
+                        if(response?.getString("message")!="done"){
+                            throw Exception("Failed")
+                        }
 
-                                transactions.add(
-                                    ObjectTransactions( message =   Message(
-                                        contacts = contacts,
-                                        message = message["Message"].toString(),
-                                        time =(if (isSend)
-                                            "Paid  "
-                                        else "Received  ")+ SplashScreen.dateToString(
-                                            message["MessageTime"].toString()
-                                        ),
-                                        type = if (isSend)
-                                            "Send"
-                                        else "Received"
-                                    )
-                                    ))
-                            }
+                        val transactions = ArrayList<Transaction>()
+
+                        val transactionObjectArray = response.getJSONArray("transactions")
+                        for (i in 0 until transactionObjectArray.length()) {
+                            val transaction = transactionObjectArray.getJSONObject(i)
+                            val from = transaction.getJSONObject("frommetadata")
+                            val to = transaction.getJSONObject("tometadata")
+                            val isSend = TransactionsHelper.isSend(Credentials.credentials.id, from.getString("id"))
+                            val name = if (isSend) to.getString("name") else from.getString("name")
+                            val number = if (isSend) to.getString("number") else from.getString("number")
+                            val email = if (isSend) to.getString("email") else from.getString("email")
+                            val id = if (isSend) to.getString("id") else from.getString("id")
+                            val contacts = Contacts(name, number,id,email)
+                            val transactionObject =   Transaction(
+                                contacts = contacts,
+                                amount = transaction["amount"].toString(),
+                                time =(if (isSend)
+                                    "Paid  "
+                                else "Received  ")+ SplashScreen.dateToString(
+                                    transaction["transactiontime"].toString()
+                                ),
+                                type = if (isSend)
+                                    "Send"
+                                else "Received",
+                                transactionId =  transaction["transactionid"].toString(),
+                                isGenerated = transaction.getBoolean("isgenerated"),
+                                isWithdraw = transaction.getBoolean("iswithdraw"),
+                                timeStamp = transaction.getString("timestamp")
+                            )
+                            transactionObject.message = transaction.getString("message")
+                            transactions.add(transactionObject)
                         }
 
                         if(transactions.size!=allActivityAdapter?.itemCount) {
@@ -427,14 +409,17 @@ class SingleObjectTransaction : AppCompatActivity() {
                     }
 
                     override fun onError(anError: ANError?) {
+                        anError?.printStackTrace()
                         AlertHelper.showServerError(this@SingleObjectTransaction)
                     }
 
                 })
+        },0)
     }
+
 }
 
-class TransactionsAdapter(var items : ArrayList<ObjectTransactions>, val context: Context) : RecyclerView.Adapter<TransactionsViewHolder>() {
+class TransactionsAdapter(var items : ArrayList<Transaction>, val context: Context) : RecyclerView.Adapter<TransactionsViewHolder>() {
 
     override fun getItemCount(): Int {
         return items.size
@@ -442,42 +427,44 @@ class TransactionsAdapter(var items : ArrayList<ObjectTransactions>, val context
 
     override fun getItemViewType(position: Int): Int = position
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionsViewHolder {
-        return if(items[viewType].transaction==null){
-            TransactionsViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_message, parent, false),context)
-        }else{
+        return if(items[viewType].amount!="0"){
             TransactionsViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_transactions, parent, false),context)
+        }else{
+            TransactionsViewHolder(LayoutInflater.from(context).inflate(R.layout.widget_message, parent, false),context)
         }
     }
 
     override fun onBindViewHolder(holder: TransactionsViewHolder, position: Int) {
+
+        println(items[position])
 
         if(position==0){
             holder.topMargin?.visibility=View.VISIBLE
         }else{
             holder.topMargin?.visibility=View.GONE
         }
-        if(items[position].transaction!=null){
-            println(items[position].transaction?.type+"  =>  "+items[position].transaction?.time)
 
-            holder.amount?.text = "${items[position].transaction?.amount}"
-            holder.time?.text = items[position].transaction?.time
-            holder.item = items[position].transaction
-            if(items[position].transaction?.type=="Received"){
+
+        if(items[position].amount!="0"){
+            holder.amount?.text = items[position].amount
+            holder.time?.text = items[position].time
+            holder.item = items[position]
+            if(items[position].type=="Received"){
                 holder.container?.gravity = Gravity.START
                 holder.contentWidget?.background= context.getDrawable(R.drawable.transaction_received_ripple)
             }
         }else{
-            holder.message?.text = items[position].message?.message
-            if(items[position].message?.type=="Received"){
+            holder.message?.text = items[position].message
+            if(items[position].type=="Received"){
                 holder.container?.gravity = Gravity.START
                 holder.contentWidget?.background= context.getDrawable(R.drawable.transaction_received_ripple)
             }
         }
+
     }
 
-    fun updateList(updatedList : ArrayList<ObjectTransactions>,view:RecyclerView){
+    fun updateList(updatedList : ArrayList<Transaction>,view:RecyclerView){
         this.items = updatedList
         try{
             notifyItemInserted(updatedList.size)
@@ -510,23 +497,5 @@ class TransactionsViewHolder (view: View,context: Context,var item:Transaction?=
                 context.startActivity(Intent(context,TransactionDetails::class.java))
             }
         }
-    }
-}
-
-class ObjectTransactions(var transaction:Transaction?=null, var message:Message?=null) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ObjectTransactions) return false
-
-        if (transaction != other.transaction) return false
-        if (message != other.message) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = transaction?.hashCode() ?: 0
-        result = 31 * result + (message?.hashCode() ?: 0)
-        return result
     }
 }

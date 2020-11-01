@@ -166,7 +166,7 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
 
             AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/withdraw")
                 .setContentType("application/json; charset=utf-8")
-                .addHeaders("jwtToken", Credentials.credentials.token)
+                .addHeaders("token", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
                     var from = object {
                         var id = Credentials.credentials.id

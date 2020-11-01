@@ -132,7 +132,7 @@ class HomePage : AppCompatActivity() {
         }
 
         profile.setOnClickListener{
-            startActivity(Intent(context, Profile::class.java))
+            startActivity(Intent(context, com.DevAsh.recbusiness.Home.Profile::class.java))
         }
 
         sendMoney.setOnClickListener{

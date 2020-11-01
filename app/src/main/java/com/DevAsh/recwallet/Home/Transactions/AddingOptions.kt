@@ -66,7 +66,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         }, 500)
         AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/addMoney")
             .setContentType("application/json; charset=utf-8")
-            .addHeaders("jwtToken", Credentials.credentials.token)
+            .addHeaders("token", Credentials.credentials.token)
             .addApplicationJsonBody(object {
                 var amount = amount
                 var to = object {

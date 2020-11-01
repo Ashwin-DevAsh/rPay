@@ -23,7 +23,7 @@ import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Home.ChangePassword
-import com.DevAsh.recwallet.Home.SelectLogo
+import com.DevAsh.recbusiness.Home.SelectLogo
 import com.DevAsh.recwallet.Home.Transactions.AllTransactions
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketHelper

@@ -18,12 +18,12 @@ object TransactionsHelper {
 
             val from = transactionObjectArray.getJSONObject(i).getJSONObject("frommetadata")
             val to = transactionObjectArray.getJSONObject(i).getJSONObject("tometadata")
-            val isSend = isSend(Credentials.credentials.id,from.getString("Id"))
+            val isSend = isSend(Credentials.credentials.id,from.getString("id"))
 
-            val name = if (isSend) to.getString("Name") else from.getString("Name")
-            val number = if (isSend) to.getString("Number") else from.getString("Number")
-            val email = if (isSend) to.getString("Email") else from.getString("Email")
-            val id = if (isSend) to.getString("Id") else from.getString("Id")
+            val name = if (isSend) to.getString("name") else from.getString("name")
+            val number = if (isSend) to.getString("number") else from.getString("number")
+            val email = if (isSend) to.getString("email") else from.getString("email")
+            val id = if (isSend) to.getString("id") else from.getString("id")
 
             val contacts = Contacts(name, number,id,email)
             val transaction = Transaction(
