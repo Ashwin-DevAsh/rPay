@@ -131,6 +131,8 @@ class NotificationService : FirebaseMessagingService() {
                 }
                 else -> {
                     val contact = Contacts(fromName,"+"+fromID.split("@")[1],fromID,fromEmail)
+                    println(fromID)
+                    println(TransactionsHelper.notificationObserver)
                     TransactionsHelper.notificationObserver[fromID]?.check()
                     val intent = Intent(applicationContext,SingleObjectTransaction::class.java)
                     contact.putIntent(intent)
