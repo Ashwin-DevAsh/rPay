@@ -24,6 +24,7 @@ import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import kotlinx.android.synthetic.main.activity_all_transactions.*
 import kotlinx.android.synthetic.main.activity_all_transactions.activity
+import kotlinx.android.synthetic.main.widget_listtile_transaction.view.*
 import kotlin.collections.ArrayList
 
 
@@ -89,6 +90,8 @@ class AllTransactionsAdapter(private var items : ArrayList<Transaction>, val con
             holder.badge.textSize = 18F
         }
 
+
+
         holder.item = items[position]
 
         try {
@@ -101,6 +104,8 @@ class AllTransactionsAdapter(private var items : ArrayList<Transaction>, val con
             holder.color = colors[colorIndex]
             colorIndex = (colorIndex+1)%colors.size
         }
+
+
 
         UiContext.loadProfileImage(context,items[position].contacts.id,object: LoadProfileCallBack {
             override fun onSuccess() {

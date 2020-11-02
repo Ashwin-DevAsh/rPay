@@ -144,7 +144,7 @@ class Register : AppCompatActivity() {
                                         token,
                                         "Pending"
                                     )
-                                    realm.insert(Credentials.credentials)
+                                    realm.insert(credentials)
                                     Credentials.credentials =
                                         Realm.getDefaultInstance()
                                             .copyFromRealm(Realm.getDefaultInstance().where(Credentials::class.java).findFirst())

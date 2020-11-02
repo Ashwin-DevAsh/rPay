@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-class GetHash  extends ContextWrapper {
+public class GetHash  extends ContextWrapper {
     public static final String TAG = GetHash.class.getSimpleName();
     private static final String HASH_TYPE = "SHA-256";
     public static final int NUM_HASHED_BYTES = 9;

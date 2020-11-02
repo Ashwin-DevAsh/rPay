@@ -53,7 +53,7 @@ class SplashScreen : AppCompatActivity() {
 
         RealmHelper.init(this)
 
-//        val appSignatureHelper = GetHash(this)
+//        val appSignatureHelper = com.DevAsh.recwallet.GetHash(this)
 //        println(appSignatureHelper.appSignatures[0]+"App Sign")
 
 
