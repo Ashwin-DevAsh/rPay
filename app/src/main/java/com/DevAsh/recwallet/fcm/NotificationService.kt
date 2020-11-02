@@ -54,6 +54,7 @@ class NotificationService : FirebaseMessagingService() {
             }
         }else if(p0.data["type"]?.startsWith("updateProfilePicture")!!){
               try{
+                  println("Change profile picture")
                   val id = p0.data["type"]?.split(",")!![1]
                   Picasso.get().invalidate(UiContext.buildURL(id))
                   Picasso.get().load(UiContext.buildURL(id))

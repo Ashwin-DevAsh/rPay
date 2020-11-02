@@ -89,14 +89,17 @@
             android:id="@+id/subtitle"
             android:layout_below="@id/title"
             android:layout_height="20dp"/>
-        <TextView
-            android:layout_width="wrap_content"
+        <ImageView
+            android:layout_width="20dp"
             android:layout_alignParentRight="true"
             android:textSize="15dp"
+            android:tint="@android:color/darker_gray"
+            android:src="@drawable/ios_forward_arrow"
+            android:layout_centerInParent="true"
             android:gravity="bottom"
             android:id="@+id/additionalInfo"
             android:textColor="@android:color/holo_red_dark"
-            android:layout_marginRight="30dp"
+            android:layout_marginRight="20dp"
             android:layout_height="40dp"/>
 
         <LinearLayout
