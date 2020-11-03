@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.activity_adding_options.*
 import org.json.JSONObject
 import java.text.DecimalFormat
 import java.util.*
+import java.util.UUID.*
 import kotlin.collections.ArrayList
 
 class AddingOptions : AppCompatActivity(), PaymentResultListener {
@@ -43,7 +44,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         upi.setOnClickListener{
             addingOption = "Upi transaction"
             loadingScreen.visibility = View.VISIBLE
-            payUsingUpi(amount, "bhartiairtel.rzp@sbi", "Version", "rPay")
+            payUsingUpi(amount, "paytmqr2810050501011pjhybp5n2g0@paytm", "Version", "rPay")
         }
 
         razorpay.setOnClickListener{
@@ -174,29 +175,29 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         amount: String?,
         upiId: String?,
         name: String?,
-        note: String?
+        note: String
     ) {
-//        val uri: Uri = Uri.parse("upi://pay").buildUpon()
-//            .appendQueryParameter("pa", upiId)
-//            .appendQueryParameter("pn", name)
-//            .appendQueryParameter("tn", note)
-//            .appendQueryParameter("am", amount)
-//            .appendQueryParameter("cu", "INR")
-//            .build()
-//        val upiPayIntent = Intent(Intent.ACTION_VIEW)
-//        upiPayIntent.data = uri
-//        val chooser = Intent.createChooser(upiPayIntent, "Pay with")
 
-        val intent = Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.data = Uri.parse(getUPIString(
-            upiId!!,name!!,
-            "",System.currentTimeMillis().toString(),
-            System.currentTimeMillis().toString(),"",amount!!,"INR","rpay.netlify.com"))
-        val chooser = Intent.createChooser(intent, "Pay with...")
+        val transactionID = randomUUID().toString()
 
+        println("transaction id = $transactionID")
+
+        val uri = Uri.parse("upi://pay").buildUpon()
+            .appendQueryParameter("pa", upiId)
+            .appendQueryParameter("pn", name)
+            .appendQueryParameter("tn", note)
+            .appendQueryParameter("am", amount)
+            .appendQueryParameter("cu", "INR")
+            .appendQueryParameter("tr",transactionID)
+            .build()
+
+        val upiPayIntent = Intent(Intent.ACTION_VIEW)
+        upiPayIntent.data = uri
+
+        // will always show a dialog to user to choose an app
+        val chooser = Intent.createChooser(upiPayIntent, "Pay with")
         if (null != chooser.resolveActivity(packageManager)) {
-            startActivityForResult(chooser, 1)
+           startActivityForResult(chooser, 1)
         } else {
           AlertHelper.showError(
               "No UPI app found, please install one to continue",
@@ -226,7 +227,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
     private fun startPayment() {
         val activity: Activity = this
         val co = Checkout()
-        co.setKeyID("rzp_test_txenFuJupWfNO6")
+        co.setKeyID("rzp_test_xkmYhXXE5iOTRu")
         try {
             val options = JSONObject()
             options.put("name", "Adding Money")
@@ -256,6 +257,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         when (requestCode) {
             1 -> if (Activity.RESULT_OK == resultCode || resultCode == 11) {
                 if (data != null) {
+                    println("data = $data")
                     val trxt = data.getStringExtra("response")
                     Log.d("UPI", "onActivityResult: $trxt")
                     val dataList: ArrayList<String> = ArrayList()
@@ -279,9 +281,10 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             var status = ""
             var approvalRefNo = ""
             val response = str.split("&".toRegex()).toTypedArray()
+            println("responseString = $str \n")
+            println("response = $response")
             for (i in response.indices) {
-                val equalStr =
-                    response[i].split("=".toRegex()).toTypedArray()
+                val equalStr = response[i].split("=".toRegex()).toTypedArray()
                 if (equalStr.size >= 2) {
                     if (equalStr[0].toLowerCase(Locale.ROOT) == "Status".toLowerCase(Locale.ROOT)) {
                         status = equalStr[1].toLowerCase(Locale.ROOT)
@@ -290,6 +293,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                             .toLowerCase(Locale.ROOT) == "txnRef".toLowerCase(Locale.ROOT)
                     ) {
                         approvalRefNo = equalStr[1]
+                        println(equalStr)
                     }
                 } else {
                     paymentCancel = "Payment cancelled by user."
@@ -297,7 +301,6 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             }
             when {
                 status == "success" -> {
-                    AlertHelper.showError("Transaction successful.  $approvalRefNo", this)
                     onPaymentSuccess(approvalRefNo)
                 }
                 "Payment cancelled by user." == paymentCancel -> {
