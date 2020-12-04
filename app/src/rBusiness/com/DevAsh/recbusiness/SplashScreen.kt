@@ -103,7 +103,7 @@ class SplashScreen : AppCompatActivity() {
                 Handler().postDelayed({
                     getStatus()
                 },0)
-                AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                         .addHeaders("token",Credentials.credentials.token)
                         .setPriority(Priority.IMMEDIATE)
                         .build()
@@ -152,7 +152,7 @@ class SplashScreen : AppCompatActivity() {
         }
 
      fun getStatus(){
-        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/getMerchant?id=${Credentials.credentials.id}")
+        AndroidNetworking.get(ApiContext.profileSubDomain + "/getMerchant?id=${Credentials.credentials.id}")
             .addHeaders("jwtToken",Credentials.credentials.token)
             .setPriority(Priority.IMMEDIATE)
             .build()

@@ -31,7 +31,6 @@ import com.DevAsh.recwallet.Home.Recovery.RecoveryOptions
 import com.DevAsh.recwallet.Models.Contacts
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
-import com.DevAsh.recwallet.Registration.Login
 import com.DevAsh.recwallet.SplashScreen
 import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
@@ -244,7 +243,7 @@ class PasswordPrompt : AppCompatActivity() {
             loadingScreen.visibility= View.VISIBLE
             needToPay=false
 
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/pay")
+            AndroidNetworking.post( ApiContext.paymentSubDomain + "/pay")
                 .setContentType("application/json; charset=utf-8")
                 .addHeaders("token", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
@@ -312,7 +311,7 @@ class PasswordPrompt : AppCompatActivity() {
                                 )
                             ))
                             transactionSuccessful()
-                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                            AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                                 .addHeaders("token", Credentials.credentials.token)
                                 .setPriority(Priority.IMMEDIATE)
                                 .build()

@@ -13,7 +13,7 @@ object MerchantHelper {
     fun updateMerchant(){
         try {
             println("updating merchants....")
-            AndroidNetworking.get(ApiContext.apiUrl+ ApiContext.profilePort+"/getMerchants")
+            AndroidNetworking.get(ApiContext.profileSubDomain+"/getMerchants")
                 .setPriority(Priority.IMMEDIATE)
                 .build()
                 .getAsJSONArray(object : JSONArrayRequestListener {

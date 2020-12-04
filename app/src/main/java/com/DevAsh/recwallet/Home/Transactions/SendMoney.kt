@@ -116,7 +116,7 @@ class SendMoney : AppCompatActivity() {
     private fun getAllUsers(){
         val allContacts = PhoneBookHelper.getContacts(context)
         HelperVariables.allUsers.clear()
-        AndroidNetworking.post(ApiContext.apiUrl+ApiContext.profilePort+"/getUsersWithContacts")
+        AndroidNetworking.post(ApiContext.profileSubDomain+"/getUsersWithContacts")
             .addBodyParameter(object {
                 var contacts = allContacts.toString()
             })

@@ -164,7 +164,7 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
             loadingScreen.visibility= View.VISIBLE
             HelperVariables.needToPay =false
 
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/withdraw")
+            AndroidNetworking.post(ApiContext.paymentSubDomain + "/withdraw")
                 .setContentType("application/json; charset=utf-8")
                 .addHeaders("token", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
@@ -188,7 +188,7 @@ class WithdrawPasswordPrompt : AppCompatActivity() {
                     override fun onResponse(response: JSONObject?) {
                         if(response?.get("message")=="done"){
                             transactionSuccessful()
-                            AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                            AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                                 .addHeaders("token",Credentials.credentials.token)
                                 .setPriority(Priority.IMMEDIATE)
                                 .build()

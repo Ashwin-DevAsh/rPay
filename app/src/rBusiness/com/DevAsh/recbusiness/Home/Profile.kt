@@ -23,7 +23,6 @@ import com.DevAsh.recwallet.Context.UiContext
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Helper.AlertHelper
 import com.DevAsh.recwallet.Home.ChangePassword
-import com.DevAsh.recbusiness.Home.SelectLogo
 import com.DevAsh.recwallet.Home.Transactions.AllTransactions
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.Sync.SocketHelper
@@ -175,7 +174,7 @@ class Profile : AppCompatActivity() {
     }
 
     private fun uploadImage(file:File,newImage:Bitmap){
-        AndroidNetworking.upload(ApiContext.apiUrl+ ApiContext.profilePort+"/addProfilePicture/"+Credentials.credentials.id)
+        AndroidNetworking.upload(ApiContext.profileSubDomain+"/addProfilePicture/"+Credentials.credentials.id)
             .addHeaders("token", Credentials.credentials.token)
             .addMultipartFile("profilePicture",file)
             .setPriority(Priority.HIGH)

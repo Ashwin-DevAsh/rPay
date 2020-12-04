@@ -39,7 +39,7 @@ class RecoveryOtp : AppCompatActivity() {
                 Handler().postDelayed({
                     mainContent.visibility = View.INVISIBLE
                 },300)
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.profilePort + BuildConfig.SETRECOVERYOTP)
+            AndroidNetworking.post(ApiContext.profileSubDomain + BuildConfig.SETRECOVERYOTP)
                 .addHeaders("token", Credentials.credentials.token)
                 .addBodyParameter("otpNumber", otpText)
                 .addBodyParameter(

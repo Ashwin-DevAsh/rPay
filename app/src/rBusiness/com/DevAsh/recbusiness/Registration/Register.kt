@@ -98,7 +98,7 @@ class Register : AppCompatActivity() {
                     .claim("id", "rbusiness@${RegistrationContext.countryCode+RegistrationContext.phoneNumber}")
                     .signWith(SignatureAlgorithm.HS256, ApiContext.qrKey)
                     .compact()
-                    AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/addMerchant")
+                    AndroidNetworking.post(ApiContext.profileSubDomain+"/addMerchant")
                         .addBodyParameter("name",name)
                         .addBodyParameter("email",email)
                         .addBodyParameter("number",RegistrationContext.countryCode+RegistrationContext.phoneNumber)
@@ -152,7 +152,7 @@ class Register : AppCompatActivity() {
 
 
                                     Handler().postDelayed({
-                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                                        AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                                             .addHeaders("token",Credentials.credentials.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()

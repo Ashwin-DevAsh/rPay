@@ -18,6 +18,14 @@
             </intent-filter>
         </activity>
 
+
+
+        <activity
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            android:name=".rMart.GetAccess"/>
+
     </application>
 
 </manifest>

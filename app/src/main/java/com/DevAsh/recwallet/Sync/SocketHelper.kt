@@ -19,7 +19,7 @@ import java.text.DecimalFormat
 
 object SocketHelper {
 
-    private val url = ApiContext.apiUrl+ ApiContext.syncPort
+    private val url =  ApiContext.syncSubDomain
     var socket:Socket? = null
     var newUser:Boolean = false
     var context:Context?=null
@@ -63,7 +63,7 @@ object SocketHelper {
     }
 
    fun getMyState(){
-        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+        AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
             .addHeaders("token",Credentials.credentials.token)
             .setPriority(Priority.IMMEDIATE)
             .build()

@@ -64,7 +64,7 @@ class ChangePassword : AppCompatActivity() {
             mainContent.visibility=View.INVISIBLE
         },500)
         newHashedPassword = PasswordHashing.encryptMsg(newPasswordText)
-        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+BuildConfig.CHANGEPASSWORDENDPOINT)
+        AndroidNetworking.post(ApiContext.profileSubDomain+BuildConfig.CHANGEPASSWORDENDPOINT)
             .addHeaders("token",Credentials.credentials.token)
             .addBodyParameter(object{
                 val id = Credentials.credentials.id

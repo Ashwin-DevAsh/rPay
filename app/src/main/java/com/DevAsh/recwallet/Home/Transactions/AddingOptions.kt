@@ -65,7 +65,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         Handler().postDelayed({
             loadingScreen.visibility = View.VISIBLE
         }, 500)
-        AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/addMoney")
+        AndroidNetworking.post(ApiContext.paymentSubDomain + "/addMoney")
             .setContentType("application/json; charset=utf-8")
             .addHeaders("token", Credentials.credentials.token)
             .addApplicationJsonBody(object {
@@ -90,7 +90,7 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
                     loadingScreen.visibility = View.VISIBLE
                     println(response)
                     if (response?.get("message") == "done") {
-                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                        AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                             .addHeaders("token", Credentials.credentials.token)
                             .setPriority(Priority.IMMEDIATE)
                             .build()

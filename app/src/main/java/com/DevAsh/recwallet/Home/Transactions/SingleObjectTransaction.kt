@@ -13,9 +13,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +25,6 @@ import com.DevAsh.recwallet.Helper.NotificationObserver
 import com.DevAsh.recwallet.Helper.PaymentObserver
 import com.DevAsh.recwallet.Helper.TransactionsHelper
 import com.DevAsh.recwallet.Models.Contacts
-import com.DevAsh.recwallet.Models.Message
 import com.DevAsh.recwallet.Models.Transaction
 import com.DevAsh.recwallet.R
 import com.DevAsh.recwallet.SplashScreen
@@ -35,15 +32,11 @@ import com.DevAsh.recwallet.Sync.SocketHelper
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_single_object_transaction.*
 
-import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Exception
-import java.security.cert.Extension
 import java.sql.Timestamp
 
 class SingleObjectTransaction : AppCompatActivity() {
@@ -207,7 +200,7 @@ class SingleObjectTransaction : AppCompatActivity() {
             (transactionContainer.layoutManager as RecyclerView.LayoutManager).startSmoothScroll(smoothScroller)
 
 
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.paymentPort + "/sendMessage")
+            AndroidNetworking.post(ApiContext.paymentSubDomain + "/sendMessage")
                 .setContentType("application/json; charset=utf-8")
                 .addHeaders("token", Credentials.credentials.token)
                 .addApplicationJsonBody(object{
@@ -246,7 +239,7 @@ class SingleObjectTransaction : AppCompatActivity() {
     private fun getData(){
         Handler().postDelayed({
             AndroidNetworking.get(
-                ApiContext.apiUrl + ApiContext.paymentPort + "/getTransactionsBetweenObjects")
+               ApiContext.paymentSubDomain + "/getTransactionsBetweenObjects")
                 .addHeaders("token", Credentials.credentials.token)
                 .addQueryParameter("id1",Credentials.credentials.id)
                 .addQueryParameter("id2",HelperVariables.selectedUser!!.id)

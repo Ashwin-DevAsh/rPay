@@ -24,7 +24,7 @@ class RecoveryOptions : AppCompatActivity() {
 
         mail.setOnClickListener{
             mainContent.visibility= View.INVISIBLE
-            AndroidNetworking.get(ApiContext.apiUrl+ ApiContext.profilePort+"${BuildConfig.RECOVERYOTP}/?emailID=${Credentials.credentials.email}")
+            AndroidNetworking.get(ApiContext.profileSubDomain+"${BuildConfig.RECOVERYOTP}/?emailID=${Credentials.credentials.email}")
                 .addHeaders("token",Credentials.credentials.token)
                 .setPriority(Priority.IMMEDIATE)
                 .build()

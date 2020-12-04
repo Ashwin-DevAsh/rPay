@@ -88,7 +88,7 @@ class SplashScreen : AppCompatActivity() {
                       },2000)
                       return@postDelayed
                   }
-                  AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                  AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                         .addHeaders("token",Credentials.credentials.token)
                         .setPriority(Priority.IMMEDIATE)
                         .build()

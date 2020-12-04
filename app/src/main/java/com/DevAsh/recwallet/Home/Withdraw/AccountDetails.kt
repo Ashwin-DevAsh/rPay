@@ -116,7 +116,7 @@ class AccountDetails : AppCompatActivity() {
 
     private fun deleteFromServer(){
 
-        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/deleteBankAccount")
+        AndroidNetworking.post(ApiContext.profileSubDomain+"/deleteBankAccount")
             .addHeaders("token", Credentials.credentials.token)
             .addBodyParameter( object{
                 var id = Credentials.credentials.id

@@ -63,7 +63,7 @@ class AddAccounts : AppCompatActivity() {
         val ifsc =  ifsc.text.toString()
         val bankName = bankName.text.toString()
 
-        AndroidNetworking.post(ApiContext.apiUrl+ ApiContext.profilePort+"/addBankAccount")
+        AndroidNetworking.post(ApiContext.profileSubDomain+"/addBankAccount")
             .addHeaders("token", Credentials.credentials.token)
             .addBodyParameter(object{
                 var id = Credentials.credentials.id

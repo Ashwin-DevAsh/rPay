@@ -103,7 +103,7 @@ class Otp : AppCompatActivity() {
                 mainContent.visibility = INVISIBLE
 
             },300)
-            AndroidNetworking.post(ApiContext.apiUrl + ApiContext.profilePort + "/setOtpMerchant")
+            AndroidNetworking.post(ApiContext.profileSubDomain + "/setOtpMerchant")
                 .addBodyParameter("otpNumber", otp.text.toString())
                 .addBodyParameter(
                     "number",
@@ -150,7 +150,7 @@ class Otp : AppCompatActivity() {
                                         SplashScreen.getStatus()
                                     },0)
                                     Handler().postDelayed({
-                                        AndroidNetworking.get(ApiContext.apiUrl + ApiContext.profilePort + "/init/${Credentials.credentials.id}")
+                                        AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
                                             .addHeaders("token",Credentials.credentials.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()
