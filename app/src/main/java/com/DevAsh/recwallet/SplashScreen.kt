@@ -128,7 +128,7 @@ class SplashScreen : AppCompatActivity() {
         val merchantTemp = ArrayList<Merchant>()
         for(i in 0 until response.length()){
             val user = Merchant(
-                response.getJSONObject(i)["storename"].toString()
+                response.getJSONObject(i)["accountname"].toString()
                 ,"+"+response.getJSONObject(i)["number"].toString()
                 ,response.getJSONObject(i)["id"].toString()
                 ,response.getJSONObject(i)["email"].toString()

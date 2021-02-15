@@ -8,7 +8,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -30,11 +31,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name="com.DevAsh.recbusiness.Home.Store.ProductsList"></activity>
+        <activity android:name="com.DevAsh.recbusiness.Home.QrScannerResult" />
+        <activity android:name=".Home.Transactions.InstamojoActivity" />
+        <activity android:name="com.DevAsh.recbusiness.Home.DeliveryScanner" />
+        <activity android:name="com.DevAsh.recbusiness.Home.Store.MyStore" />
         <activity
+            android:name=".rMart.GetAccess"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"
-            android:name=".rMart.GetAccess"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.Withdraw.WithdrawPasswordPrompt"
             android:screenOrientation="portrait"
@@ -149,6 +155,7 @@
             android:name=".Registration.Login"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+
         <service
             android:name=".fcm.NotificationService"
             android:exported="false">
@@ -160,6 +167,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="instamojo.orderauth.url"
+            android:value="https://abc.com/access_token.php" />
     </application>
 
 </manifest>

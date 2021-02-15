@@ -161,14 +161,16 @@ class AllTransactionsAdapter(private var items : ArrayList<Transaction>, val con
             holder.additionalInfo.setTextColor(Color.parseColor("#d50000"))
             holder.additionalInfo.setBackgroundColor(Color.parseColor("#15d50000"))
             holder.additionalInfo.text= "-${items[position].amount} ${HelperVariables.currency}"
-            if(items[position].contacts.id.startsWith("rmart")){
-                holder.badge.text = "RC"
-                holder.logo.visibility = View.VISIBLE
-                holder.title.text="rMart"
-                holder.badge.textSize = 14F
-                holder.logo.setBackgroundColor(Color.parseColor("#fe724c"))
-                holder.color = "#fe724c"
-            }
+
+        }
+
+        if(items[position].contacts.id.startsWith("rmart")){
+            holder.badge.text = "RC"
+            holder.logo.visibility = View.VISIBLE
+            holder.title.text="rMart"
+            holder.badge.textSize = 14F
+            holder.logo.setBackgroundColor(Color.parseColor("#fe724c"))
+            holder.color = "#fe724c"
         }
     }
 

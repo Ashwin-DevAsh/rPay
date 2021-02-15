@@ -12,7 +12,6 @@ import org.json.JSONArray
 object MerchantHelper {
     fun updateMerchant(){
         try {
-            println("updating merchants....")
             AndroidNetworking.get(ApiContext.profileSubDomain+"/getMerchants")
                 .setPriority(Priority.IMMEDIATE)
                 .build()
@@ -20,10 +19,11 @@ object MerchantHelper {
                     override fun onResponse(response: JSONArray?) {
                         println(response)
                         if(response!=null){
-                            var merchantTemp = ArrayList<Merchant>()
+                            println("response ="+ response)
+                            val merchantTemp = ArrayList<Merchant>()
                             for(i in 0 until response.length()){
                                 val user = Merchant(
-                                    response.getJSONObject(i)["storename"].toString()
+                                    response.getJSONObject(i)["accountname"].toString()
                                     ,"+"+response.getJSONObject(i)["number"].toString()
                                     ,response.getJSONObject(i)["id"].toString()
                                     ,response.getJSONObject(i)["email"].toString()

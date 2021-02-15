@@ -44,6 +44,25 @@ object UiContext {
 
     }
 
+    fun loadProductImage(context: Context,
+                         id:String,
+                         imageView:ImageView,
+                         errorPlaceHolder:Int= R.drawable.place_holder
+    ){
+        Picasso.get()
+            .load(id)
+//            .placeholder(errorPlaceHolder)
+//            .error(errorPlaceHolder)
+            .into(imageView, object : Callback {
+                override fun onSuccess() {
+                }
+                override fun onError(e: Exception?) {
+                }
+
+            })
+
+    }
+
     fun loadProfileImageWithoutPlaceHolder(
         id: String,
         loadProfileCallBack: LoadProfileCallBack,

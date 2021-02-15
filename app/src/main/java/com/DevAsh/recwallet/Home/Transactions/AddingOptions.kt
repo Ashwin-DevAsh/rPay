@@ -22,7 +22,9 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
+import com.instamojo.android.Instamojo
 import com.razorpay.Checkout
+//import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import kotlinx.android.synthetic.main.activity_adding_options.*
 import org.json.JSONObject
@@ -44,15 +46,17 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
         upi.setOnClickListener{
             addingOption = "Upi transaction"
             loadingScreen.visibility = View.VISIBLE
-            payUsingUpi(amount, "paytmqr2810050501011pjhybp5n2g0@paytm", "Version", "rPay")
+            payUsingUpi(amount, "reccollege@icici", "Version", "rPay")
         }
 
         razorpay.setOnClickListener{
-            addingOption = "Gateway transaction"
-            loadingScreen.visibility = View.VISIBLE
-            Handler().postDelayed({
-                startPayment()
-            }, 1000)
+
+            startActivity(Intent(this,InstamojoActivity::class.java))
+//            addingOption = "Gateway transaction"
+//            loadingScreen.visibility = View.VISIBLE
+//            Handler().postDelayed({
+//                startPayment()
+//            }, 1000)
         }
     }
 
@@ -225,27 +229,31 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
     }
 
     private fun startPayment() {
-        val activity: Activity = this
-        val co = Checkout()
-        co.setKeyID("rzp_test_xkmYhXXE5iOTRu")
-        try {
-            val options = JSONObject()
-            options.put("name", "Adding Money")
-            options.put("description", "This process require a 2% commission")
-            options.put("currency", "INR")
-            options.put(
-                "amount",
-                ((Integer.parseInt(amount) * 100) + ((Integer.parseInt(amount) * 100) * 0.02
-                        )).toString()
-            )
-            val prefill = JSONObject()
-            prefill.put("email", Credentials.credentials.email)
-            prefill.put("contact", Credentials.credentials.phoneNumber)
-            options.put("prefill", prefill)
-            co.open(activity, options)
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
+
+
+        Instamojo.getInstance().initialize(this, Instamojo.Environment.TEST);
+
+//        val activity: Activity = this
+//        val co = Checkout()
+//        co.setKeyID("rzp_test_xkmYhXXE5iOTRu")
+//        try {
+//            val options = JSONObject()
+//            options.put("name", "Adding Money")
+//            options.put("description", "This process require a 2% commission")
+//            options.put("currency", "INR")
+//            options.put(
+//                "amount",
+//                ((Integer.parseInt(amount) * 100) + ((Integer.parseInt(amount) * 100) * 0.02
+//                        )).toString()
+//            )
+//            val prefill = JSONObject()
+//            prefill.put("email", Credentials.credentials.email)
+//            prefill.put("contact", Credentials.credentials.phoneNumber)
+//            options.put("prefill", prefill)
+//            co.open(activity, options)
+//        }catch (e: Exception){
+//            e.printStackTrace()
+//        }
     }
 
     override fun onActivityResult(

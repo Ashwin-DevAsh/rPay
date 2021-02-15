@@ -14,3 +14,6 @@
 -keepclasseswithmembers class * {
   public void onPayment*(...);
 }
+
+# Rules for Instamojo SDK
+-keep class com.instamojo.android.**{*;}

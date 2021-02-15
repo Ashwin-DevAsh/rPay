@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.DevAsh.recbusiness.Home.Store.MyStore
 import com.DevAsh.recbusiness.Registration.Login
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.StateContext
@@ -52,20 +53,22 @@ class SplashScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         RealmHelper.init(this)
-
-//        val appSignatureHelper = com.DevAsh.recwallet.GetHash(this)
-//        println(appSignatureHelper.appSignatures[0]+"App Sign")
-
-
-
         setContentView(R.layout.activity_splash_screen)
+
+
+        Handler().postDelayed({
+            startActivity(Intent(this, MyStore::class.java))
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            finish()
+        },1500)
+
+        return;
+
+
+
         context = this
         parentLayout = findViewById(android.R.id.content)
-
-
         val credentials: Credentials? =  Realm.getDefaultInstance().where(Credentials::class.java).findFirst()
-
-
         if(credentials!=null && credentials.isLogin==true){
             StateContext.initRecentContact(arrayListOf())
 
@@ -156,15 +159,16 @@ class SplashScreen : AppCompatActivity() {
             .addHeaders("jwtToken",Credentials.credentials.token)
             .setPriority(Priority.IMMEDIATE)
             .build()
-            .getAsJSONObject(object: JSONObjectRequestListener {
+            .getAsJSONObject(object : JSONObjectRequestListener {
                 override fun onResponse(response: JSONObject?) {
-                    print(response)
                     try {
-                        Credentials.credentials.isVerified = response?.getString("status")=="active"
-                    }catch (e:Throwable){
+                        Credentials.credentials.isVerified =
+                            response?.getString("status") == "active"
+                    } catch (e: Throwable) {
 
                     }
                 }
+
                 override fun onError(anError: ANError?) {
                     println("err")
                     println(anError?.localizedMessage)

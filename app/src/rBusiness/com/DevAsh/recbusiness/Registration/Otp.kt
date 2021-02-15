@@ -116,15 +116,13 @@ class Otp : AppCompatActivity() {
                         val otpObject = response?.getJSONObject(0)
                         if (otpObject != null && otpObject["message"] == "verified") {
                             try {
-
-
                                 val user: JSONObject = otpObject["user"] as JSONObject
                                 Realm.getDefaultInstance().executeTransaction { realm ->
                                     realm.delete(Credentials::class.java)
                                    val credentials = Credentials(
                                         true,
-                                       user["storename"].toString(),
-                                       user["name"].toString(),
+                                       user["accountname"].toString(),
+                                       user["ownername"].toString(),
                                         user["number"].toString(),
                                         user["email"].toString(),
                                         user["password"].toString(),
@@ -135,7 +133,7 @@ class Otp : AppCompatActivity() {
 
                                     Credentials.credentials =
                                         Realm.getDefaultInstance()
-                                            .copyFromRealm(Realm.getDefaultInstance().where(Credentials::class.java).findFirst())
+                                            .copyFromRealm(Realm.getDefaultInstance().where(Credentials::class.java).findFirst()!!)
 
 
                                     Handler().postDelayed({

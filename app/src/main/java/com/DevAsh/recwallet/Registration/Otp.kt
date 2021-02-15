@@ -8,6 +8,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.DevAsh.recwallet.Context.ApiContext
 import com.DevAsh.recwallet.Context.RegistrationContext
@@ -120,8 +121,8 @@ class Otp : AppCompatActivity() {
                                     realm.delete(Credentials::class.java)
                                     val credentials = Credentials(
                                         true,
-                                        user["name"].toString(),
-                                        user["name"].toString(),
+                                        user["accountname"].toString(),
+                                        user["ownername"].toString(),
                                         user["number"].toString(),
                                         user["email"].toString(),
                                         user["password"].toString(),
@@ -131,37 +132,51 @@ class Otp : AppCompatActivity() {
                                     realm.insert(credentials)
                                     Credentials.credentials =
                                         Realm.getDefaultInstance()
-                                            .copyFromRealm(Realm.getDefaultInstance().where(Credentials::class.java).findFirst())
+                                            .copyFromRealm(
+                                                Realm.getDefaultInstance()
+                                                    .where(Credentials::class.java).findFirst()!!
+                                            )
 
 
                                     Handler().postDelayed({
                                         try {
-                                            addBankAccounts( user.getJSONArray("accountinfo"))
-                                        }catch (e:Throwable){
+                                            addBankAccounts(user.getJSONArray("accountinfo"))
+                                        } catch (e: Throwable) {
 
                                         }
-                                    },0)
+                                    }, 0)
 
                                     Handler().postDelayed({
                                         AndroidNetworking.get(ApiContext.profileSubDomain + "/init/${Credentials.credentials.id}")
-                                            .addHeaders("token",Credentials.credentials.token)
+                                            .addHeaders("token", Credentials.credentials.token)
                                             .setPriority(Priority.IMMEDIATE)
                                             .build()
-                                            .getAsJSONObject(object: JSONObjectRequestListener {
+                                            .getAsJSONObject(object : JSONObjectRequestListener {
                                                 override fun onResponse(response: JSONObject?) {
                                                     val balance = response?.getInt("balance")
-                                                    val merchants = response?.getJSONArray("merchants")!!
+                                                    val merchants =
+                                                        response?.getJSONArray("merchants")!!
                                                     StateContext.currentBalance = balance!!
-                                                    val formatter = DecimalFormat("##,##,##,##,##,##,##,###")
-                                                    StateContext.setBalanceToModel(formatter.format(balance))
+                                                    val formatter =
+                                                        DecimalFormat("##,##,##,##,##,##,##,###")
+                                                    StateContext.setBalanceToModel(
+                                                        formatter.format(
+                                                            balance
+                                                        )
+                                                    )
                                                     Handler().postDelayed({
                                                         getMerchants(merchants)
-                                                    },0)
+                                                    }, 0)
                                                     Handler().postDelayed({
-                                                        val transactionObjectArray = response.getJSONArray("transactions")
+                                                        val transactionObjectArray =
+                                                            response.getJSONArray("transactions")
                                                         println(transactionObjectArray)
-                                                        StateContext.initAllTransaction(TransactionsHelper.addTransaction(transactionObjectArray))
-                                                    },0)
+                                                        StateContext.initAllTransaction(
+                                                            TransactionsHelper.addTransaction(
+                                                                transactionObjectArray
+                                                            )
+                                                        )
+                                                    }, 0)
 
                                                 }
 
@@ -170,23 +185,24 @@ class Otp : AppCompatActivity() {
                                                 }
 
                                             })
-                                    },0)
+                                    }, 0)
                                 }
 
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 startActivity(Intent(context, Register::class.java))
                                 finish()
                             }
 
                         } else {
                             mainContent.visibility = VISIBLE
-                            AlertHelper.showError("Invalid Otp",this@Otp)
+                            AlertHelper.showError("Invalid Otp", this@Otp)
                         }
                     }
 
                     override fun onError(anError: ANError?) {
                         AlertHelper.showServerError(this@Otp)
-                        errorMessage.visibility=VISIBLE
+                        errorMessage.visibility = VISIBLE
                     }
                 })
         } else {
@@ -225,7 +241,7 @@ class Otp : AppCompatActivity() {
         val merchantTemp = ArrayList<Merchant>()
         for(i in 0 until response.length()){
             val user = Merchant(
-                response.getJSONObject(i)["storename"].toString()
+                response.getJSONObject(i)["accountname"].toString()
                 ,"+"+response.getJSONObject(i)["number"].toString()
                 ,response.getJSONObject(i)["id"].toString()
                 ,response.getJSONObject(i)["email"].toString()

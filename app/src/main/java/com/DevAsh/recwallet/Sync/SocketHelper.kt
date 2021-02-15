@@ -29,7 +29,6 @@ object SocketHelper {
         socket?.connect()
 
         socket?.on("connect") {
-            println("connecting ....")
             val data = JSONObject(
                mapOf(
                    "id"  to Credentials.credentials.id,

@@ -63,6 +63,48 @@ object AlertHelper {
         }
     }
 
+    fun showNativeAlertDialog(
+        context:Activity,
+        title:String,
+        subTitle:String,
+        alertDialogCallback: AlertDialogCallback? =null
+    ){
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context,R.style.AlertDialogCustom)
+        alertDialogBuilder.setMessage(subTitle)
+        alertDialogBuilder.setTitle(title)
+        alertDialogBuilder.setCancelable(false)
+
+        alertDialogBuilder.setPositiveButton(
+           "OK"
+        ) { dialog, _ ->
+            dialog.cancel()
+            alertDialogCallback?.onDismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+
+
+//        val mBottomSheetDialog = AlertDialog.Builder(context)
+//        val sheetView: View = LayoutInflater.from(context).inflate(R.layout.password_alert_sheet, null)
+//        sheetView.title.text = title
+//        sheetView.subTitle.text = subTitle
+//        val done = sheetView.findViewById<TextView>(R.id.done)
+//        mBottomSheetDialog.setView(sheetView)
+//        val dialog = mBottomSheetDialog.show()
+//        done.setOnClickListener{
+//            dialog.dismiss()
+//            alertDialogCallback?.onDone()
+//        }
+//
+//        dialog.setOnDismissListener{
+//            alertDialogCallback?.onDismiss()
+//        }
+    }
+
+
+
+
     interface AlertDialogCallback{
         fun onDismiss()
         fun onDone()

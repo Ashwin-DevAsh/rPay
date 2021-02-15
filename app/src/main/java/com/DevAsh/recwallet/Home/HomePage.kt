@@ -104,10 +104,8 @@ class HomePage : AppCompatActivity() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    println("Failed . . . .")
                     return@OnCompleteListener
                 } else {
-                    println("success . . . .")
                     HelperVariables.fcmToken = task.result?.token!!
                     SocketHelper.connect()
                 }

@@ -23,10 +23,10 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.DevAsh.recbusiness.Home.Store.MyStore
 import com.DevAsh.recwallet.Context.*
 import com.DevAsh.recwallet.Database.Credentials
 import com.DevAsh.recwallet.Database.ExtraValues
-import com.DevAsh.recwallet.Home.Profile
 import com.DevAsh.recwallet.Home.QrScanner
 import com.DevAsh.recwallet.Home.Transactions.AddMoney
 import com.DevAsh.recwallet.Home.Transactions.AllTransactions
@@ -171,7 +171,7 @@ class HomePage : AppCompatActivity() {
         }
 
         myStore.setOnClickListener{
-//            startActivity(Intent(this,MyStoreHome::class.java))
+            startActivity(Intent(this, MyStore::class.java))
         }
 
         bankAccounts.setOnClickListener{
@@ -587,6 +587,15 @@ class RecentPaymentsAdapter(var items : List<Transaction>, val context: Context,
             colorMap[items[position].contacts.id] = UiContext.colors[colorIndex]
             holder.color = UiContext.colors[colorIndex]
             colorIndex = (colorIndex+1)% UiContext.colors.size
+        }
+
+        if(items[position].contacts.id.startsWith("rmart")){
+            holder.badge.text = "RC"
+            holder.logo.visibility = View.VISIBLE
+            holder.title.text="rMart"
+            holder.badge.textSize = 14F
+            holder.logo.setBackgroundColor(Color.parseColor("#fe724c"))
+            holder.color = "#fe724c"
         }
 
         UiContext.loadProfileImageWithoutPlaceHolder(items[position].contacts.id, object: LoadProfileCallBack {

@@ -68,16 +68,18 @@ class TransactionDetails : AppCompatActivity() {
 
 
 
+        if(HelperVariables.selectedTransaction?.contacts!!.id.startsWith("rmart")){
+            logoContainer.visibility=View.VISIBLE
+            logoContainer.setBackgroundColor(Color.parseColor( "#fe724c"))
+        }
+
         if (HelperVariables.selectedTransaction?.type=="Send"){
             toDetails.text = "To: ${HelperVariables.selectedTransaction?.contacts?.name}"
             toID.text = "${HelperVariables.selectedTransaction?.contacts?.id}"
             fromDetails.text = "From: ${Credentials.credentials.accountName}"
             fromID.text = "${Credentials.credentials.id}"
 
-            if(HelperVariables.selectedTransaction?.contacts!!.id.startsWith("rmart")){
-                logoContainer.visibility=View.VISIBLE
-                logoContainer.setBackgroundColor(Color.parseColor( "#fe724c"))
-            }
+
 
         }else{
             toDetails.text = "To: ${Credentials.credentials.accountName}"

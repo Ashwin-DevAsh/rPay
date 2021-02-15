@@ -101,7 +101,7 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
 
     fun password(view: View){
         if(PasswordHashing.decryptMsg(Credentials.credentials.password!!)==password.text.toString()){
-            hideKeyboardFrom(activity!!, view)
+            hideKeyboardFrom(requireActivity(), view)
             Handler().postDelayed({
                 done()
             }, 500)
@@ -138,7 +138,7 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
                 cipher.let {
                     cryptoObject = FingerprintManager.CryptoObject(it)
                 }
-                helper = FingerprintHelper(activity!!, object : CallBack {
+                helper = FingerprintHelper(requireActivity(), object : CallBack {
                     override fun onSuccess() {
                         if (extraValues == null || !extraValues?.isEnteredPasswordOnce!!) {
                             animateBell("Enter password to enable fingerprint")
@@ -186,13 +186,13 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
         }
 
         if (ActivityCompat.checkSelfPermission(
-                activity!!,
+                requireActivity(),
                 Manifest.permission.USE_FINGERPRINT
             ) !=
             PackageManager.PERMISSION_GRANTED) {
             AlertHelper.showError(
                 "Permission not enabled (Fingerprint)",
-                activity!!
+                requireActivity()
             )
 
             return false
@@ -201,7 +201,7 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
         if (!fingerprintManager.hasEnrolledFingerprints()) {
             AlertHelper.showError(
                 "No fingerprint registered, please register",
-                activity!!
+                requireActivity()
             )
             return false
         }
@@ -304,7 +304,7 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
         errorMessage.visibility=View.VISIBLE
         errorMessage.setTextColor(Color.RED)
 
-        val shake: Animation = AnimationUtils.loadAnimation(activity!!, R.anim.shakeanimation)
+        val shake: Animation = AnimationUtils.loadAnimation(requireActivity(), R.anim.shakeanimation)
         imgBell.animation = shake
         imgBell.startAnimation(shake)
 
@@ -322,8 +322,9 @@ class PasswordSheet(val callBack: com.DevAsh.recwallet.rMart.CallBack) : BottomS
             val d = dialog as BottomSheetDialog
             val bottomSheetInternal =
                 d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            BottomSheetBehavior.from(bottomSheetInternal)
-                .setState(BottomSheetBehavior.STATE_EXPANDED)
+            if (bottomSheetInternal != null) {
+                BottomSheetBehavior.from(bottomSheetInternal).state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
     }
     }
