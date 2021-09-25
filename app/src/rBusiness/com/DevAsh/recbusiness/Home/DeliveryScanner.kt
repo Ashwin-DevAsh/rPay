@@ -1,6 +1,7 @@
 package com.DevAsh.recbusiness.Home
 
 import android.content.Intent
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Window
@@ -67,12 +68,13 @@ class DeliveryScanner : AppCompatActivity(),AlertHelper.AlertDialogCallback {
             runOnUiThread {
                 try {
 //                    val body = Jwts.parser().setSigningKey("rec@3214-init|bab|AAA|{barath,ash,version}").parseClaimsJws(it.text).body
-                    Toast.makeText(this,it.text.toString(),Toast.LENGTH_LONG).show();
-
+//                    Toast.makeText(this,it.text.toString(),Toast.LENGTH_LONG).show();
+                    val ring: MediaPlayer = MediaPlayer.create(this, R.raw.scan_beep)
+                    ring.start()
                     val id = it.text // body["orderID"].toString();
                     getOrder(id)
                 }catch (e:Throwable){
-                    Toast.makeText(this,e.message,Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"Dirty qrcode",Toast.LENGTH_LONG).show();
                     println(e)
                 }
 
@@ -102,7 +104,7 @@ class DeliveryScanner : AppCompatActivity(),AlertHelper.AlertDialogCallback {
                             startActivity(Intent(this@DeliveryScanner,ProductsList::class.java))
 //                            finish()
                         }else if(order.getString("status")=="invalid token" ){
-                             AlertHelper.showNativeAlertDialog(this@DeliveryScanner,"Invalid Token!","This is an invalid Token. Kindly ask the customer to provide correct QR code token.",this@DeliveryScanner)
+                             AlertHelper.showNativeAlertDialog(this@DeliveryScanner,"Invalid Token!","This token is either invalid or tomorrow's token. Kindly ask the customer to show a valid QR / today's QR.",this@DeliveryScanner)
                         }else if(order.getString("status")=="expired" ){
                             AlertHelper.showNativeAlertDialog(this@DeliveryScanner,"Expired!","This token has already expired.Kindly do not provide any products to the customer.",this@DeliveryScanner)
                         }else if(order.getString("status")=="delivered" ){
@@ -113,7 +115,8 @@ class DeliveryScanner : AppCompatActivity(),AlertHelper.AlertDialogCallback {
                         }
 
                     }catch (e:Throwable){
-                        Toast.makeText(this@DeliveryScanner,"invalid token ${e.message}",Toast.LENGTH_LONG).show()
+                        AlertHelper.showNativeAlertDialog(this@DeliveryScanner,"Invalid Token!","This token is either invalid or tomorrow's token. Kindly ask the customer to show a valid QR / today's QR.",this@DeliveryScanner)
+
                     }
                 }
 

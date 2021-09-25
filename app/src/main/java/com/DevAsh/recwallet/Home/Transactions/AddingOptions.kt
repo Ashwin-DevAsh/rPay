@@ -22,9 +22,7 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import com.instamojo.android.Instamojo
 import com.razorpay.Checkout
-//import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import kotlinx.android.synthetic.main.activity_adding_options.*
 import org.json.JSONObject
@@ -51,12 +49,12 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
 
         razorpay.setOnClickListener{
 
-            startActivity(Intent(this,InstamojoActivity::class.java))
-//            addingOption = "Gateway transaction"
-//            loadingScreen.visibility = View.VISIBLE
-//            Handler().postDelayed({
-//                startPayment()
-//            }, 1000)
+//            startActivity(Intent(this,InstamojoActivity::class.java))
+            addingOption = "Gateway transaction"
+            loadingScreen.visibility = View.VISIBLE
+            Handler().postDelayed({
+                startPayment()
+            }, 1000)
         }
     }
 
@@ -231,29 +229,27 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
     private fun startPayment() {
 
 
-        Instamojo.getInstance().initialize(this, Instamojo.Environment.TEST);
-
-//        val activity: Activity = this
-//        val co = Checkout()
-//        co.setKeyID("rzp_test_xkmYhXXE5iOTRu")
-//        try {
-//            val options = JSONObject()
-//            options.put("name", "Adding Money")
-//            options.put("description", "This process require a 2% commission")
-//            options.put("currency", "INR")
-//            options.put(
-//                "amount",
-//                ((Integer.parseInt(amount) * 100) + ((Integer.parseInt(amount) * 100) * 0.02
-//                        )).toString()
-//            )
-//            val prefill = JSONObject()
-//            prefill.put("email", Credentials.credentials.email)
-//            prefill.put("contact", Credentials.credentials.phoneNumber)
-//            options.put("prefill", prefill)
-//            co.open(activity, options)
-//        }catch (e: Exception){
-//            e.printStackTrace()
-//        }
+        val activity: Activity = this
+        val co = Checkout()
+        co.setKeyID("rzp_test_xkmYhXXE5iOTRu")
+        try {
+            val options = JSONObject()
+            options.put("name", "Adding Money")
+            options.put("description", "This process require a 2% commission")
+            options.put("currency", "INR")
+            options.put(
+                "amount",
+                ((Integer.parseInt(amount) * 100) + ((Integer.parseInt(amount) * 100) * 0.02
+                        )).toString()
+            )
+            val prefill = JSONObject()
+            prefill.put("email", Credentials.credentials.email)
+            prefill.put("contact", Credentials.credentials.phoneNumber)
+            options.put("prefill", prefill)
+            co.open(activity, options)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     override fun onActivityResult(
@@ -294,11 +290,10 @@ class AddingOptions : AppCompatActivity(), PaymentResultListener {
             for (i in response.indices) {
                 val equalStr = response[i].split("=".toRegex()).toTypedArray()
                 if (equalStr.size >= 2) {
-                    if (equalStr[0].toLowerCase(Locale.ROOT) == "Status".toLowerCase(Locale.ROOT)) {
+                    if (equalStr[0].equals("Status", ignoreCase = true)) {
                         status = equalStr[1].toLowerCase(Locale.ROOT)
-                    } else if (equalStr[0]
-                            .toLowerCase(Locale.ROOT) == "ApprovalRefNo".toLowerCase(Locale.ROOT) || equalStr[0]
-                            .toLowerCase(Locale.ROOT) == "txnRef".toLowerCase(Locale.ROOT)
+                    } else if (equalStr[0].equals("ApprovalRefNo", ignoreCase = true) || equalStr[0].equals(
+                            "txnRef", ignoreCase = true)
                     ) {
                         approvalRefNo = equalStr[1]
                         println(equalStr)

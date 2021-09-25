@@ -46,12 +46,16 @@ class MyStore : AppCompatActivity() {
             }
         }
 
+        myProducts.setOnClickListener {
+            startActivity(Intent(this, MyProducts::class.java))
+        }
+
+
     }
 
     private fun downloadMyOrders(context: Activity){
         val url = "https://mart.rajalakshmimart.com/downloadAllPendingOrders/"
-        val downloadManager: DownloadManager? =
-            context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+        val downloadManager: DownloadManager? = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
         val uri = Uri.parse(url)
         val request: DownloadManager.Request = DownloadManager.Request(uri)
         request.addRequestHeader("Key",ApiContext.martKey);

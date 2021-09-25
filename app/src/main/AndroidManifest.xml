@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -31,7 +33,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.DevAsh.recbusiness.Home.Store.ProductsList"></activity>
+        <activity android:name="com.DevAsh.recbusiness.Home.Store.MyProducts"></activity>
+        <activity android:name="com.DevAsh.recbusiness.Home.Store.ProductsList" />
         <activity android:name="com.DevAsh.recbusiness.Home.QrScannerResult" />
         <activity android:name=".Home.Transactions.InstamojoActivity" />
         <activity android:name="com.DevAsh.recbusiness.Home.DeliveryScanner" />
@@ -162,8 +165,14 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-
+        </service> <!-- <receiver -->
+        <!-- android:name=".receivers.NetworkChangeReceiver" -->
+        <!-- android:label="NetworkChangeReceiver" > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
+        <!-- <action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

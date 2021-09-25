@@ -1,6 +1,7 @@
 package com.DevAsh.recwallet.Helper
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.LayoutInflater
@@ -41,7 +42,7 @@ object AlertHelper {
     }
 
     fun showAlertDialog(
-        context:Activity,
+        context: Context,
         title:String,
         subTitle:String,
         alertDialogCallback: AlertDialogCallback? =null
