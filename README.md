@@ -1,4 +1,6 @@
-[![ic-launcher-playstore.png](https://i.postimg.cc/Fs0rhC1w/ic-launcher-playstore.png)](https://postimg.cc/svDdccYJ)
+<a href="https://postimg.cc/svDdccYJ">
+  <img src="https://i.postimg.cc/Fs0rhC1w/ic-launcher-playstore.png" alt="RPay Logo" width="100"/>
+</a>
 
 # rPay: College Payment Application
 
