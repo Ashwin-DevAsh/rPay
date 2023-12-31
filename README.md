@@ -10,7 +10,7 @@ rPay is an Android application developed in Android Studio using Kotlin, designe
 
 <p align="left">
   <img src="https://i.postimg.cc/FF65dMY7/Screenshot-2023-12-31-215431.png" width="200"/>
-  <img src="https://i.postimg.cc/dhVHkQMs/Screenshot-2023-12-31-215537.png" width="200"/>
+  <img src="https://i.postimg.cc/L6ZdzxPv/Screenshot-2023-12-31-215940.png" width="200"/>
   <img src="https://i.postimg.cc/ykBrKXvS/Screenshot-2023-12-31-215940.png" width="200"/>
   <img src="https://i.postimg.cc/5QWK6wJT/Screenshot-2023-12-31-220603.png" width="200"/>
   <img src="https://i.postimg.cc/ZCcs5BMs/Screenshot-2023-12-31-220725.png" width="200"/>
