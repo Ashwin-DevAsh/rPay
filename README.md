@@ -4,7 +4,24 @@
 
 # rPay: College Payment Application
 
+## Overview
+
 rPay is an Android application developed in Android Studio using Kotlin, designed to facilitate convenient financial transactions for college students within the campus. The app allows users to load money into their wallets through various payment methods, enabling seamless spending within the college premises.
+
+<p align="center">
+  <img src="https://i.postimg.cc/Rqwb2bQB/Screenshot-2023-12-31-215431.png" width="200"/>
+  <img src="https://i.postimg.cc/dhVHkQMs/Screenshot-2023-12-31-215537.png" width="200"/>
+  <img src="https://i.postimg.cc/ykBrKXvS/Screenshot-2023-12-31-215940.png" width="200"/>
+  <img src="https://i.postimg.cc/5QWK6wJT/Screenshot-2023-12-31-220603.png" width="200"/>
+  <img src="https://i.postimg.cc/ZCcs5BMs/Screenshot-2023-12-31-220725.png" width="200"/>
+  <img src="https://i.postimg.cc/Bj7hxWsx/Screenshot-2023-12-31-220833.png" width="200"/>
+  <img src="https://i.postimg.cc/LnBwg0nT/Screenshot-2023-12-31-221147.png" width="200"/>
+  <img src="https://i.postimg.cc/5X4GBqzM/Screenshot-2023-12-31-221428.png" width="200"/>
+  <img src="https://i.postimg.cc/7CbWcHXs/Screenshot-2023-12-31-221555.png" width="200"/>
+  <img src="https://i.postimg.cc/N28JT5fM/Screenshot-2023-12-31-221820.png" width="200"/>
+  <img src="https://i.postimg.cc/4YW0B7vH/Screenshot-2023-12-31-221942.png" width="200"/>
+  <img src="https://i.postimg.cc/cgn5xFpf/Screenshot-2023-12-31-222012.png" width="200"/>
+</p>
 
 ## Features
 
