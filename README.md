@@ -1,4 +1,4 @@
-[![rPay Logo](https://postimg.cc/svDdccYJ/273022fd)](https://postimg.cc/svDdccYJ/273022fd)
+[![ic-launcher-playstore.png](https://i.postimg.cc/Fs0rhC1w/ic-launcher-playstore.png)](https://postimg.cc/svDdccYJ)
 
 # rPay: College Payment Application
 
