@@ -69,3 +69,10 @@ rPay is an Android application developed in Android Studio using Kotlin, designe
 
 - **Security:**
   - Prioritizes the security of transactions.
+
+## Dependency Repositories
+- [rPay-Backend](https://github.com/Ashwin-DevAsh/rPay-Backend): Microservice handling backend functionality.
+- [rPay-Business](https://github.com/Ashwin-DevAsh/rPay-Business): Vendor application for scanning and delivering orders.
+- [rPay-Admin](https://github.com/Ashwin-DevAsh/rPay-Admin): Vendor application for scanning and delivering orders.
+
+
