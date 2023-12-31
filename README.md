@@ -1,3 +1,5 @@
+[![rPay Logo](https://postimg.cc/svDdccYJ/273022fd)](https://postimg.cc/svDdccYJ/273022fd)
+
 # rPay: College Payment Application
 
 rPay is an Android application developed in Android Studio using Kotlin, designed to facilitate convenient financial transactions for college students within the campus. The app allows users to load money into their wallets through various payment methods, enabling seamless spending within the college premises.
