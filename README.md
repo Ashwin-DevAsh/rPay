@@ -57,7 +57,7 @@ rPay is an Android application developed in Android Studio using Kotlin, designe
    - Follow the prompts to complete the payment and load money into your wallet.
 
 4. **Making Payments:**
-   - Navigate to the "Send Money" section to make payments within the college premises.
+   - Navigate to the "Pay Money" section to make payments within the college premises.
 
 ## Why rPay?
 
