@@ -11,31 +11,16 @@ rPay is an Android application developed in Android Studio using Kotlin, designe
 <p align="left">
   <img src="https://i.postimg.cc/FF65dMY7/Screenshot-2023-12-31-215431.png" width="200"/>
   <img src="https://i.postimg.cc/6QtDxwm1/Screenshot-2023-12-31-220833.png" width="200" />
-  
   <img src="https://i.postimg.cc/wTSpPCzS/Screenshot-2023-12-31-221147.png" width="200"/>
-
   <img src="https://i.postimg.cc/T1pzN94d/Screenshot-2023-12-31-220603.png" width="200" />
-  
   <img src="https://i.postimg.cc/L6ZdzxPv/Screenshot-2023-12-31-215940.png" width="200" />
   <img src="https://i.postimg.cc/VNwcsXdg/Screenshot-2023-12-31-221942.png" width="200"/>
-  
   <img src="https://i.postimg.cc/x1rwgLyQ/Screenshot-2023-12-31-220725.png" width="200" />
-  
-  
   <img src="https://i.postimg.cc/7Z0kyKYb/Screenshot-2023-12-31-221428.png" width="200"/>
-  
   <img src="https://i.postimg.cc/MGYJnXBS/Screenshot-2023-12-31-221555.png" width="200"/>
-  
   <img src="https://i.postimg.cc/j2mGp7pz/Screenshot-2023-12-31-221820.png" width="200"/>
-  
-  
   <img src="https://i.postimg.cc/NMJhxVbC/Screenshot-2023-12-31-222012.png" width="200"/>
-
   <img src="https://i.postimg.cc/8C7zWR1S/Screenshot-2023-12-31-231041.png" width="200"/>
-  
-
- 
-
 </p>
 
 ## Features
